@@ -26,6 +26,7 @@ export default defineComponent({
           canvas.value.add(circle);
         }, 1000);
         setTimeout(() => {
+          canvas.value;
           canvas.value.loadFromJSON(sti, () => {
             console.log(e);
           });
