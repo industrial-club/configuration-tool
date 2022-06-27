@@ -1,11 +1,9 @@
-import { defineComponent, onMounted, provide, ref } from "vue";
-import Vue3TabsChrome from "vue3-tabs-chrome";
+import { defineComponent, onMounted, provide, reactive, ref } from "vue";
 import { fabric } from "fabric";
 import ThingPlane from "./thingPlane";
 import topOption from "../topopt";
 import { createCanvas } from "../";
 import "../style/index.less";
-import "vue3-tabs-chrome/dist/vue3-tabs-chrome.css";
 import { Mcanvas } from "../canvas";
 
 export interface CustomTabProps {
@@ -16,11 +14,10 @@ export interface CustomTabProps {
 export default defineComponent({
   components: { topOption },
   setup(props, content) {
-    const canvas = ref<Mcanvas>();
-    provide("canvas", canvas);
-
+    let canvas: Mcanvas;
     onMounted(() => {
-      window["canvas"] = canvas.value = createCanvas("flow_canvas");
+      canvas = new fabric.Canvas("flow_canvas") as Mcanvas;
+      createCanvas(canvas);
     });
 
     // 存储当前状态下的所有tab
@@ -29,15 +26,15 @@ export default defineComponent({
 
     return () => (
       <div class={"canvas_body"}>
-        <topOption />
+        <topOption
+          onMenuClick={(e: any) => {
+            e.event(canvas);
+          }}
+        />
         <div class={"canvas_box"}>
           <ThingPlane />
           <div class={"canvas_box canvas_box_column"}>
-            <div class={"tabs_box"}>
-              {tabs.value.map((item) => (
-                <Vue3TabsChrome>{item.name}</Vue3TabsChrome>
-              ))}
-            </div>
+            <div class={"tabs_box"}></div>
             <div class={"canvas_box"} id="canvas_box">
               <canvas id="flow_canvas"></canvas>
             </div>
