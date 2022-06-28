@@ -1,7 +1,6 @@
 import { defineComponent, onMounted } from "vue";
 import { fabric } from "fabric";
-import { createCanvas } from "./xflow";
-import xFlow from "./xflow/layout";
+import xFlow from "./xflow";
 
 export default defineComponent({
   components: { xFlow },

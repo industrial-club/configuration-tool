@@ -1,50 +1,17 @@
-import { defineComponent, onMounted, inject, Ref } from "vue";
-import { fabric } from "fabric";
+import { defineComponent, PropType } from "vue";
 import { UnorderedListOutlined } from "@ant-design/icons-vue";
 import { menus } from "../config";
+import "./index.less";
 import { Mcanvas } from "../canvas";
 
 export default defineComponent({
-  emits: ["newTab"],
+  emits: ["MenuClick", "newTab"],
+  props: {
+    canvas: {
+      type: Object as PropType<Mcanvas>,
+    },
+  },
   setup(props, content) {
-    const canvas = inject<Ref<Mcanvas>>("canvas")!;
-    onMounted(() => {
-      fabric.loadSVGFromURL("svg/a.svg", (e, opt) => {
-        for (let i of e) {
-          canvas.value.add(i);
-          console.log(i);
-        }
-
-        const sti = canvas.value.toDatalessJSON();
-        setTimeout(() => {
-          canvas.value.clear();
-          const circle = new fabric.Circle({
-            top: 100,
-            left: 500,
-            radius: 50, // 圆的半径 50
-            fill: "green",
-          });
-          canvas.value.add(circle);
-        }, 1000);
-        setTimeout(() => {
-          canvas.value;
-          canvas.value.loadFromJSON(sti, () => {
-            console.log(e);
-          });
-          //   fabric.loadSVGFromString(sti, (e, opt) => {
-          //     for (let i of e) {
-          //       canvas.value.add(i);
-          //     }
-          //   });
-        }, 2000);
-      });
-      //   setTimeout(() => {
-      //     const item = canvas.value.getItem("2");
-      //     item.getObjects()[0].set("fill", "red");
-      //     canvas.value.renderAll();
-      //   }, 5000);
-    });
-
     const dropMenu = () => {
       const items = () => {
         return menus.newFile.map((item) => (
@@ -55,6 +22,7 @@ export default defineComponent({
       };
       return <a-menu>{items()}</a-menu>;
     };
+
     return () => (
       <div class={"zx_xflow_opt"}>
         <a-dropdown
@@ -62,8 +30,23 @@ export default defineComponent({
             overlay: dropMenu,
           }}
         >
-          <UnorderedListOutlined />
+          <div class={"optItem"}>
+            <UnorderedListOutlined />
+          </div>
         </a-dropdown>
+
+        {menus.list.map((item) => (
+          <a-tooltip placement="bottom" vSlots={{ title: () => item.name }}>
+            <div
+              class={"optItem"}
+              onClick={() => {
+                content.emit("MenuClick", item);
+              }}
+            >
+              {item.icon}
+            </div>
+          </a-tooltip>
+        ))}
       </div>
     );
   },

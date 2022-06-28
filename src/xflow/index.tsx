@@ -1,13 +1,14 @@
-import { defineComponent, onMounted, provide, ref } from "vue";
-import { Vue3TabsChrome } from "vue3-tabs-chrome";
+import { defineComponent, onMounted, provide, reactive, ref } from "vue";
 import { fabric } from "fabric";
-import ThingPlane from "./thingPlane";
-import topOption from "../topopt";
-import { createCanvas } from "../";
-import "../style/index.less";
+import prototype from "./canvas/prototype";
+import { Vue3TabsChrome } from "vue3-tabs-chrome";
 import "vue3-tabs-chrome/dist/vue3-tabs-chrome.css";
-import { Mcanvas } from "../canvas";
-import PropertiedForm from "./propertied-form";
+import ThingPlane from "./layout/thingPlane";
+import topOption from "./topopt";
+import { reset } from "./canvas";
+import "./style/index.less";
+import { Mcanvas } from "./canvas";
+import PropertiedForm from "./layout/propertied-form";
 
 export interface CustomTabProps {
   label: string;
@@ -17,13 +18,13 @@ export interface CustomTabProps {
 export default defineComponent({
   components: { topOption },
   setup(props, content) {
-    const canvas = ref<Mcanvas>();
-    provide("canvas", canvas);
-
     const tabsRef = ref();
 
+    let canvas: Mcanvas;
+    prototype();
     onMounted(() => {
-      window["canvas"] = canvas.value = createCanvas("flow_canvas");
+      canvas = new fabric.Canvas("flow_canvas") as Mcanvas;
+      reset(canvas);
     });
 
     // 存储当前状态下的所有tab
