@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, provide, reactive, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 import { fabric } from "fabric";
 import prototype from "./canvas/prototype";
 import { Vue3TabsChrome } from "vue3-tabs-chrome";
@@ -9,10 +9,12 @@ import { reset } from "./canvas";
 import "./style/index.less";
 import { Mcanvas } from "./canvas";
 import PropertiedForm from "./layout/propertied-form";
+import { uuid } from "./utils";
 
 export interface CustomTabProps {
   label: string;
   key: string;
+  type: "add-xflow" | "add-thing";
 }
 
 export default defineComponent({
@@ -29,14 +31,18 @@ export default defineComponent({
 
     // 存储当前状态下的所有tab
     const tabs = ref<Array<CustomTabProps>>([
-      { label: "新建标签1", key: Date.now() + "" },
+      { label: "新建标签1", key: uuid(), type: "add-xflow" },
     ]);
     const tabsActiveIndex = ref(tabs.value[0]?.key || undefined);
 
-    const handleOpenNewTab = (type: string) => {
-      const tab = { label: "新建标签页", key: Date.now() + "", type };
+    const handleOpenNewTab = (type: "add-xflow" | "add-thing") => {
+      const label = window.prompt("请输入标签名称");
+      const tab: CustomTabProps = {
+        label: label || "新建标签页",
+        key: uuid(),
+        type,
+      };
       tabsRef.value.addTab(tab);
-      console.log(tabs);
     };
 
     return () => (
