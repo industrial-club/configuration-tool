@@ -1,3 +1,5 @@
+import { isEqual, difference } from "lodash";
+
 export const getWindowInfo = (domId?: string) => {
   let height, width, dom: HTMLElement;
   if (domId && document.getElementById(domId)) {
@@ -21,4 +23,31 @@ export const uuid = () => {
       v = c == "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+};
+
+/**
+ * 得到两个对象不一样的属性 (以a为基准)
+ * @param a
+ * @param b
+ */
+export const diff = (a: any, b: any) => {
+  const res: any = {};
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+
+  const diffKeys = difference(aKeys, bKeys);
+
+  for (const key of diffKeys) {
+    res[key] = a[key];
+  }
+
+  // a b 都有的key
+  const basicKeys = aKeys.filter((key) => bKeys.includes(key));
+
+  for (const key of basicKeys) {
+    if (!isEqual(a[key], b[key])) {
+      res[key] = a[key];
+    }
+  }
+  return res;
 };

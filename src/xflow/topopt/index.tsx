@@ -5,9 +5,10 @@ import { menus } from "../config";
 import { Mcanvas } from "../canvas";
 
 export default defineComponent({
+  emits: ["newTab"],
   setup(props, content) {
+    const canvas = inject<Ref<Mcanvas>>("canvas")!;
     onMounted(() => {
-      const canvas = inject<Ref<Mcanvas>>("canvas")!;
       fabric.loadSVGFromURL("svg/a.svg", (e, opt) => {
         for (let i of e) {
           canvas.value.add(i);
@@ -47,7 +48,7 @@ export default defineComponent({
     const dropMenu = () => {
       const items = () => {
         return menus.newFile.map((item) => (
-          <a-menu-item>
+          <a-menu-item onClick={() => content.emit("newTab", item.id)}>
             <a href="javascript:;">{item.name}</a>
           </a-menu-item>
         ));
