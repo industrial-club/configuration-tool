@@ -1,4 +1,6 @@
 import { isEqual, difference } from "lodash";
+import { fabric } from "fabric";
+import { Mcanvas } from "../canvas";
 
 export const getWindowInfo = (domId?: string) => {
   let height, width, dom: HTMLElement;
@@ -50,4 +52,12 @@ export const diff = (a: any, b: any) => {
     }
   }
   return res;
+};
+
+export const createCanvas: (id: string) => Mcanvas = (id) => {
+  const canvas = new fabric.Canvas(id) as Mcanvas;
+  canvas.custonData = {
+    id,
+  };
+  return canvas;
 };

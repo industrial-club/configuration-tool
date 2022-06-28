@@ -43,7 +43,9 @@ export default {
       id: "event-save",
       icon: <SaveOutlined />,
       event(canvas: Mcanvas) {
-        console.log(canvas.toJSON());
+        const canvasJSon = canvas.toJSON();
+        const canvasCustomData = canvas.custonData;
+        console.log(canvasJSon);
       },
     },
   ],

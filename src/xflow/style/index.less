@@ -13,6 +13,17 @@ body {
   width: 100%;
   height: 100%;
   flex-direction: column;
+  .canvas_list_box{
+    flex: 1;
+    .canvas_box_item{
+      width: 100%;
+      height: 100%;
+      display: none;
+      &.active{
+        display: flex;
+      }
+    }
+  }
   .canvas_box {
     flex: 1;
     display: flex;

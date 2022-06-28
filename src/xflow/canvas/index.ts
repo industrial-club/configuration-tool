@@ -7,6 +7,7 @@ export interface Mcanvas extends fabric.Canvas {
   toDragRect: boolean;
   lastPosX: number;
   lastPosY: number;
+  custonData: Object;
   removeActiveObject: () => void;
   getItem: (id: string) => fabric.Canvas | fabric.Line | fabric.Group;
 }
