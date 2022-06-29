@@ -3,8 +3,9 @@ import {
   BorderOutlined,
   SaveOutlined,
 } from "@ant-design/icons-vue";
+import { fabric } from "fabric";
 import { uuid } from "../utils";
-import Default from "./default";
+import Default, { finishDragLine, toDragLine } from "./default";
 
 const meuns: ZXFLOW.Menu = {
   newFile: [
@@ -38,13 +39,9 @@ const meuns: ZXFLOW.Menu = {
       name: "连线",
       id: "custom-line",
       icon: <ApiOutlined />,
-      event(canvas) {
-        const line = Default.line();
-        line.data = {
-          id: uuid(),
-          type: "custom-line",
-        };
-        canvas.add(line);
+      event(canvas, flowArgs) {
+        // Default.line(canvas);
+        toDragLine(canvas);
       },
     },
     {

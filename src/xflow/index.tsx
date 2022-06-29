@@ -53,14 +53,14 @@ export default defineComponent({
         <topOption
           onNewTab={handleOpenNewTab}
           onMenuClick={(e: any) => {
-            e.event(canvas[tabsActiveIndex.value!]);
+            e.event(
+              canvas[tabsActiveIndex.value!],
+              flowArgsById.value[tabsActiveIndex.value!]
+            );
           }}
         />
         <div class={"canvas_box"}>
           <thingPlane
-            onDropEnd={() => {
-              // thingInfo.value = null;
-            }}
             onDropStart={(e: ThingInfo) => {
               flowArgsById.value[tabsActiveIndex.value!].thingInfo = e;
             }}

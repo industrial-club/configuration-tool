@@ -1,8 +1,8 @@
 declare namespace ZXFLOW {
   export interface Canvas extends fabric.Canvas {
-    isDragging: boolean; // 是否为绘制状态
     toDragLine: boolean;
     toDragRect: boolean;
+    isLineDragIng: boolean;
     lastPosX: number;
     lastPosY: number;
     custonData: Object;
@@ -33,7 +33,7 @@ declare namespace ZXFLOW {
       name: string;
       id: string;
       icon: JSX.Element;
-      event: (canvas: Canvas) => void;
+      event: (canvas: Canvas, flowArgs?: FlowArgs) => void;
     }>;
   }
 }

@@ -1,4 +1,3 @@
-import { Ref } from "vue";
 import canvasEvent from "./canvasEvent";
 import windowEvent from "./windowEvent";
 

@@ -2,11 +2,9 @@ import sentZoom from "./sentZoom";
 import canvasMove from "./canvasMove";
 import { svgToCanvas } from "../../../utils/svgToCanvas";
 import customLineEdit, { addControlPoint } from "./customLineClick";
-import { Ref } from "vue";
 
 // 所有canvas事件集合
 const Events = (canvas: ZXFLOW.Canvas, flowArgs: ZXFLOW.FlowArgs) => {
-  console.log(flowArgs);
   const customLineFun = customLineEdit(canvas);
   canvas.on("mouse:down:before", (e) => {});
   canvas.on("mouse:down", (e) => {

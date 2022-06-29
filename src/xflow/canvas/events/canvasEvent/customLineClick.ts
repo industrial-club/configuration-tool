@@ -97,7 +97,7 @@ export const addControlPoint = (
   e: fabric.IEvent<MouseEvent>
 ) => {
   const edit = customLineEdit(canvas);
-  if (e.transform.action !== "modifyPolygon") {
+  if (e.transform?.action !== "modifyPolygon") {
     // const { points } = e.target as ZXFLOW.CustomPolyline;
     // // 当点击到控制点
     // const { offsetX, offsetY } = e.transform as any;
