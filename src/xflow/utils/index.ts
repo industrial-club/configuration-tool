@@ -1,6 +1,7 @@
 import { isEqual, difference } from "lodash";
 import { fabric } from "fabric";
-import { Mcanvas } from "../canvas";
+import { ThingInfo, reset } from "../canvas";
+import { computed, Ref } from "vue";
 
 export const getWindowInfo = (domId?: string) => {
   let height, width, dom: HTMLElement;
@@ -54,10 +55,32 @@ export const diff = (a: any, b: any) => {
   return res;
 };
 
-export const createCanvas: (id: string) => Mcanvas = (id) => {
-  const canvas = new fabric.Canvas(id) as Mcanvas;
+export const computedZoomXY = (x: number, y: number, canvas: ZXFLOW.Canvas) => {
+  const zoom = canvas.getZoom();
+  let left = x;
+  let top = y;
+  if (canvas.viewportTransform) {
+    left = (left - canvas.viewportTransform[4]) / zoom;
+    top = (top - canvas.viewportTransform[5]) / zoom;
+  }
+  return {
+    left,
+    top,
+  };
+};
+
+export const createCanvas: (
+  id: string,
+  flowArgs: ZXFLOW.FlowArgs,
+  type: string
+) => ZXFLOW.Canvas = (id, flowArgs, type) => {
+  const canvas = new fabric.Canvas(id) as ZXFLOW.Canvas;
+
   canvas.custonData = {
     id,
+    type,
   };
+  reset(canvas, flowArgs);
+
   return canvas;
 };

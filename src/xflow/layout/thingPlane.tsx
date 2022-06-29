@@ -1,46 +1,17 @@
 import { computed, defineComponent, ref } from "vue";
+import ThingList from "../config/thingList";
 
 export default defineComponent({
-  setup() {
+  emits: ["dropEnd", "dropStart"],
+  props: {},
+  setup(props, content) {
     const keyword = ref("");
 
-    const thingList = ref([
-      {
-        key: "ymzbxt",
-        name: "原煤准备系统",
-        icons: [
-          {
-            path: "/icons/设备图标汇总_方仓 .svg",
-            name: "101",
-          },
-          {
-            path: "/icons/设备图标汇总_方仓 .svg",
-            name: "102",
-          },
-          {
-            path: "/icons/设备图标汇总_方仓 .svg",
-            name: "103",
-          },
-        ],
-      },
-      {
-        key: "zxxt",
-        name: "主洗系统",
-        icons: [
-          {
-            path: "/icons/设备图标汇总_综保数据.svg",
-            name: "201",
-          },
-          {
-            path: "/icons/设备图标汇总_仪表数据.svg",
-            name: "303X",
-          },
-        ],
-      },
-    ]);
+    const thingList = ref(ThingList);
 
     const expandedKeys = ref(thingList.value.map((item) => item.key));
 
+    const thinginfo = ref();
     return () => (
       <div class={"thing_plane"}>
         <a-input
@@ -59,6 +30,13 @@ export default defineComponent({
                       class="thing-item-thumbnail"
                       draggable="true"
                       src={icon.path}
+                      onDragstart={() => {
+                        thinginfo.value = icon;
+                        content.emit("dropStart", icon);
+                      }}
+                      onDragend={() => {
+                        content.emit("dropEnd", icon);
+                      }}
                     />
                     <span class="thing-item-name">{icon.name}</span>
                   </div>

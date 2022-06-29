@@ -2,20 +2,19 @@ import { defineComponent, PropType } from "vue";
 import { UnorderedListOutlined } from "@ant-design/icons-vue";
 import { menus } from "../config";
 import "./index.less";
-import { Mcanvas } from "../canvas";
 
 export default defineComponent({
   emits: ["MenuClick", "newTab"],
   props: {
     canvas: {
-      type: Object as PropType<Mcanvas>,
+      type: Object as PropType<ZXFLOW.Canvas>,
     },
   },
   setup(props, content) {
     const dropMenu = () => {
       const items = () => {
         return menus.newFile.map((item) => (
-          <a-menu-item onClick={() => content.emit("newTab", item.id)}>
+          <a-menu-item onClick={() => content.emit("newTab", item)}>
             <a href="javascript:;">{item.name}</a>
           </a-menu-item>
         ));

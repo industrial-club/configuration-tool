@@ -31,4 +31,35 @@ export default {
     });
     return rect;
   },
+  line() {
+    // 默认线
+    const points = [
+      {
+        x: 3,
+        y: 4,
+      },
+      {
+        x: 16,
+        y: 3,
+      },
+      {
+        x: 20,
+        y: 50,
+      },
+    ];
+    const Polyline = new fabric.Polyline(points, {
+      left: 100,
+      top: 50,
+      fill: "transparent",
+      strokeWidth: 1,
+      stroke: "green",
+      scaleX: 1,
+      scaleY: 1,
+      objectCaching: false,
+      transparentCorners: false,
+      cornerColor: "blue",
+    });
+
+    return Polyline;
+  },
 };

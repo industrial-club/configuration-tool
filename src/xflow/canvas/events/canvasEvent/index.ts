@@ -1,9 +1,13 @@
-import { Mcanvas } from "../..";
 import sentZoom from "./sentZoom";
 import canvasMove from "./canvasMove";
+import { svgToCanvas } from "../../../utils/svgToCanvas";
+import customLineEdit, { addControlPoint } from "./customLineClick";
+import { Ref } from "vue";
 
 // 所有canvas事件集合
-export default (canvas: Mcanvas) => {
+const Events = (canvas: ZXFLOW.Canvas, flowArgs: ZXFLOW.FlowArgs) => {
+  console.log(flowArgs);
+  const customLineFun = customLineEdit(canvas);
   canvas.on("mouse:down:before", (e) => {});
   canvas.on("mouse:down", (e) => {
     canvasMove.mouseDown(e, canvas);
@@ -17,9 +21,24 @@ export default (canvas: Mcanvas) => {
   canvas.on("mouse:up:before", (e) => {});
   canvas.on("mouse:up", (e) => {
     canvasMove.mouseUp(e, canvas);
+    if (e.target && (e.target as ZXFLOW.CustomPolyline).edit) {
+      addControlPoint(canvas, e);
+    }
   });
   canvas.on("mouse:wheel", (e) => {
     // 缩放画布 控制大小
     sentZoom(canvas, e);
   });
+
+  canvas.on("mouse:dblclick", (e) => {
+    // 自定义连线
+    if (e.target?.data.type === "custom-line") {
+      customLineFun(e.target as ZXFLOW.CustomPolyline);
+    }
+  });
+
+  canvas.on("drop", (e) => {
+    svgToCanvas(canvas, flowArgs.thingInfo, e);
+  });
 };
+export default Events;

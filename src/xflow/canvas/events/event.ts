@@ -1,8 +1,10 @@
-import { Mcanvas } from "..";
+import { Ref } from "vue";
 import canvasEvent from "./canvasEvent";
 import windowEvent from "./windowEvent";
 
-export default (canvas: Mcanvas) => {
-  canvasEvent(canvas);
+const Events = (canvas: ZXFLOW.Canvas, flowArgs: ZXFLOW.FlowArgs) => {
+  canvasEvent(canvas, flowArgs);
   windowEvent(canvas);
 };
+
+export default Events;

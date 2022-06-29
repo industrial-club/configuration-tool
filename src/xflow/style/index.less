@@ -35,6 +35,16 @@ body {
   .propertied-form {
     width: 300px;
     box-shadow: 0 3px 5px #ccc;
+    overflow: auto;
+    .ant-checkbox-wrapper {
+      display: flex;
+    }
+    .ant-checkbox-group {
+      width: 100%;
+      .ant-checkbox-wrapper {
+        margin-left: 0;
+      }
+    }
   }
 }
 @import url(./topopt.less);

@@ -1,50 +1,49 @@
-import {
-  defineComponent,
-  nextTick,
-  onMounted,
-  provide,
-  reactive,
-  ref,
-} from "vue";
-import { fabric } from "fabric";
+import { defineComponent, nextTick, ref, watch } from "vue";
 import vue3TabsChrome from "vue3-tabs-chrome";
 import "vue3-tabs-chrome/dist/vue3-tabs-chrome.css";
 import prototype from "./canvas/prototype";
-import ThingPlane from "./layout/thingPlane";
+import thingPlane from "./layout/thingPlane";
 import topOption from "./topopt";
-import { reset } from "./canvas";
+import { reset, ThingInfo } from "./canvas";
 import "./style/index.less";
-import { Mcanvas } from "./canvas";
 import { createCanvas, uuid } from "./utils";
 import PropertiedForm from "./layout/propertied-form";
 
 export interface CustomTabProps {
   label: string;
   key: string;
+  type: "add-xflow" | "add-thing";
 }
 
 export default defineComponent({
-  components: { vue3TabsChrome, topOption },
+  components: { vue3TabsChrome, topOption, thingPlane },
   setup(props, content) {
     const tabsRef = ref();
 
-    let canvas: Record<string, Mcanvas> = {};
+    let canvas: Record<string, ZXFLOW.Canvas> = {};
     prototype();
+
+    // 活跃的左侧菜单icon
+    const flowArgsById = ref<Record<string, ZXFLOW.FlowArgs>>({});
 
     // 存储当前状态下的所有tab
     const tabs = ref<Array<CustomTabProps>>([]);
     const tabsActiveIndex = ref(tabs.value[0]?.key || undefined);
 
     const handleOpenNewTab = (type: string) => {
+      const label = window.prompt("请输入标签名称");
       const id = uuid();
-      const tab = { label: "新建标签页", key: id, type };
+
+      if (!label) return;
+      const tab = { label: label, key: id, type };
       tabsRef.value.addTab(tab);
       tabsActiveIndex.value = id;
-
+      flowArgsById.value[id] = {
+        thingInfo: {},
+      };
       nextTick(() => {
         if (!canvas[id]) {
-          canvas[id] = createCanvas(id);
-          reset(canvas[id]);
+          canvas[id] = createCanvas(id, flowArgsById.value[id], type);
         }
       });
     };
@@ -58,7 +57,14 @@ export default defineComponent({
           }}
         />
         <div class={"canvas_box"}>
-          <ThingPlane />
+          <thingPlane
+            onDropEnd={() => {
+              // thingInfo.value = null;
+            }}
+            onDropStart={(e: ThingInfo) => {
+              flowArgsById.value[tabsActiveIndex.value!].thingInfo = e;
+            }}
+          />
           <div class={"canvas_box canvas_box_column"}>
             <div class={"tabs_box"}>
               <vue3TabsChrome

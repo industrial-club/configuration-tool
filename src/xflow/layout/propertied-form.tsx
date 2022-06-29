@@ -1,6 +1,7 @@
 import { defineComponent, h, ref, resolveComponent, watch } from "vue";
 import { cloneDeep } from "lodash";
 import { diff } from "../utils";
+import CheckboxGroup from "../components/checkbox-group";
 
 const formGroupList = [
   {
@@ -49,6 +50,39 @@ const formGroupList = [
         label: "是否XXX",
         type: "checkbox",
         value: true,
+      },
+    ],
+  },
+  {
+    name: "控制-单击弹出框信息",
+    key: "controls",
+    formItems: [
+      {
+        key: "status",
+        label: "状态",
+        type: "checkgroup",
+        value: ["long", "speed", "direction", "frontTemperture", "fault"],
+        options: [
+          {
+            name: "主机属性",
+            key: "main",
+            checkboxOptions: [
+              { label: "长度", value: "long" },
+              { label: "运行速度", value: "speed" },
+            ],
+          },
+          {
+            name: "电机",
+            key: "motor",
+            checkboxOptions: [
+              { label: "转动方向", value: "direction" },
+              { label: "前轴温度", value: "frontTemperture" },
+              { label: "后轴温度", value: "backTemperture" },
+              { label: "电流", value: "dianliu" },
+              { label: "故障", value: "fault" },
+            ],
+          },
+        ],
       },
     ],
   },
@@ -120,18 +154,22 @@ const PropertiedForm = defineComponent({
         case "checkbox": // 复选框
           fieldCpn = "a-checkbox";
           break;
+        case "checkgroup": // 复选框组
+          fieldCpn = CheckboxGroup;
+          props.options = desc.options;
+          break;
 
         default: // 文本
           fieldCpn = "a-input";
           break;
       }
 
-      const isNative = !fieldCpn.startsWith("a-");
+      const isNative = fieldCpn === "input" || fieldCpn === CheckboxGroup;
 
       const tag = isNative ? fieldCpn : resolveComponent(fieldCpn as string);
 
       return h(
-        tag,
+        tag as any,
         {
           ...props,
           key: desc.key,

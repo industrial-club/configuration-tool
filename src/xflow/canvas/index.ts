@@ -1,18 +1,9 @@
-import { fabric } from "fabric";
+import { Ref } from "vue";
 import events from "./events/event";
 
-export interface Mcanvas extends fabric.Canvas {
-  isDragging: boolean;
-  toDragLine: boolean;
-  toDragRect: boolean;
-  lastPosX: number;
-  lastPosY: number;
-  custonData: Object;
-  removeActiveObject: () => void;
-  getItem: (id: string) => fabric.Canvas | fabric.Line | fabric.Group;
-}
+export type ThingInfo = Ref<any>;
 
-export const reset = (canvas: Mcanvas) => {
+export const reset = (canvas: ZXFLOW.Canvas, flowArgs: ZXFLOW.FlowArgs) => {
   // 事件
-  events(canvas);
+  events(canvas, flowArgs);
 };

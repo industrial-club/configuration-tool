@@ -14,6 +14,7 @@
     "@ant-design/icons-vue": "^6.1.0",
     "@soybeanjs/vue-admin-tab": "^1.0.2",
     "@types/fabric": "^4.5.8",
+    "@types/lodash": "^4.14.182",
     "@vitejs/plugin-vue": "^2.3.3",
     "@vitejs/plugin-vue-jsx": "^1.3.10",
     "ant-design-vue": "^3.2.8",
