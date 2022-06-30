@@ -7,11 +7,10 @@ export const svgToCanvas = (
   e: fabric.IEvent<Event>
 ) => {
   fabric.loadSVGFromURL(thingInfo.path, (objects, options) => {
-    const svg = fabric.util.groupSVGElements(objects, options);
-    const userX = (e.pointer?.x || e.e.layerX) - svg.width / 2;
-    const userY = (e.pointer?.y || e.e.layerY) - svg.height / 2;
+    const svg = fabric.util.groupSVGElements(objects, options) as any;
+    const userX = (e.pointer?.x || (e.e as any).layerX) - svg.width / 2;
+    const userY = (e.pointer?.y || (e.e as any).layerY) - svg.height / 2;
     const { left, top } = computedZoomXY(userX, userY, canvas);
-    console.log(svg);
     svg.set({
       left,
       top,

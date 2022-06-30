@@ -1,10 +1,11 @@
 import { defineComponent, onMounted } from "vue";
-import { fabric } from "fabric";
-import xFlow from "./xflow";
+// import xFlow from "./xflow";
+import canvasEditor from "./canvasEditor";
+import "./index.less";
 
 export default defineComponent({
-  components: { xFlow },
+  components: { canvasEditor },
   setup(props, content) {
-    return () => <xFlow />;
+    return () => <canvasEditor />;
   },
 });

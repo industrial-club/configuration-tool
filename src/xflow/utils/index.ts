@@ -76,7 +76,7 @@ export const createCanvas: (
 ) => ZXFLOW.Canvas = (id, flowArgs, type) => {
   const canvas = new fabric.Canvas(id) as ZXFLOW.Canvas;
 
-  canvas.custonData = {
+  canvas.customData = {
     id,
     type,
   };

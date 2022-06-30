@@ -3,9 +3,8 @@ import {
   BorderOutlined,
   SaveOutlined,
 } from "@ant-design/icons-vue";
-import { fabric } from "fabric";
 import { uuid } from "../utils";
-import Default, { finishDragLine, toDragLine } from "./default";
+import Default, { toDragLine } from "./default";
 
 const meuns: ZXFLOW.Menu = {
   newFile: [
@@ -50,7 +49,7 @@ const meuns: ZXFLOW.Menu = {
       icon: <SaveOutlined />,
       event(canvas) {
         const canvasJSon = canvas.toJSON();
-        const canvasCustomData = canvas.custonData;
+        const canvasCustomData = canvas.customData;
         console.log(canvasJSon);
         console.log(canvasCustomData);
       },

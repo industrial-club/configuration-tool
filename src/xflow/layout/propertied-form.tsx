@@ -1,7 +1,17 @@
-import { defineComponent, h, ref, resolveComponent, watch } from "vue";
+import {
+  defineComponent,
+  h,
+  ref,
+  Ref,
+  resolveComponent,
+  watch,
+  PropType,
+  nextTick,
+} from "vue";
 import { cloneDeep } from "lodash";
 import { diff } from "../utils";
 import CheckboxGroup from "../components/checkbox-group";
+import menus from "../config/menu";
 
 const formGroupList = [
   {
@@ -88,13 +98,42 @@ const formGroupList = [
   },
 ];
 
+export const Props = {
+  tabId: String,
+  canvas: Object as PropType<Record<string, ZXFLOW.Canvas>>,
+  flowArgsById: Object as PropType<Record<string, ZXFLOW.FlowArgs>>,
+};
+
 /**
  * 动态属性表单
  */
 const PropertiedForm = defineComponent({
-  setup() {
+  props: Props,
+  setup(props, context) {
     const expendedKeys = ref(formGroupList.map((item) => item.key));
 
+    // 判断表单类型，分为 模型 - 模型实例 - 流程图
+    const formType = ref("");
+    const createForm = () => {
+      const item = props.flowArgsById![props.tabId!];
+      const { customData } = props.canvas![props.tabId!];
+      if (item) {
+        console.log(item.activeObj, customData);
+      } else {
+        // 点击的有可能是canvas画板
+      }
+    };
+    watch(
+      () => [props.tabId, props.flowArgsById],
+      () => {
+        nextTick(() => {
+          createForm();
+        });
+      },
+      {
+        deep: true,
+      }
+    );
     // 表单
     const form = ref<any>({});
     const oldForm = ref<any>({});
@@ -105,6 +144,7 @@ const PropertiedForm = defineComponent({
     });
     oldForm.value = cloneDeep(form.value);
 
+    // 但表单产生变化时触发
     watch(
       form,
       (val) => {
@@ -192,23 +232,24 @@ const PropertiedForm = defineComponent({
       );
     };
 
-    return () => (
-      <div class="propertied-form">
-        <a-form modal={form.value} labelCol={{ span: 6 }}>
-          <a-collapse v-model={[expendedKeys.value, "activeKey"]}>
-            {formGroupList.map((item) => (
-              <a-collapse-panel key={item.key} header={item.name}>
-                {item.formItems?.map((form) => (
-                  <a-form-item name={form.key} label={form.label}>
-                    {getFieldCpn(form)}
-                  </a-form-item>
-                ))}
-              </a-collapse-panel>
-            ))}
-          </a-collapse>
-        </a-form>
-      </div>
+    // 渲染表单
+    const renderForm = (form: Ref<any>) => (
+      <a-form modal={form.value} labelCol={{ span: 6 }}>
+        <a-collapse v-model={[expendedKeys.value, "activeKey"]}>
+          {formGroupList.map((item) => (
+            <a-collapse-panel key={item.key} header={item.name}>
+              {item.formItems?.map((form) => (
+                <a-form-item name={form.key} label={form.label}>
+                  {getFieldCpn(form)}
+                </a-form-item>
+              ))}
+            </a-collapse-panel>
+          ))}
+        </a-collapse>
+      </a-form>
     );
+
+    return () => <div class="propertied-form">{formType.value?.name}</div>;
   },
 });
 

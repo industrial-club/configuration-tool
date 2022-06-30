@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
-export default {
-  mouseDown(opt: fabric.IEvent<MouseEvent>, canvas: ZXFLOW.Canvas) {
+
+const event = {
+  mouseDown(opt: fabric.IEvent<MouseEvent>, canvas: CanvasEditor.Canvas) {
     let evt = opt.e;
     if (evt.ctrlKey === true) {
       // 是否按住ctrl
@@ -9,7 +10,7 @@ export default {
       canvas.lastPosY = evt.clientY; // lastPosY 是自定义的
     }
   },
-  mouseMove(opt: fabric.IEvent<MouseEvent>, canvas: ZXFLOW.Canvas) {
+  mouseMove(opt: fabric.IEvent<MouseEvent>, canvas: CanvasEditor.Canvas) {
     if (canvas.isMoveing) {
       let evt = opt.e;
       let vpt = canvas.viewportTransform!; // 聚焦视图的转换
@@ -20,8 +21,19 @@ export default {
       canvas.lastPosY = evt.clientY;
     }
   },
-  mouseUp(opt: fabric.IEvent<MouseEvent>, canvas: ZXFLOW.Canvas) {
+  mouseUp(opt: fabric.IEvent<MouseEvent>, canvas: CanvasEditor.Canvas) {
     canvas.setViewportTransform(canvas.viewportTransform!); // 设置此画布实例的视口转换
     canvas.isMoveing = false; // 关闭移动状态
   },
+};
+export default (canvas: CanvasEditor.Canvas) => {
+  canvas.on("mouse:down", (e) => {
+    event.mouseDown(e, canvas);
+  });
+  canvas.on("mouse:move", (e) => {
+    event.mouseMove(e, canvas);
+  });
+  canvas.on("mouse:up", (e) => {
+    event.mouseUp(e, canvas);
+  });
 };

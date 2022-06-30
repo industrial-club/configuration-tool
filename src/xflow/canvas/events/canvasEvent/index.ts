@@ -2,6 +2,7 @@ import sentZoom from "./sentZoom";
 import canvasMove from "./canvasMove";
 import { svgToCanvas } from "../../../utils/svgToCanvas";
 import customLineEdit, { addControlPoint } from "./customLineClick";
+import { ClickEvent } from "./clickEvent";
 
 // 所有canvas事件集合
 const Events = (canvas: ZXFLOW.Canvas, flowArgs: ZXFLOW.FlowArgs) => {
@@ -37,6 +38,11 @@ const Events = (canvas: ZXFLOW.Canvas, flowArgs: ZXFLOW.FlowArgs) => {
 
   canvas.on("drop", (e) => {
     svgToCanvas(canvas, flowArgs.thingInfo, e);
+  });
+
+  // 自定义模拟点击事件
+  ClickEvent(canvas, (e) => {
+    flowArgs.activeObj = e.target!;
   });
 };
 export default Events;

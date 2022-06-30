@@ -1,11 +1,12 @@
 declare namespace ZXFLOW {
   export interface Canvas extends fabric.Canvas {
+    isMoveing: boolean;
     toDragLine: boolean;
     toDragRect: boolean;
     isLineDragIng: boolean;
     lastPosX: number;
     lastPosY: number;
-    custonData: Object;
+    customData: any;
     removeActiveObject: () => void;
     getItem: (id: string) => fabric.Canvas | fabric.Line | fabric.Group;
   }
@@ -13,6 +14,7 @@ declare namespace ZXFLOW {
   // 画板参数
   export interface FlowArgs {
     thingInfo: ThingInfo;
+    activeObj: Object;
   }
 
   // 物模型属性

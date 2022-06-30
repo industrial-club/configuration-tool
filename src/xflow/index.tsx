@@ -40,6 +40,7 @@ export default defineComponent({
       tabsActiveIndex.value = id;
       flowArgsById.value[id] = {
         thingInfo: {},
+        activeObj: {},
       };
       nextTick(() => {
         if (!canvas[id]) {
@@ -87,7 +88,11 @@ export default defineComponent({
             </div>
           </div>
 
-          <PropertiedForm />
+          <PropertiedForm
+            canvas={canvas}
+            tabId={tabsActiveIndex.value}
+            flowArgsById={flowArgsById.value}
+          />
         </div>
       </div>
     );
