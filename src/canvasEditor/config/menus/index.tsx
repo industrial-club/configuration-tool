@@ -21,7 +21,6 @@ const onLine = (canvas: CanvasEditor.Canvas) => {
     item.selectable = false;
     return item;
   });
-  // canvas.selection = true;
 };
 const finishLine = (canvas: CanvasEditor.Canvas) => {
   canvas.isCreateLine = false;
@@ -29,7 +28,6 @@ const finishLine = (canvas: CanvasEditor.Canvas) => {
     item.selectable = true;
     return item;
   });
-  // canvas.selection = false;
 };
 
 const menus: Array<CanvasEditor.MenuItem> = [
