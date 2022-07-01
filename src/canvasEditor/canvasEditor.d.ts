@@ -11,6 +11,7 @@ declare namespace CanvasEditor {
     lastPosX: number;
     lastPosY: number;
     TabInfo: TabItem;
+    isCreateLine: boolean;
   }
 
   type MenuItemType = "group" | "item";
