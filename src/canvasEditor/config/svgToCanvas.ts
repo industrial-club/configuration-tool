@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
 import { computedZoomXY, svgPath } from ".";
+import { MenuId } from "./menus";
 
 export const svgToCanvas = (
   canvas: CanvasEditor.Canvas,
@@ -22,6 +23,10 @@ export const svgToCanvas = (
     canvas.add(svg);
   };
   const everySvg = (objects: fabric.Object[], options: any) => {
+    // const svgList = [];
+    // for(let i of objects) {
+    //   svgList.push(i);
+    // }
     const svg = fabric.util.groupSVGElements(objects, options) as any;
     const userX = (e.pointer?.x || (e.e as any).layerX) - svg.width / 2;
     const userY = (e.pointer?.y || (e.e as any).layerY) - svg.height / 2;
@@ -32,11 +37,12 @@ export const svgToCanvas = (
     });
     canvas.add(svg);
     setTimeout(() => {
+      console.log(svg);
       svg.toActiveSelection();
     }, 500);
   };
   fabric.loadSVGFromURL(path!, (objects, options) => {
-    if (canvas.TabInfo.menuInfo.id === "newThing") {
+    if (canvas.TabInfo.menuInfo.id === MenuId.newThing) {
       everySvg(objects, options);
     } else {
       groupSvg(objects, options);

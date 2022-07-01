@@ -93,7 +93,10 @@ export default defineComponent({
               tabs={TabInfo.value.list}
             />
           </div>
-          <canvasEditorForm />
+          <canvasEditorForm
+            tabsActiveIndex={TabInfo.value.indexKey}
+            canvasInfo={canvasInfo.value}
+          />
         </div>
 
         <a-modal

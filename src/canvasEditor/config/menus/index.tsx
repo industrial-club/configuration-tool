@@ -1,15 +1,9 @@
-import {
-  ApiOutlined,
-  BorderOutlined,
-  SaveOutlined,
-  BarsOutlined,
-} from "@ant-design/icons-vue";
+import { BorderOutlined, BarsOutlined } from "@ant-design/icons-vue";
 import { fabric } from "fabric";
-import { toRaw } from "vue";
 
 export enum MenuId {
-  newXflow = "newXflow",
-  newThing = "newThing",
+  newXflow = "流程图",
+  newThing = "物模型",
   thing = "thing",
   save = "save",
   circle = "circle",
