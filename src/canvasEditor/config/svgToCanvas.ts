@@ -22,9 +22,18 @@ export const svgToCanvas = (
     canvas.add(svg);
   };
   const everySvg = (objects: fabric.Object[], options: any) => {
-    for (let i of objects) {
-      canvas.add(i);
-    }
+    const svg = fabric.util.groupSVGElements(objects, options) as any;
+    const userX = (e.pointer?.x || (e.e as any).layerX) - svg.width / 2;
+    const userY = (e.pointer?.y || (e.e as any).layerY) - svg.height / 2;
+    const { left, top } = computedZoomXY(userX, userY, canvas);
+    svg.set({
+      left,
+      top,
+    });
+    canvas.add(svg);
+    setTimeout(() => {
+      svg.toActiveSelection();
+    }, 500);
   };
   fabric.loadSVGFromURL(path!, (objects, options) => {
     if (canvas.TabInfo.menuInfo.id === "newThing") {
