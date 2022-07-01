@@ -1,4 +1,8 @@
-import { BorderOutlined, BarsOutlined } from "@ant-design/icons-vue";
+import {
+  BorderOutlined,
+  BarsOutlined,
+  ApiOutlined,
+} from "@ant-design/icons-vue";
 import { fabric } from "fabric";
 
 export enum MenuId {
@@ -8,7 +12,25 @@ export enum MenuId {
   save = "save",
   circle = "circle",
   rect = "rect",
+  line = "线",
 }
+
+const onLine = (canvas: CanvasEditor.Canvas) => {
+  canvas.isCreateLine = true;
+  canvas.getObjects().map((item) => {
+    item.selectable = false;
+    return item;
+  });
+  // canvas.selection = true;
+};
+const finishLine = (canvas: CanvasEditor.Canvas) => {
+  canvas.isCreateLine = false;
+  canvas.getObjects().map((item) => {
+    item.selectable = true;
+    return item;
+  });
+  // canvas.selection = false;
+};
 
 const menus: Array<CanvasEditor.MenuItem> = [
   {
@@ -48,6 +70,19 @@ const menus: Array<CanvasEditor.MenuItem> = [
     type: "item",
     icon: <BorderOutlined />,
     name: "创建矩形",
+  },
+  {
+    id: MenuId.line,
+    event(canvas) {
+      if (canvas.isCreateLine) {
+        finishLine(canvas);
+      } else {
+        onLine(canvas);
+      }
+    },
+    type: "item",
+    icon: <ApiOutlined />,
+    name: "创建管道",
   },
 ];
 

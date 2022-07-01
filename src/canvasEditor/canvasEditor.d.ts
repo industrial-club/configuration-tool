@@ -6,6 +6,11 @@ declare namespace CanvasEditor {
     menuInfo: CanvasEditor.MenuItem;
   }
 
+  export interface Object extends fabric.Object {
+    outLines?: fabric.Path[];
+    inLines?: fabric.Path[];
+  }
+
   export interface Canvas extends fabric.Canvas {
     isMoveing: boolean;
     lastPosX: number;
