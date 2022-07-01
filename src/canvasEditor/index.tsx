@@ -8,6 +8,7 @@ import canvasEditorTop from "./layout/canvasEditorTop";
 import "./style/index.less";
 import { uuid } from "./config";
 import events from "./events";
+import { MenuId } from "./config/menus";
 
 export interface CanvasInfo {
   canvas: CanvasEditor.Canvas;
@@ -68,6 +69,19 @@ export default defineComponent({
       });
     };
 
+    const test = () => {
+      createCanvasConfirm.value.val = "测试Tab";
+      createCustomCanvas({
+        id: MenuId.newXflow,
+        name: "测试tab",
+        event() {},
+        type: "item",
+      });
+      nextTick(() => {
+        createCanvasConfirm.value.val = "";
+      });
+    };
+    test();
     return () => (
       <div class={"canvas_editor"}>
         <canvasEditorTop
