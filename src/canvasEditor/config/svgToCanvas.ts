@@ -20,6 +20,7 @@ export const svgToCanvas = (
       left,
       top,
     });
+    svg.type = "rect";
     canvas.add(svg);
   };
   const everySvg = (objects: fabric.Object[], options: any) => {

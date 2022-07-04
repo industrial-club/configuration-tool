@@ -17,34 +17,76 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     }
   });
   canvas.on("mouse:move", (e) => {
-    if (beginObj && !canvas.isCreateLine) {
-      beginObj.outLines?.forEach((line: fabric.Path) => {
+    if (beginObj && !canvas.isCreateLine && beginObj.type === "rect") {
+      beginObj.outLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
+        const line: CanvasEditor.Path = canvas._objects.find(
+          (ele: CanvasEditor.Object) => {
+            return ele.id === lineId;
+          }
+        ) as CanvasEditor.Path;
         const test = (line.path as Array<any>)[0];
         test[1] = beginPoint.x;
         test[2] = beginPoint.y;
       });
-      beginObj.inLines?.forEach((line: fabric.Path) => {
+      beginObj.inLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
+        const line: CanvasEditor.Path = canvas._objects.find(
+          (ele: CanvasEditor.Object) => {
+            return ele.id === lineId;
+          }
+        ) as CanvasEditor.Path;
         const test = (line.path as Array<any>)[1];
         test[1] = beginPoint.x;
         test[2] = beginPoint.y;
       });
     }
+    if (beginObj && !canvas.isCreateLine && beginObj.type === "line") {
+      console.log(e);
+    }
   });
   canvas.on("mouse:up", (e) => {
     const endObj: CanvasEditor.Object | undefined = e.target;
+    if (beginObj && !canvas.isCreateLine && beginObj.type === "rect") {
+      [...(beginObj.outLines || []), ...(beginObj.inLines || [])]?.forEach(
+        (lineId: number) => {
+          const line: CanvasEditor.Path = canvas._objects.find(
+            (ele: CanvasEditor.Object) => {
+              return ele.id === lineId;
+            }
+          ) as CanvasEditor.Path;
+          const path = line.path;
+          canvas.remove(line);
+          const newLine: CanvasEditor.Path = new fabric.Path(path, {
+            fill: "",
+            stroke: "black",
+            objectCaching: false,
+            strokeWidth: 10,
+            selectable: false,
+            hasControls: false,
+          });
+          newLine.id = lineId;
+          newLine.type = "line";
+          canvas.add(newLine);
+        }
+      );
+    }
     if (endObj && canvas.isCreateLine && beginObj && beginObj !== endObj) {
       const beginPoint: { [key: string]: number } = getCenter(beginObj);
       const endPoint: { [key: string]: number } = getCenter(endObj);
-      var line = new fabric.Path(
+      const line: CanvasEditor.Path = new fabric.Path(
         `M ${beginPoint.x} ${beginPoint.y} L ${endPoint.x} ${endPoint.y}`,
         {
           fill: "",
           stroke: "black",
           objectCaching: false,
+          strokeWidth: 10,
+          selectable: false,
+          hasControls: false,
         }
       );
+      line.id = Math.random();
+      line.type = "line";
       canvas.add(line);
       if (!beginObj.outLines) {
         beginObj.outLines = [];
@@ -52,15 +94,20 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       if (!endObj.inLines) {
         endObj.inLines = [];
       }
-      beginObj.outLines.push(line);
-      endObj.inLines!.push(line);
+      beginObj.outLines.push(line.id);
+      endObj.inLines!.push(line.id);
       beginObj = undefined;
       canvas.isCreateLine = false;
       canvas.getObjects().map((item) => {
-        item.selectable = true;
+        if (item.type !== "line") {
+          item.selectable = true;
+        }
         return item;
       });
+
+      canvas.renderAll();
     }
+    beginObj = undefined;
   });
 };
 export default createLine;

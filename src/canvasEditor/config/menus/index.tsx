@@ -25,7 +25,9 @@ const onLine = (canvas: CanvasEditor.Canvas) => {
 const finishLine = (canvas: CanvasEditor.Canvas) => {
   canvas.isCreateLine = false;
   canvas.getObjects().map((item) => {
-    item.selectable = true;
+    if (item.type !== "line") {
+      item.selectable = true;
+    }
     return item;
   });
 };

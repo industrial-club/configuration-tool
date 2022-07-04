@@ -7,8 +7,13 @@ declare namespace CanvasEditor {
   }
 
   export interface Object extends fabric.Object {
-    outLines?: fabric.Path[];
-    inLines?: fabric.Path[];
+    outLines?: number[];
+    inLines?: number[];
+    id?: number;
+  }
+
+  export interface Path extends fabric.Path {
+    id?: number;
   }
 
   export interface Canvas extends fabric.Canvas {
