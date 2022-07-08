@@ -1,4 +1,6 @@
 import { fabric } from "fabric";
+import { Line } from "fabric/fabric-impl";
+import canvas from "../../layout/canvas";
 
 const getCenter = (obj: CanvasEditor.Object) => {
   return {
@@ -7,6 +9,90 @@ const getCenter = (obj: CanvasEditor.Object) => {
   };
 };
 
+const getObjById = (canvas: CanvasEditor.Canvas, id: number) => {
+  return canvas._objects.find((ele: CanvasEditor.Object) => {
+    return ele.id === id;
+  });
+};
+
+const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
+  const point: CanvasEditor.Circle = new fabric.Circle({
+    radius: 8,
+    fill: "#4FC3F7",
+    left: x,
+    top: y,
+    hasControls: false,
+    opacity: 0.7,
+    stroke: "blue",
+    strokeWidth: 3,
+    strokeUniform: true,
+  });
+  point.type = "point";
+  point.id = Math.random();
+  point.lineId = line.id;
+  return point;
+};
+
+const addLine = (
+  canvas: CanvasEditor.Canvas,
+  id: number,
+  path: Array<any>,
+  data: any,
+  points?: number[]
+) => {
+  const newLine: CanvasEditor.Path = new fabric.Path(path, {
+    fill: "",
+    stroke: "black",
+    objectCaching: false,
+    strokeWidth: 10,
+    perPixelTargetFind: true,
+    lockMovementX: true,
+    lockMovementY: true,
+  }) as CanvasEditor.Path;
+  newLine.id = id;
+  newLine.data = data;
+  newLine.type = "line";
+  if (points) {
+    newLine.points = points;
+  } else {
+    newLine.points = [];
+    // const p1: CanvasEditor.Circle = addPoint(newLine, path[0][1], path[0][2]);
+    // const p2: CanvasEditor.Circle = addPoint(newLine, path[1][1], path[1][2]);
+    // canvas.add(p1);
+    // canvas.add(p2);
+    // newLine.points.push(p1.id!);
+    // newLine.points.push(p2.id!);
+  }
+  canvas.add(newLine);
+  return newLine;
+};
+
+const getInsertIndex = (
+  canvas: CanvasEditor.Canvas,
+  line: CanvasEditor.Path,
+  x: number,
+  y: number
+) => {
+  let index = 0;
+  let distance;
+  for (let i: number = 0; i <= line.path.length - 2; i++) {
+    const point1 = line.path[i];
+    const point2 = line.path[i + 1];
+    const num =
+      Math.sqrt(Math.pow(x - point1[1], 2) + Math.pow(y - point1[2], 2)) +
+      Math.sqrt(Math.pow(x - point2[1], 2) + Math.pow(y - point2[2], 2)) -
+      Math.sqrt(
+        Math.pow(point1[1] - point2[1], 2) + Math.pow(point1[2] - point2[2], 2)
+      );
+    if (!distance || num < distance) {
+      distance = num;
+      index = i;
+    }
+  }
+  return index;
+};
+
+// 连线相关事件
 const createLine = (canvas: CanvasEditor.Canvas) => {
   let beginObj: CanvasEditor.Object | undefined;
   canvas.on("mouse:down:before", (e) => {
@@ -16,86 +102,93 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       beginObj = undefined;
     }
   });
+  // 加点
+  canvas.on("mouse:dblclick", (e: fabric.IEvent) => {
+    const obj: CanvasEditor.Object | undefined = e.target;
+    if (obj?.type === "line") {
+      const line: CanvasEditor.Path = obj as CanvasEditor.Path;
+      const point: CanvasEditor.Circle = addPoint(
+        line,
+        e.pointer!.x - 8,
+        e.pointer!.y
+      );
+      canvas.add(point);
+      const index = getInsertIndex(canvas, line, e.pointer!.x, e.pointer!.y);
+      line.path.splice(index + 1, 0, ["L", e.pointer!.x, e.pointer!.y]);
+      line.points!.splice(index, 0, point.id!);
+    }
+  });
   canvas.on("mouse:move", (e) => {
+    // 移动块
     if (beginObj && !canvas.isCreateLine && beginObj.type === "rect") {
       beginObj.outLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
-        const line: CanvasEditor.Path = canvas._objects.find(
-          (ele: CanvasEditor.Object) => {
-            return ele.id === lineId;
-          }
+        const line: CanvasEditor.Path = getObjById(
+          canvas,
+          lineId
         ) as CanvasEditor.Path;
-        const test = (line.path as Array<any>)[0];
-        test[1] = beginPoint.x;
-        test[2] = beginPoint.y;
+        const path = line.path;
+        path[0][1] = beginPoint.x;
+        path[0][2] = beginPoint.y;
+        canvas.remove(line);
+        addLine(canvas, lineId, path, line.data, line.points);
       });
       beginObj.inLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
-        const line: CanvasEditor.Path = canvas._objects.find(
-          (ele: CanvasEditor.Object) => {
-            return ele.id === lineId;
-          }
+        const line: CanvasEditor.Path = getObjById(
+          canvas,
+          lineId
         ) as CanvasEditor.Path;
-        const test = (line.path as Array<any>)[1];
-        test[1] = beginPoint.x;
-        test[2] = beginPoint.y;
+        const path = line.path;
+        path[line.path.length - 1][1] = beginPoint.x;
+        path[line.path.length - 1][2] = beginPoint.y;
+        canvas.remove(line);
+        addLine(canvas, lineId, path, line.data, line.points);
       });
     }
-    if (beginObj && !canvas.isCreateLine && beginObj.type === "line") {
-      console.log(e);
+    // 移动点
+    if (beginObj && !canvas.isCreateLine && beginObj.type === "point") {
+      const point: CanvasEditor.Circle = beginObj as CanvasEditor.Circle;
+      const line: CanvasEditor.Path = getObjById(
+        canvas,
+        point.lineId!
+      ) as CanvasEditor.Path;
+      const index: number = line.points?.indexOf(point.id!)!;
+      line.path[index + 1][1] = e.pointer!.x - 8;
+      line.path[index + 1][2] = e.pointer!.y - 8;
+      canvas.remove(line);
+      addLine(canvas, line.id!, line.path, line.data, line.points);
     }
   });
+
   canvas.on("mouse:up", (e) => {
     const endObj: CanvasEditor.Object | undefined = e.target;
-    if (beginObj && !canvas.isCreateLine && beginObj.type === "rect") {
-      [...(beginObj.outLines || []), ...(beginObj.inLines || [])]?.forEach(
-        (lineId: number) => {
-          const line: CanvasEditor.Path = canvas._objects.find(
-            (ele: CanvasEditor.Object) => {
-              return ele.id === lineId;
-            }
-          ) as CanvasEditor.Path;
-          const path = line.path;
-          canvas.remove(line);
-          const newLine: CanvasEditor.Path = new fabric.Path(path, {
-            fill: "",
-            stroke: "black",
-            objectCaching: false,
-            strokeWidth: 10,
-            selectable: false,
-            hasControls: false,
-          });
-          newLine.id = lineId;
-          newLine.type = "line";
-          canvas.add(newLine);
-        }
-      );
-    }
+    // 新连线
     if (endObj && canvas.isCreateLine && beginObj && beginObj !== endObj) {
       const beginPoint: { [key: string]: number } = getCenter(beginObj);
       const endPoint: { [key: string]: number } = getCenter(endObj);
-      const line: CanvasEditor.Path = new fabric.Path(
-        `M ${beginPoint.x} ${beginPoint.y} L ${endPoint.x} ${endPoint.y}`,
-        {
-          fill: "",
-          stroke: "black",
-          objectCaching: false,
-          strokeWidth: 10,
-          selectable: false,
-          hasControls: false,
-        }
+      const lineId = Math.random();
+      const data = {
+        from: beginObj.id,
+        to: endObj.id,
+      };
+      const newLine = addLine(
+        canvas,
+        lineId,
+        [
+          ["M", beginPoint.x, beginPoint.y],
+          ["L", endPoint.x, endPoint.y],
+        ],
+        data
       );
-      line.id = Math.random();
-      line.type = "line";
-      canvas.add(line);
       if (!beginObj.outLines) {
         beginObj.outLines = [];
       }
       if (!endObj.inLines) {
         endObj.inLines = [];
       }
-      beginObj.outLines.push(line.id);
-      endObj.inLines!.push(line.id);
+      beginObj.outLines.push(lineId);
+      endObj.inLines!.push(lineId);
       beginObj = undefined;
       canvas.isCreateLine = false;
       canvas.getObjects().map((item) => {
@@ -104,8 +197,6 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
         }
         return item;
       });
-
-      canvas.renderAll();
     }
     beginObj = undefined;
   });

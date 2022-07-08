@@ -14,6 +14,14 @@ declare namespace CanvasEditor {
 
   export interface Path extends fabric.Path {
     id?: number;
+    points?: number[];
+    path: any[];
+    data?: any;
+  }
+
+  export interface Circle extends fabric.Circle {
+    id?: number;
+    lineId?: number;
   }
 
   export interface Canvas extends fabric.Canvas {
