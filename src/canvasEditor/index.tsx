@@ -30,7 +30,10 @@ export default defineComponent({
     canvasEditorTop,
   },
   setup(prop, context) {
+    // 所有图表集合
     const canvasInfo = ref<Array<CanvasInfo>>([]);
+
+    // tab 合集
     const TabInfo = ref<TabInfo>({
       list: [],
       indexKey: "",
@@ -46,6 +49,7 @@ export default defineComponent({
       val: "",
     });
 
+    // 创建
     const createCustomCanvas = (e: CanvasEditor.MenuItem) => {
       const id = uuid();
       const tabInfo = {

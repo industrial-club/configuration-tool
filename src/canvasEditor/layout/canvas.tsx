@@ -1,8 +1,7 @@
 import { defineComponent } from "vue";
-import { TabItem } from "..";
 
 export default defineComponent({
-  props: { tabsActiveIndex: String, tabs: Array<TabItem> },
+  props: { tabsActiveIndex: String, tabs: Array<CanvasEditor.MenuItem> },
   setup(prop, context) {
     return () => (
       <div class={"canvas_editor_ct_box_canvas"} id="canvas_box">

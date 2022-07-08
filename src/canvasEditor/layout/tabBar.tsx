@@ -1,10 +1,9 @@
 import { defineComponent, ref } from "vue";
 import { CloseCircleFilled} from '@ant-design/icons-vue';
-import { TabItem } from "..";
 
 export default defineComponent({
   emits: ["change"],
-  props: { tabsActiveIndex: String, tabs: Array<TabItem> },
+  props: { tabsActiveIndex: String, tabs: Array<CanvasEditor.TabItem> },
   setup(prop, ctx) {
     const renderTab = () => {
         return prop.tabs?.map(item => {

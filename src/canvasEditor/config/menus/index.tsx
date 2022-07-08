@@ -2,6 +2,7 @@ import {
   BorderOutlined,
   BarsOutlined,
   ApiOutlined,
+  SaveOutlined,
 } from "@ant-design/icons-vue";
 import { fabric } from "fabric";
 
@@ -83,6 +84,15 @@ const menus: Array<CanvasEditor.MenuItem> = [
     type: "item",
     icon: <ApiOutlined />,
     name: "创建管道",
+  },
+  {
+    id: MenuId.line,
+    event(canvas) {
+      console.log(canvas.toJSON());
+    },
+    type: "item",
+    icon: <SaveOutlined />,
+    name: "保存",
   },
 ];
 
