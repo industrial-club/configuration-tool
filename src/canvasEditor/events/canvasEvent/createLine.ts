@@ -18,7 +18,7 @@ const getObjById = (canvas: CanvasEditor.Canvas, id: number) => {
 
 const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
   const point: CanvasEditor.Circle = new fabric.Circle({
-    radius: 8,
+    radius: 5,
     fill: "#4FC3F7",
     left: x,
     top: y,
@@ -45,7 +45,7 @@ const addLine = (
     fill: "",
     stroke: "black",
     objectCaching: false,
-    strokeWidth: 10,
+    strokeWidth: 5,
     perPixelTargetFind: true,
     lockMovementX: true,
     lockMovementY: true,
@@ -109,10 +109,14 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
     if (obj?.type === "line") {
       const line: CanvasEditor.Path = obj as CanvasEditor.Path;
-      const point: CanvasEditor.Circle = addPoint(line, xy.left! - 4, xy.top);
+      const point: CanvasEditor.Circle = addPoint(
+        line,
+        xy.left! - 5,
+        xy.top! - 5
+      );
       canvas.add(point);
       const index = getInsertIndex(canvas, line, xy!.left, xy!.top);
-      line.path.splice(index + 1, 0, ["L",  xy!.left, xy!.top]);
+      line.path.splice(index + 1, 0, ["L", xy!.left, xy!.top]);
       line.points!.splice(index, 0, point.id!);
     }
   });
@@ -153,8 +157,8 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       ) as CanvasEditor.Path;
       const index: number = line.points?.indexOf(point.id!)!;
       const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
-      line.path[index + 1][1] = xy.left- 4;
-      line.path[index + 1][2] =xy.top - 4;
+      line.path[index + 1][1] = xy.left;
+      line.path[index + 1][2] = xy.top;
       canvas.remove(line);
       addLine(canvas, line.id!, line.path, line.data, line.points);
     }
