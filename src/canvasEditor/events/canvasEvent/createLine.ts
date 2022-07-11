@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
 import { Line } from "fabric/fabric-impl";
 import canvas from "../../layout/canvas";
+import { computedZoomXY } from "@/canvasEditor/config/index";
 
 const getCenter = (obj: CanvasEditor.Object) => {
   return {
@@ -105,16 +106,13 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
   // 加点
   canvas.on("mouse:dblclick", (e: fabric.IEvent) => {
     const obj: CanvasEditor.Object | undefined = e.target;
+    const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
     if (obj?.type === "line") {
       const line: CanvasEditor.Path = obj as CanvasEditor.Path;
-      const point: CanvasEditor.Circle = addPoint(
-        line,
-        e.pointer!.x - 8,
-        e.pointer!.y
-      );
+      const point: CanvasEditor.Circle = addPoint(line, xy.left! - 4, xy.top);
       canvas.add(point);
-      const index = getInsertIndex(canvas, line, e.pointer!.x, e.pointer!.y);
-      line.path.splice(index + 1, 0, ["L", e.pointer!.x, e.pointer!.y]);
+      const index = getInsertIndex(canvas, line, xy!.left, xy!.top);
+      line.path.splice(index + 1, 0, ["L",  xy!.left, xy!.top]);
       line.points!.splice(index, 0, point.id!);
     }
   });
@@ -154,8 +152,9 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
         point.lineId!
       ) as CanvasEditor.Path;
       const index: number = line.points?.indexOf(point.id!)!;
-      line.path[index + 1][1] = e.pointer!.x - 8;
-      line.path[index + 1][2] = e.pointer!.y - 8;
+      const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
+      line.path[index + 1][1] = xy.left- 4;
+      line.path[index + 1][2] =xy.top - 4;
       canvas.remove(line);
       addLine(canvas, line.id!, line.path, line.data, line.points);
     }
