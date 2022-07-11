@@ -55,4 +55,16 @@ export const svgPath = {
   },
 };
 
+export const previewInfo = {
+  get() {
+    return window.sessionStorage.getItem("previewInfo");
+  },
+  set(val: string) {
+    window.sessionStorage.setItem("previewInfo", JSON.stringify(val));
+  },
+  clear() {
+    window.sessionStorage.setItem("previewInfo", "");
+  },
+};
+
 export default { Menus, uuid, computedZoomXY };

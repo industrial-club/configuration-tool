@@ -12,7 +12,7 @@ export const svgToCanvas = (
 
   // 当流程图情况下，将svg打组 后渲染
   const groupSvg = (objects: fabric.Object[], options: any) => {
-    const svg = fabric.util.groupSVGElements(objects, options) as any;
+    const svg = fabric.util.groupSVGElements(objects, { a: 0 }) as any;
     const userX = (e.pointer?.x || (e.e as any).layerX) - svg.width / 2;
     const userY = (e.pointer?.y || (e.e as any).layerY) - svg.height / 2;
     const { left, top } = computedZoomXY(userX, userY, canvas);
@@ -20,8 +20,21 @@ export const svgToCanvas = (
       left,
       top,
     });
-    svg.type = "rect";
+    // svg.type = "rect";
+    svg.toObject = (function (toObject) {
+      return function () {
+        return fabric.util.object.extend(toObject.call(this), {
+          data: (this as any).data,
+        });
+      };
+    })(svg.toObject);
+    svg.data = {
+      a: "zx",
+    };
     canvas.add(svg);
+    canvas.setActiveObject(svg);
+
+    console.log(svg);
   };
   const everySvg = (objects: fabric.Object[], options: any) => {
     // const svgList = [];
