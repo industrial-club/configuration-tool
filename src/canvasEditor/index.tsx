@@ -1,4 +1,4 @@
-import { defineComponent, nextTick, ref } from "vue";
+import { computed, defineComponent, nextTick, ref } from "vue";
 import { fabric } from "fabric";
 import { message } from "ant-design-vue";
 import canvasEditor from "./layout/canvas";
@@ -75,6 +75,14 @@ export default defineComponent({
       });
     };
 
+    // 当前选中的canvas
+    const avtiveCanvas = computed(() => {
+      const findCanvasById = (id: string) => {
+        return canvasInfo.value!.find((item) => item.id === id);
+      };
+      return findCanvasById(TabInfo.value.indexKey)!;
+    });
+
     const test = () => {
       createCanvasConfirm.value.val = "测试Tab";
       createCustomCanvas({
@@ -134,10 +142,7 @@ export default defineComponent({
               tabs={TabInfo.value.list}
             />
           </div>
-          <canvasEditorForm
-            tabsActiveIndex={TabInfo.value.indexKey}
-            canvasInfo={canvasInfo.value}
-          />
+          <canvasEditorForm avtiveCanvas={avtiveCanvas.value} />
         </div>
 
         <a-modal

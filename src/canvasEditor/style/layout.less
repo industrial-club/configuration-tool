@@ -1,26 +1,34 @@
 .@{prefix} {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+
+  &_conter {
+    flex: 1;
     display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
+    overflow: hidden;
+  }
 
-    &_conter {
-        flex: 1;
-        display: flex;
-        overflow: hidden;
+  &_thing_plane,
+  &_form_box {
+    width: 200px;
+    padding: 16px;
+    box-shadow: 1px 1px 3px @boxShadowColor;
+    overflow-y: auto;
+    .ant-input,
+    .ant-input-number,
+    .ant-select {
+      width: 100%;
     }
+  }
 
-    &_thing_plane,
-    &_form_box {
-        width: 200px;
-        box-shadow: 1px 1px 3px @boxShadowColor;
-    }
+  &_form_box {
+    width: 300px;
+    box-shadow: -1px 1px 3px @boxShadowColor;
+  }
 
-    &_form_box {
-        box-shadow: -1px 1px 3px @boxShadowColor;
-    }
-
-    &_ct_box {
-        flex: 1;
-    }
+  &_ct_box {
+    flex: 1;
+  }
 }
