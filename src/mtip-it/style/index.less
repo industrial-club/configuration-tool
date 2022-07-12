@@ -1,0 +1,18 @@
+@import url(./const.less);
+@import url(./tabBar.less);
+@import url(./editorConter.less);
+
+.@{prefix}{
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    &_center{
+        flex: 1;
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+    }
+    &_canvas{
+        flex: 1;
+    }
+}
