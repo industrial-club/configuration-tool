@@ -11,6 +11,7 @@ import { previewInfo, uuid } from "./config";
 import events from "./events";
 import { MenuId } from "./config/menus";
 import onresize from "./events/windowEvent/onresize";
+import { onClick } from "./events/canvasEvent/click";
 
 export interface CanvasInfo {
   canvas: CanvasEditor.Canvas;
@@ -52,8 +53,8 @@ export default defineComponent({
     });
 
     // 创建
-    const createCustomCanvas = (e: CanvasEditor.MenuItem) => {
-      const id = uuid();
+    const createCustomCanvas = (e: CanvasEditor.MenuItem, uid?: string) => {
+      const id = uid || uuid();
       const tabInfo = {
         menuInfo: e,
         name: createCanvasConfirm.value.val,
@@ -85,9 +86,10 @@ export default defineComponent({
 
     const test = () => {
       createCanvasConfirm.value.val = "测试Tab";
+      const id = uuid();
       createCustomCanvas({
-        id: MenuId.newXflow,
-        name: "测试tab",
+        id,
+        name: "测试-tab",
         event() {},
         type: "item",
       });
@@ -99,15 +101,28 @@ export default defineComponent({
 
     // 预览弹窗
     const preview = ref(false);
+    let PreviewCanvas: CanvasEditor.Canvas;
     const toPreview = () => {
-      const canvas = new fabric.StaticCanvas("previewCanvas");
-      const canvasJson = previewInfo.get();
-      onresize(canvas as CanvasEditor.Canvas, "previewBox");
-      canvas.on("before:render", ({ ctx }) => {
-        ctx.patternQuality = "best";
-        console.log(JSON.parse(canvasJson!));
+      if (!PreviewCanvas) {
+        PreviewCanvas = new fabric.Canvas(
+          "previewCanvas"
+        ) as CanvasEditor.Canvas;
+        onresize(PreviewCanvas, "previewBox");
+        onClick(
+          PreviewCanvas,
+          (e) => {
+            console.log(e);
+          },
+          200
+        );
+      } else {
+        PreviewCanvas.clear();
+      }
+      PreviewCanvas.loadFromJSON(previewInfo.get(), () => {
+        PreviewCanvas.getObjects().forEach((e) => {
+          e.selectable = false;
+        });
       });
-      canvas.loadFromJSON(canvasJson, () => {});
     };
 
     return () => (
@@ -128,7 +143,16 @@ export default defineComponent({
           }}
         />
         <div class={"canvas_editor_conter"}>
-          <thingPlane />
+          <thingPlane
+            onOpenIcon={(e: any) => {
+              console.log(e);
+              createCanvasConfirm.value.val = "测试Tab";
+              createCustomCanvas(e);
+              nextTick(() => {
+                createCanvasConfirm.value.val = "";
+              });
+            }}
+          />
           <div class={"canvas_editor_ct_box"}>
             <tabBar
               tabsActiveIndex={TabInfo.value.indexKey}

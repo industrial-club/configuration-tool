@@ -92,8 +92,6 @@ const menus: Array<CanvasEditor.MenuItem> = [
     id: MenuId.save,
     event(canvas) {
       const canvasJson = canvas.toJSON();
-      console.log(canvasJson);
-
       previewInfo.set(canvas.toJSON());
     },
     type: "item",

@@ -45,7 +45,8 @@ export const computedZoomXY = (
 
 export const svgPath = {
   get() {
-    return window.sessionStorage.getItem("svgPath");
+    const ss = window.sessionStorage.getItem("svgPath");
+    return JSON.parse(ss!);
   },
   set(val: string) {
     window.sessionStorage.setItem("svgPath", val);

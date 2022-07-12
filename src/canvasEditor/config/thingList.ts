@@ -5,15 +5,21 @@ const ThingList = [
     icons: [
       {
         path: "/icons/设备图标汇总_方仓 .svg",
-        name: "101",
+        data: {
+          name: "101",
+        },
       },
       {
         path: "/icons/设备图标汇总_方仓 .svg",
-        name: "102",
+        data: {
+          name: "102",
+        },
       },
       {
         path: "/icons/设备图标汇总_方仓 .svg",
-        name: "103",
+        data: {
+          name: "103",
+        },
       },
     ],
   },
@@ -23,11 +29,15 @@ const ThingList = [
     icons: [
       {
         path: "/icons/设备图标汇总_综保数据.svg",
-        name: "201",
+        data: {
+          name: "201",
+        },
       },
       {
         path: "/icons/设备图标汇总_仪表数据.svg",
-        name: "303X",
+        data: {
+          name: "303X",
+        },
       },
     ],
   },
