@@ -3,7 +3,7 @@ import { CanvasInfo } from "..";
 import Menus, { MenuId } from "../config/menus";
 
 export default defineComponent({
-  emits: ["newCanvas"],
+  emits: ["newCanvas", "see"],
   props: {
     canvasInfo: Array<CanvasInfo>,
     tabsActiveIndex: String,
@@ -22,15 +22,17 @@ export default defineComponent({
         return renderMenuItem(item);
       });
     };
-const findCanvasById = (id: string) => {
-            return prop.canvasInfo!.find((item) => item.id === id);
-        };
+    const findCanvasById = (id: string) => {
+      return prop.canvasInfo!.find((item) => item.id === id);
+    };
     const toDoMenuEvent = (item: CanvasEditor.MenuItem) => {
       if (item.id === MenuId.newThing || item.id === MenuId.newXflow) {
         ctx.emit("newCanvas", item);
       } else {
-        
-        console.log(findCanvasById(prop.tabsActiveIndex!));
+        if (item.id === MenuId.see) {
+          // 触发预览
+          ctx.emit('see', item)
+        }
         item.event(toRaw(findCanvasById(prop.tabsActiveIndex!)?.canvas!));
       }
     };

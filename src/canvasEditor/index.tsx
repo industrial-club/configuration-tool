@@ -1,14 +1,16 @@
 import { computed, defineComponent, nextTick, ref } from "vue";
 import { fabric } from "fabric";
+import { message } from "ant-design-vue";
 import canvasEditor from "./layout/canvas";
 import thingPlane from "./layout/thingPlane";
 import tabBar from "./layout/tabBar";
 import canvasEditorForm from "./layout/form";
 import canvasEditorTop from "./layout/canvasEditorTop";
 import "./style/index.less";
-import { uuid } from "./config";
+import { previewInfo, uuid } from "./config";
 import events from "./events";
 import { MenuId } from "./config/menus";
+import onresize from "./events/windowEvent/onresize";
 
 export interface CanvasInfo {
   canvas: CanvasEditor.Canvas;
@@ -94,6 +96,20 @@ export default defineComponent({
       });
     };
     test();
+
+    // 预览弹窗
+    const preview = ref(false);
+    const toPreview = () => {
+      const canvas = new fabric.StaticCanvas("previewCanvas");
+      const canvasJson = previewInfo.get();
+      onresize(canvas as CanvasEditor.Canvas, "previewBox");
+      canvas.on("before:render", ({ ctx }) => {
+        ctx.patternQuality = "best";
+        console.log(JSON.parse(canvasJson!));
+      });
+      canvas.loadFromJSON(canvasJson, () => {});
+    };
+
     return () => (
       <div class={"canvas_editor"}>
         <canvasEditorTop
@@ -102,6 +118,13 @@ export default defineComponent({
           onNewCanvas={(e: CanvasEditor.MenuItem) => {
             createCanvasConfirm.value.visible = true;
             createCanvasConfirm.value.tabInfo = e;
+          }}
+          onSee={(e: CanvasEditor.MenuItem) => {
+            preview.value = true;
+            nextTick(() => {
+              message.info("Esc 即可退出预览模式");
+              toPreview();
+            });
           }}
         />
         <div class={"canvas_editor_conter"}>
@@ -137,6 +160,19 @@ export default defineComponent({
             v-models={[[createCanvasConfirm.value.val, "value"]]}
             placeholder="请输入..."
           />
+        </a-modal>
+
+        <a-modal
+          width="100%"
+          wrap-class-name="full-modal"
+          v-models={[[preview.value, "visible"]]}
+          title={createCanvasConfirm.value.tabInfo.name}
+          footer={null}
+          closable={false}
+        >
+          <div id="previewBox">
+            {preview.value ? <canvas id="previewCanvas"></canvas> : ""}
+          </div>
         </a-modal>
       </div>
     );

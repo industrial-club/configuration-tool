@@ -3,8 +3,10 @@ import {
   BarsOutlined,
   ApiOutlined,
   SaveOutlined,
+  FastForwardOutlined,
 } from "@ant-design/icons-vue";
 import { fabric } from "fabric";
+import { previewInfo } from "..";
 
 export enum MenuId {
   newXflow = "流程图",
@@ -14,6 +16,7 @@ export enum MenuId {
   circle = "circle",
   rect = "rect",
   line = "线",
+  see = "看",
 }
 
 const onLine = (canvas: CanvasEditor.Canvas) => {
@@ -86,13 +89,23 @@ const menus: Array<CanvasEditor.MenuItem> = [
     name: "创建管道",
   },
   {
-    id: MenuId.line,
+    id: MenuId.save,
     event(canvas) {
-      console.log(canvas.toJSON());
+      const canvasJson = canvas.toJSON();
+      console.log(canvasJson);
+
+      previewInfo.set(canvas.toJSON());
     },
     type: "item",
     icon: <SaveOutlined />,
     name: "保存",
+  },
+  {
+    id: MenuId.see,
+    event(canvas) {},
+    type: "item",
+    icon: <FastForwardOutlined />,
+    name: "预览",
   },
 ];
 
