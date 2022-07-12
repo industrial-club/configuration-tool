@@ -1,4 +1,5 @@
 import { computed, defineComponent, h, PropType, resolveComponent } from "vue";
+import { fabric } from "fabric";
 import { CONFIG_PROPS } from "./config";
 
 /**
@@ -7,7 +8,8 @@ import { CONFIG_PROPS } from "./config";
 const PropertiesForm = defineComponent({
   props: {
     widget: {
-      type: Object as PropType<any>,
+      type: Object as PropType<fabric.Object>,
+      required: true,
     },
   },
   setup(props, { emit }) {
@@ -26,8 +28,8 @@ const PropertiesForm = defineComponent({
 
     // 更新属性
     const update = (key: string, value: any) => {
-      props.widget.set(key, value);
-      props.widget.canvas.requestRenderAll();
+      props.widget.set<any>(key, value);
+      props.widget.canvas!.requestRenderAll();
     };
 
     // 获取表单项的类型
@@ -67,9 +69,9 @@ const PropertiesForm = defineComponent({
                   return h(res.isNative ? res.tag : resolveComponent(res.tag), {
                     ...(item.props ?? {}),
                     ...res.props,
-                    value: props.widget[item.key],
-                    checked: props.widget[item.key],
-                    modelValue: props.widget[item.key],
+                    value: props.widget.get(item.key),
+                    checked: props.widget.get(item.key),
+                    modelValue: props.widget.get(item.key),
                     "onUpdate:value": (val: any) => update(item.key, val),
                     "onUpdate:checked": (val: any) => update(item.key, val),
                     "onUpdate:modelValue": (val: any) => update(item.key, val),

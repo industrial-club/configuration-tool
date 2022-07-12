@@ -10,6 +10,8 @@ import { fabric } from "fabric";
 import { CanvasInfo } from "..";
 import { MenuId } from "../config/menus";
 import PropertiesForm from "../components/properties-form";
+import ThingForm from "../components/thing-form";
+import FlowForm from "../components/flow-form";
 
 export default defineComponent({
   props: {
@@ -24,9 +26,6 @@ export default defineComponent({
       // 只选择了一个小部件
       if (selected.length === 1) {
         activeWidget.value = selected[0];
-        activeWidget.value!.on("event:modified", (e) => {
-          console.log(e);
-        });
       }
     };
     // 取消选择
@@ -65,12 +64,37 @@ export default defineComponent({
       props.avtiveCanvas?.canvas.off("selection:cleared", handleClearSelect);
     });
 
+    // 处理选中属性后展示到图中
+    const handlePropertyChange = ({ checked, property }: any) => {
+      // 选中
+      if (checked) {
+        // 创建text
+        const text = new fabric.Text(`${property.name}: ${property.value}`, {
+          name: `_property_${property.key}`,
+          fill: "#ff0000",
+          fontSize: 16,
+        });
+        props.avtiveCanvas?.canvas.add(text);
+      } else {
+        // 移除text
+        const textList = props.avtiveCanvas?.canvas
+          .getObjects()
+          .filter((item) => item.name === `_property_${property.key}`);
+        if (textList?.length) props.avtiveCanvas?.canvas.remove(...textList);
+      }
+    };
+
     return () => (
       <div class={"canvas_editor_form_box"}>
         {isThing.value ? (
-          <PropertiesForm widget={activeWidget.value} />
+          // 如果选中部件 展示部件属性表单 否则展示实例表单
+          activeWidget.value ? (
+            <PropertiesForm widget={activeWidget.value} />
+          ) : (
+            <ThingForm onPropertyChange={handlePropertyChange} />
+          )
         ) : (
-          <div>流程图</div>
+          <FlowForm widget={activeWidget.value} />
         )}
       </div>
     );
