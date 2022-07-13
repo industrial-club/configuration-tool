@@ -1,0 +1,32 @@
+.@{prefix}_tabbar{
+    height: 30px;
+    padding: 0 .5rem;
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 1px solid #ccc;
+    &_item {
+        padding: 0 .5rem;
+        padding-right: 1.5rem;
+        cursor: pointer;
+        position: relative;
+        text-align: left;
+        border-radius: 0.2rem 0.2rem 0 0;
+        margin-right: .3rem;
+
+        &:hover,
+        &.active {
+            background-color: #ccc;
+
+            .anticon-close-circle {
+                display: block;
+            }
+        }
+
+        .anticon-close-circle {
+            top: 4px;
+            right: 0.2rem;
+            position: absolute;
+            display: none;
+        }
+    }
+}

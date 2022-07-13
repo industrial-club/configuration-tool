@@ -3,7 +3,7 @@ import { svgPath } from "../config";
 import ThingList from "../config/thingList";
 
 export default defineComponent({
-  emits: ["dropEnd", "dropStart"],
+  emits: ["dropEnd", "dropStart", "openIcon"],
   props: {},
   setup(props, content) {
     const keyword = ref("");
@@ -26,19 +26,22 @@ export default defineComponent({
             <a-collapse-panel key={item.key} header={item.name}>
               <div class="thing-list">
                 {item.icons.map((icon) => (
-                  <div class="thing-item" key={icon.path}>
-                    <img
-                      class="thing-item-thumbnail"
-                      draggable="true"
-                      src={icon.path}
-                      onDragstart={() => {
-                        svgPath.set(icon.path);
-                      }}
-                      onDragend={() => {
-                        svgPath.clear();
-                      }}
-                    />
-                    <span class="thing-item-name">{icon.name}</span>
+                  <div
+                    class="thing-item"
+                    key={icon.path}
+                    draggable="true"
+                    onDragstart={() => {
+                      svgPath.set(JSON.stringify(icon));
+                    }}
+                    onDragend={() => {
+                      svgPath.clear();
+                    }}
+                    onDblclick={() => {
+                      content.emit("openIcon", icon);
+                    }}
+                  >
+                    <img class="thing-item-thumbnail" src={icon.path} />
+                    <span class="thing-item-name">{icon.data.name}</span>
                   </div>
                 ))}
               </div>
