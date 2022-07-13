@@ -1,6 +1,15 @@
-import { computed, defineComponent, h, PropType, resolveComponent } from "vue";
+import {
+  computed,
+  defineComponent,
+  h,
+  PropType,
+  ref,
+  resolveComponent,
+  watch,
+} from "vue";
 import { fabric } from "fabric";
 import { CONFIG_PROPS } from "./config";
+import AddEventModal from "./add-event-modal";
 
 /**
  * 动态部件属性表单
@@ -58,8 +67,41 @@ const PropertiesForm = defineComponent({
       };
     };
 
+    // 给部件添加点击事件
+    const isAddEventShow = ref(false);
+    const listener = ref<any>();
+    const listenerStr = ref("");
+    const handleAddEvents = () => {
+      isAddEventShow.value = true;
+      const { _onClick, _onClickStr } = props.widget.data ?? {};
+      listener.value = _onClick;
+      listenerStr.value = _onClickStr;
+    };
+    const handleAddOver = (fnStr: string) => {
+      // 如果存在监听函数 移除
+      if (listener.value) {
+        props.widget.off("mousedown", listener.value);
+      }
+      // 创建监听函数
+      if (fnStr) {
+        listener.value = function onClick(e: any) {
+          eval(fnStr);
+        };
+        props.widget.on("mousedown", listener.value);
+        props.widget.data || (props.widget.data = {});
+        props.widget.data._onClick = listener.value;
+        props.widget.data._onClickStr = fnStr;
+      }
+      isAddEventShow.value = false;
+    };
+
     return () => (
       <div class="propertiesForm">
+        <a-space style={{ marginBottom: "16px" }}>
+          <a-button type="primary" onClick={handleAddEvents}>
+            添加事件
+          </a-button>
+        </a-space>
         <a-form labelCol={{ style: { width: "6em" } }}>
           {configureProps.value.length ? (
             configureProps.value.map((item) => (
@@ -83,6 +125,12 @@ const PropertiesForm = defineComponent({
             <a-empty />
           )}
         </a-form>
+
+        <AddEventModal
+          v-model={[isAddEventShow.value, "visible"]}
+          onCommit={handleAddOver}
+          listener={listenerStr.value}
+        />
       </div>
     );
   },
