@@ -1,4 +1,4 @@
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, watch } from "vue";
 
 export interface tabBarItem {
   id: string;
@@ -10,7 +10,7 @@ export const Props = {
     type: Array as PropType<Array<tabBarItem>>,
     default: [],
   },
-  value: String,
+  value: {},
 };
 
 export default defineComponent({
@@ -21,11 +21,10 @@ export default defineComponent({
     const itemClick = (e: tabBarItem) => {
       cxt.emit("update:value", e.id);
     };
-    // 渲染子类
-    const renderChild: () => Array<JSX.Element> = () => {
-      const elementList: Array<JSX.Element> = [];
-      for (let i of prop.list) {
-        elementList.push(
+
+    return () => (
+      <ul id="mtip_it_editor_tabbar" class={"mtip_it_editor_tabbar"}>
+        {prop.list.map((i) => (
           <li
             class={[
               "mtip_it_editor_tabbar_item",
@@ -37,13 +36,7 @@ export default defineComponent({
           >
             <span>{i.name}</span>
           </li>
-        );
-      }
-      return elementList;
-    };
-    return () => (
-      <ul id="mtip_it_editor_tabbar" class={"mtip_it_editor_tabbar"}>
-        {renderChild()}
+        ))}
       </ul>
     );
   },

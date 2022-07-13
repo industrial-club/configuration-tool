@@ -1,6 +1,7 @@
 import { fabric } from "fabric";
 import { MenuId } from "./menus";
 import { computedZoomXY, svgPath } from ".";
+import { pad } from "lodash";
 
 export const svgToCanvas = (
   canvas: CanvasEditor.Canvas,
@@ -51,5 +52,27 @@ export const svgToCanvas = (
     } else {
       groupSvg(objects, options);
     }
+  });
+};
+
+export const initSvgCanvas = (canvas: MtipIt.Canvas, path: string) => {
+  const padding = 80;
+  fabric.loadSVGFromURL(path, (objects, options) => {
+    const svg = fabric.util.groupSVGElements(objects, options);
+    const { width, height } = svg;
+    const nw = width! + padding;
+    const nh = height! + padding;
+    svg.set({
+      left: padding / 2,
+      top: padding / 2,
+    });
+
+    canvas.add(svg);
+    setTimeout(() => {
+      (svg as any).toActiveSelection();
+    }, 500);
+
+    canvas.setHeight(nh!);
+    canvas.setWidth(nw!);
   });
 };
