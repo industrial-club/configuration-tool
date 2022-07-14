@@ -31,10 +31,9 @@ export const svgToCanvas = (
     svg.data = {
       a: "zx",
     };
+    svg.effectType = "rect";
     canvas.add(svg);
     canvas.setActiveObject(svg);
-
-    console.log(svg);
   };
   const everySvg = (objects: fabric.Object[], options: any) => {
     // const svgList = [];
