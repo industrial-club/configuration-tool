@@ -1,4 +1,5 @@
 declare namespace MtipIt {
+  export type EventsList = "click" | "move";
   export interface Canvas extends fabric.Canvas {
     isCreateLine: boolean;
   }
@@ -7,8 +8,10 @@ declare namespace MtipIt {
     name: string;
     canvas: any; // Canvas as
     type: "flow" | "thing";
+    events?: Record<EventsList, (e: MouseEvent) => void>;
     thingPath?: string;
     flowJson?: string;
+    thingInfo?: any;
   }
 
   export interface ThingItem {

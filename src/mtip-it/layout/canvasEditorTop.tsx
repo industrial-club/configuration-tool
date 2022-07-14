@@ -2,7 +2,7 @@ import { defineComponent, inject, PropType, Ref } from "vue";
 import Menus, { MenuId } from "../config/menus";
 
 export default defineComponent({
-  emits: ["newCanvas", "see"],
+  emits: ["newCanvas", "preview"],
   props: {
     customMenus: {
       type: Array,
@@ -20,10 +20,13 @@ export default defineComponent({
       });
     };
 
-    const toDoMenuEvent = (item: CanvasEditor.MenuItem) => {
+    const toDoMenuEvent = (item: MtipIt.MenuItem) => {
       item.event(activeCanvas?.value.canvas);
+      if (item.id === MenuId.see) {
+        ctx.emit("preview", item);
+      }
     };
-    const renderMenuGroup = (item: CanvasEditor.MenuItem) => {
+    const renderMenuGroup = (item: MtipIt.MenuItem) => {
       const dropMenu: () => JSX.Element = () => {
         const items = () => {
           return item.child!.map((item) => (
@@ -49,7 +52,7 @@ export default defineComponent({
       );
     };
 
-    const renderMenuItem = (item: CanvasEditor.MenuItem) => {
+    const renderMenuItem = (item: MtipIt.MenuItem) => {
       return (
         <a-tooltip placement="bottom" vSlots={{ title: () => item.name }}>
           <div
