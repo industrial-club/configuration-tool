@@ -113,6 +113,8 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       if (!endObj.inLines) {
         endObj.inLines = [];
       }
+      newLine.from = beginObj.id;
+      newLine.to = endObj.id;
       beginObj.outLines.push(lineId);
       endObj.inLines!.push(lineId);
       beginObj = undefined;
@@ -140,7 +142,6 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       );
       canvas.add(point);
       line.points?.splice(pointIndex, 0, point.id!);
-
       updateLine(canvas, line);
     }
     beginObj = undefined;

@@ -18,6 +18,8 @@ declare namespace CanvasEditor {
     points?: number[];
     path: any[];
     data?: any;
+    from?: number;
+    to?: number;
     tempPoint: id;
   }
 
