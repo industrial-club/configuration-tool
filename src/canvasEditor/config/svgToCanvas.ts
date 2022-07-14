@@ -7,7 +7,6 @@ export const svgToCanvas = (
   e: fabric.IEvent<Event>
 ) => {
   const thing = svgPath.get();
-  console.log(canvas.TabInfo);
   if (thing === "") return;
 
   // 当流程图情况下，将svg打组 后渲染

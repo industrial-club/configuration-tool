@@ -1,11 +1,20 @@
 @import url(./const.less);
 @import url(./tabBar.less);
 @import url(./editorConter.less);
+@import url(./thingPlane.less);
+@import url(./form.less);
+@import url(./editorTop.less);
 
 .@{prefix}{
     display: flex;
     height: 100vh;
     width: 100vw;
+    flex-direction: column;
+    &_body{
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+    }
     &_center{
         flex: 1;
         display: flex;
