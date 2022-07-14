@@ -2,96 +2,17 @@ import { fabric } from "fabric";
 import { Line } from "fabric/fabric-impl";
 import canvas from "../../layout/canvas";
 import { computedZoomXY } from "@/canvasEditor/config/index";
+import {
+  getCenter,
+  getObjById,
+  addPoint,
+  getInsertIndex,
+  addLine,
+  updateLine,
+} from "./createLineUtil";
 
-const getCenter = (obj: CanvasEditor.Object) => {
-  return {
-    x: obj.left! + obj.width! / 2,
-    y: obj.top! + obj.height! / 2,
-  };
-};
-
-const getObjById = (canvas: CanvasEditor.Canvas, id: number) => {
-  return canvas._objects.find((ele: CanvasEditor.Object) => {
-    return ele.id === id;
-  });
-};
-
-const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
-  const point: CanvasEditor.Circle = new fabric.Circle({
-    radius: 5,
-    fill: "#4FC3F7",
-    left: x,
-    top: y,
-    hasControls: false,
-    opacity: 0.7,
-    stroke: "blue",
-    strokeWidth: 3,
-    strokeUniform: true,
-  });
-  point.type = "point";
-  point.id = Math.random();
-  point.lineId = line.id;
-  return point;
-};
-
-const addLine = (
-  canvas: CanvasEditor.Canvas,
-  id: number,
-  path: Array<any>,
-  data: any,
-  points?: number[]
-) => {
-  const newLine: CanvasEditor.Path = new fabric.Path(path, {
-    fill: "",
-    stroke: "black",
-    objectCaching: false,
-    strokeWidth: 5,
-    perPixelTargetFind: true,
-    lockMovementX: true,
-    lockMovementY: true,
-  }) as CanvasEditor.Path;
-  newLine.id = id;
-  newLine.data = data;
-  newLine.type = "line";
-  if (points) {
-    newLine.points = points;
-  } else {
-    newLine.points = [];
-    // const p1: CanvasEditor.Circle = addPoint(newLine, path[0][1], path[0][2]);
-    // const p2: CanvasEditor.Circle = addPoint(newLine, path[1][1], path[1][2]);
-    // canvas.add(p1);
-    // canvas.add(p2);
-    // newLine.points.push(p1.id!);
-    // newLine.points.push(p2.id!);
-  }
-  canvas.add(newLine);
-  return newLine;
-};
-
-const getInsertIndex = (
-  canvas: CanvasEditor.Canvas,
-  line: CanvasEditor.Path,
-  x: number,
-  y: number
-) => {
-  let index = 0;
-  let distance;
-  for (let i: number = 0; i <= line.path.length - 2; i++) {
-    const point1 = line.path[i];
-    const point2 = line.path[i + 1];
-    const num =
-      Math.sqrt(Math.pow(x - point1[1], 2) + Math.pow(y - point1[2], 2)) +
-      Math.sqrt(Math.pow(x - point2[1], 2) + Math.pow(y - point2[2], 2)) -
-      Math.sqrt(
-        Math.pow(point1[1] - point2[1], 2) + Math.pow(point1[2] - point2[2], 2)
-      );
-    if (!distance || num < distance) {
-      distance = num;
-      index = i;
-    }
-  }
-  return index;
-};
+const pointRadius = 7;
+let pointIndex: number | undefined;
 
 // 连线相关事件
 const createLine = (canvas: CanvasEditor.Canvas) => {
@@ -104,25 +25,18 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     }
   });
   // 加点
-  canvas.on("mouse:dblclick", (e: fabric.IEvent) => {
+  canvas.on("mouse:down", (e: fabric.IEvent) => {
     const obj: CanvasEditor.Object | undefined = e.target;
     const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
     if (obj?.type === "line") {
       const line: CanvasEditor.Path = obj as CanvasEditor.Path;
-      const point: CanvasEditor.Circle = addPoint(
-        line,
-        xy.left! - 5,
-        xy.top! - 5
-      );
-      canvas.add(point);
-      const index = getInsertIndex(canvas, line, xy!.left, xy!.top);
-      line.path.splice(index + 1, 0, ["L", xy!.left, xy!.top]);
-      line.points!.splice(index, 0, point.id!);
+      pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
+      line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
     }
   });
   canvas.on("mouse:move", (e) => {
     // 移动块
-    if (beginObj && !canvas.isCreateLine && beginObj.type === "rect") {
+    if (beginObj && !canvas.isCreateLine && beginObj.effectType === "rect") {
       beginObj.outLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
         const line: CanvasEditor.Path = getObjById(
@@ -132,8 +46,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
         const path = line.path;
         path[0][1] = beginPoint.x;
         path[0][2] = beginPoint.y;
-        canvas.remove(line);
-        addLine(canvas, lineId, path, line.data, line.points);
+        updateLine(canvas, line);
       });
       beginObj.inLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
@@ -144,8 +57,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
         const path = line.path;
         path[line.path.length - 1][1] = beginPoint.x;
         path[line.path.length - 1][2] = beginPoint.y;
-        canvas.remove(line);
-        addLine(canvas, lineId, path, line.data, line.points);
+        updateLine(canvas, line);
       });
     }
     // 移动点
@@ -159,8 +71,19 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
       line.path[index + 1][1] = xy.left;
       line.path[index + 1][2] = xy.top;
-      canvas.remove(line);
-      addLine(canvas, line.id!, line.path, line.data, line.points);
+      updateLine(canvas, line);
+    }
+    // 拖动线
+    if (
+      beginObj &&
+      !canvas.isCreateLine &&
+      beginObj.type === "line" &&
+      pointIndex !== undefined
+    ) {
+      const line: CanvasEditor.Path = beginObj as CanvasEditor.Path;
+      const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
+      line.path[pointIndex + 1][1] = xy.left;
+      line.path[pointIndex + 1][2] = xy.top;
     }
   });
 
@@ -201,7 +124,27 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
         return item;
       });
     }
+    // 新点
+    if (
+      beginObj &&
+      !canvas.isCreateLine &&
+      beginObj.type === "line" &&
+      pointIndex !== undefined
+    ) {
+      const line: CanvasEditor.Path = beginObj as CanvasEditor.Path;
+      const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
+      const point: CanvasEditor.Circle = addPoint(
+        line,
+        xy.left! - pointRadius,
+        xy.top! - pointRadius
+      );
+      canvas.add(point);
+      line.points?.splice(pointIndex, 0, point.id!);
+
+      updateLine(canvas, line);
+    }
     beginObj = undefined;
+    pointIndex = undefined;
   });
 };
 export default createLine;
