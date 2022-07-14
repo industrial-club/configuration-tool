@@ -10,6 +10,7 @@ declare namespace CanvasEditor {
     outLines?: number[];
     inLines?: number[];
     id?: number;
+    effectType?: string;
   }
 
   export interface Path extends fabric.Path {
@@ -17,6 +18,9 @@ declare namespace CanvasEditor {
     points?: number[];
     path: any[];
     data?: any;
+    from?: number;
+    to?: number;
+    tempPoint: id;
   }
 
   export interface Circle extends fabric.Circle {

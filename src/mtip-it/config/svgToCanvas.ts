@@ -19,6 +19,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
     svg.data = {
       info: thing,
     };
+    svg.effectType = "rect";
     canvas.add(svg);
     canvas.setActiveObject(svg);
   };
