@@ -1,5 +1,6 @@
 import { fabric } from "fabric";
 import { nextTick } from "vue";
+import events from "../events";
 import { uuid } from "./";
 import { initSvgCanvas } from "./svgToCanvas";
 
@@ -26,6 +27,20 @@ export const initCanvas = (id: string, thingPath: string) => {
   return canvas;
 };
 
-export const createFlow = () => {
+export const createFlow: () => MtipIt.Item = () => {
+  const id = uuid();
+  const flowCanvas: MtipIt.Item = {
+    canvas: null,
+    type: "flow",
+    id,
+    name: "全场工艺流程图",
+  };
+  nextTick(() => {
+    flowCanvas.canvas = new fabric.Canvas(id);
+    events(flowCanvas.canvas);
+
+    flowCanvas.canvas.isCreateLine = false;
+  });
+  return flowCanvas;
   // mtip_it_editor_canvas
 };

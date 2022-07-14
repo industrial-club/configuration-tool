@@ -1,7 +1,7 @@
 import onResize from "./onresize";
 import keyDown from "./keyDown";
 
-export default (canvas: CanvasEditor.Canvas) => {
-  onResize(canvas, "canvas_box");
+export default (canvas: MtipIt.Canvas) => {
+  onResize(canvas, "mtip_it_editor_canvas");
   keyDown(canvas);
 };

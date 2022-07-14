@@ -19,14 +19,14 @@ export enum MenuId {
   see = "看",
 }
 
-const onLine = (canvas: CanvasEditor.Canvas) => {
+const onLine = (canvas: MtipIt.Canvas) => {
   canvas.isCreateLine = true;
   canvas.getObjects().map((item) => {
     item.selectable = false;
     return item;
   });
 };
-const finishLine = (canvas: CanvasEditor.Canvas) => {
+const finishLine = (canvas: MtipIt.Canvas) => {
   canvas.isCreateLine = false;
   canvas.getObjects().map((item) => {
     if (item.type !== "line") {
@@ -36,7 +36,7 @@ const finishLine = (canvas: CanvasEditor.Canvas) => {
   });
 };
 
-const menus: Array<CanvasEditor.MenuItem> = [
+const menus: Array<MtipIt.MenuItem> = [
   {
     type: "group",
     id: "",
@@ -78,6 +78,8 @@ const menus: Array<CanvasEditor.MenuItem> = [
   {
     id: MenuId.line,
     event(canvas) {
+      console.log(canvas);
+
       if (canvas.isCreateLine) {
         finishLine(canvas);
       } else {

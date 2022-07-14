@@ -23,11 +23,7 @@ export const getWindowInfo = (domId?: string) => {
   };
 };
 
-export const computedZoomXY = (
-  x: number,
-  y: number,
-  canvas: CanvasEditor.Canvas
-) => {
+export const computedZoomXY = (x: number, y: number, canvas: MtipIt.Canvas) => {
   const zoom = canvas.getZoom();
   let left = x;
   let top = y;

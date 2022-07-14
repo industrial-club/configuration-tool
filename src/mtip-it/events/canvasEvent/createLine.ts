@@ -1,6 +1,4 @@
 import { fabric } from "fabric";
-import { Line } from "fabric/fabric-impl";
-import canvas from "../../layout/canvas";
 import { computedZoomXY } from "@/canvasEditor/config/index";
 
 const getCenter = (obj: CanvasEditor.Object) => {
@@ -10,7 +8,7 @@ const getCenter = (obj: CanvasEditor.Object) => {
   };
 };
 
-const getObjById = (canvas: CanvasEditor.Canvas, id: number) => {
+const getObjById = (canvas: MtipIt.Canvas, id: number) => {
   return canvas._objects.find((ele: CanvasEditor.Object) => {
     return ele.id === id;
   });
@@ -35,7 +33,7 @@ const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
 };
 
 const addLine = (
-  canvas: CanvasEditor.Canvas,
+  canvas: MtipIt.Canvas,
   id: number,
   path: Array<any>,
   data: any,
@@ -69,7 +67,7 @@ const addLine = (
 };
 
 const getInsertIndex = (
-  canvas: CanvasEditor.Canvas,
+  canvas: MtipIt.Canvas,
   line: CanvasEditor.Path,
   x: number,
   y: number
@@ -94,7 +92,7 @@ const getInsertIndex = (
 };
 
 // 连线相关事件
-const createLine = (canvas: CanvasEditor.Canvas) => {
+const createLine = (canvas: MtipIt.Canvas) => {
   let beginObj: CanvasEditor.Object | undefined;
   canvas.on("mouse:down:before", (e) => {
     if (e.target) {
@@ -204,4 +202,5 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     beginObj = undefined;
   });
 };
+
 export default createLine;

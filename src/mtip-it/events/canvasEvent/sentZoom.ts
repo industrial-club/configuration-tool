@@ -1,4 +1,4 @@
-const setZoom = (canvas: CanvasEditor.Canvas) => {
+const setZoom = (canvas: MtipIt.Canvas) => {
   canvas.on("mouse:wheel", (opt) => {
     const delta = opt.e.deltaY; // 滚轮，向上滚一下是 -100，向下滚一下是 100
     let zoom = canvas.getZoom(); // 获取画布当前缩放值

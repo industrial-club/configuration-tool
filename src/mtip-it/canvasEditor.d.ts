@@ -1,5 +1,7 @@
 declare namespace MtipIt {
-  export interface Canvas extends fabric.Canvas {}
+  export interface Canvas extends fabric.Canvas {
+    isCreateLine: boolean;
+  }
   export interface Item {
     id: string;
     name: string;
@@ -23,4 +25,13 @@ declare namespace MtipIt {
   }
 
   export type ThingGroupList = Array<ThingGroup>;
+
+  export interface MenuItem {
+    type: MenuItemType;
+    name: string;
+    id: string;
+    icon?: JSX.Element;
+    event: (canvas: Canvas) => void;
+    child?: Array<MenuItem>;
+  }
 }

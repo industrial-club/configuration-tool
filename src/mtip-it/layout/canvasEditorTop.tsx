@@ -1,18 +1,17 @@
-import { defineComponent, PropType } from "vue";
+import { defineComponent, inject, PropType, Ref } from "vue";
 import Menus, { MenuId } from "../config/menus";
 
 export default defineComponent({
   emits: ["newCanvas", "see"],
   props: {
-    activeCanvas: {
-      type: Object as PropType<MtipIt.Item>,
-    },
     customMenus: {
       type: Array,
       default: [],
     },
   },
   setup(prop, ctx) {
+    // 获取当前活跃的canvas
+    const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem");
     const renderMenus = () => {
       const allMenu = [...Menus, ...prop.customMenus!];
       return allMenu.map((item: any) => {
@@ -21,7 +20,9 @@ export default defineComponent({
       });
     };
 
-    const toDoMenuEvent = (item: CanvasEditor.MenuItem) => {};
+    const toDoMenuEvent = (item: CanvasEditor.MenuItem) => {
+      item.event(activeCanvas?.value.canvas);
+    };
     const renderMenuGroup = (item: CanvasEditor.MenuItem) => {
       const dropMenu: () => JSX.Element = () => {
         const items = () => {
