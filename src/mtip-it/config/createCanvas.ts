@@ -13,6 +13,7 @@ export const create: (e: MtipIt.ThingItem) => MtipIt.Item = (e) => {
     canvas: null,
     type: "thing",
     thingPath: e.image_run || "/icons/设备图标汇总_综保数据.svg",
+    thingInfo: e,
   } as MtipIt.Item;
   nextTick(() => {
     a.canvas = initCanvas(a.id, a.thingPath!);
@@ -22,7 +23,7 @@ export const create: (e: MtipIt.ThingItem) => MtipIt.Item = (e) => {
 
 // 初始化canvas
 export const initCanvas = (id: string, thingPath: string) => {
-  const canvas = new fabric.Canvas(id);
+  const canvas = new fabric.Canvas(id) as MtipIt.Canvas;
   initSvgCanvas(canvas, thingPath);
   return canvas;
 };
