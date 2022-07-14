@@ -1,5 +1,7 @@
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, inject, Ref, onMounted, computed } from "vue";
 import { CheckboxChangeEvent } from "ant-design-vue/es/_util/EventInterface";
+import AddEventModal from "./add-event-modal";
+import * as api from "@/mtip-it/api/form";
 
 const propertiesList = [
   {
@@ -53,6 +55,27 @@ const propertiesList = [
 const ThingForm = defineComponent({
   emits: ["propertyChange"],
   setup(props, { emit }) {
+    const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem")!;
+
+    // 当前实例详细信息
+    const thingDetail = ref<any>({});
+
+    // 属性列表
+    const propertiesList = computed(() => {
+      return thingDetail.value.thingPropertyList || [];
+    });
+
+    // 获取实例属性
+    const getProperties = async () => {
+      // const id = activeCanvas.value.id;
+      const id = "1";
+      const { data } = await api.getThingCode(id);
+      const thingCode = data.thingInst.thingCode;
+      const { data: res } = await api.getThingDetail(thingCode);
+      thingDetail.value = res;
+    };
+    onMounted(getProperties);
+
     const selectedProps = ref([]);
 
     // 选中/取消选中属性 通知父组件 展示到图中
@@ -60,11 +83,26 @@ const ThingForm = defineComponent({
       emit("propertyChange", { checked: e.target.checked, property: ele });
     };
 
+    // 添加事件
+    const isAddEventShow = ref(false);
+    const currListener = computed(() => activeCanvas.value.events?.click || "");
+    const handleSetListener = (code: string) => {
+      activeCanvas.value.events = {
+        click: code,
+      };
+      isAddEventShow.value = false;
+    };
+
     return () => (
       <div class="thing-form">
         <a-form>
+          <a-form-item>
+            <a-button onClick={() => (isAddEventShow.value = true)}>
+              添加事件
+            </a-button>
+          </a-form-item>
           <a-form-item label="名称">
-            <a-input disabled value="302X"></a-input>
+            <a-input disabled value={thingDetail.value.name}></a-input>
           </a-form-item>
           <a-form-item label="备注">
             <a-textarea value="302刮板机"></a-textarea>
@@ -75,26 +113,34 @@ const ThingForm = defineComponent({
               v-model={selectedProps.value}
             >
               <a-collapse>
-                {propertiesList.map((item) => (
-                  <a-collapse-panel key={item.key} header={item.name}>
+                <a-collapse-panel key={1} header="属性">
+                  <a-checkbox-group v-model={[selectedProps.value, "value"]}>
                     <a-row>
-                      {item.children.map((ele) => (
+                      {propertiesList.value.map((item: any) => (
                         <a-col span={24}>
                           <a-checkbox
-                            value={ele.key}
-                            onChange={(e: any) => onPropertyChange(e, ele)}
+                            value={item.code}
+                            onChange={(e: CheckboxChangeEvent) =>
+                              onPropertyChange(e, item)
+                            }
                           >
-                            {ele.name}
+                            {item.displayLabel}
                           </a-checkbox>
                         </a-col>
                       ))}
                     </a-row>
-                  </a-collapse-panel>
-                ))}
+                  </a-checkbox-group>
+                </a-collapse-panel>
               </a-collapse>
             </a-checkbox-group>
           </a-form-item>
         </a-form>
+
+        <AddEventModal
+          listener={currListener.value}
+          v-model={[isAddEventShow.value, "visible"]}
+          onCommit={handleSetListener}
+        />
       </div>
     );
   },

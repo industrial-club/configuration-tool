@@ -8,7 +8,7 @@ declare namespace MtipIt {
     name: string;
     canvas: any; // Canvas as
     type: "flow" | "thing";
-    events?: Record<EventsList, (e: MouseEvent) => void>;
+    events?: Partial<Record<EventsList, string /* (e: MouseEvent) => void */>>;
     thingPath?: string;
     flowJson?: string;
     thingInfo?: any;
