@@ -78,8 +78,6 @@ const menus: Array<MtipIt.MenuItem> = [
   {
     id: MenuId.line,
     event(canvas) {
-      console.log(canvas);
-
       if (canvas.isCreateLine) {
         finishLine(canvas);
       } else {

@@ -8,6 +8,14 @@ export const resetFabric = () => {
         return fabric.util.object.extend(toObject.call(this), {
           data: (this as any).data,
           id: this.id || "aaa",
+          outLines: this.outLines,
+          inLines: this.inLines,
+          effectType: this.effectType,
+          points: this.points,
+          from: this.from,
+          to: this.to,
+          tempPoint: this.tempPoint,
+          lineId: this.lineId,
         });
       };
     })((fabric as any)[i].prototype["toObject"]);

@@ -28,7 +28,7 @@ export const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
     strokeWidth: 3,
     strokeUniform: true,
   });
-  point.type = "point";
+  point.effectType = "point";
   point.id = Math.random();
   point.lineId = line.id;
   return point;
@@ -70,14 +70,14 @@ export const addLine = (
     fill: "",
     stroke: "black",
     objectCaching: false,
-    strokeWidth: 5,
+    strokeWidth: 3,
     perPixelTargetFind: true,
     lockMovementX: true,
     lockMovementY: true,
   }) as CanvasEditor.Path;
   newLine.id = id;
   newLine.data = data;
-  newLine.type = "line";
+  newLine.effectType = "line";
   if (points) {
     newLine.points = points;
   } else {
@@ -94,29 +94,9 @@ export const addLine = (
     strokeWidth: 2,
     strokeUniform: true,
   });
-  point.type = "point";
+  point.effectType = "point";
   point.visible = false;
   point.id = Math.random();
-  newLine.on("mousemove", (event: any) => {
-    const xy: any = computedZoomXY(event.e.offsetX, event.e.offsetY, canvas);
-    const line: CanvasEditor.Path = event.target;
-    const temp: any = getObjById(canvas, line.tempPoint);
-    temp.left = xy.left - pointRadius;
-    temp.top = xy.top - pointRadius;
-    canvas.renderAll();
-  });
-  newLine.on("mouseover", (event: any) => {
-    const line: CanvasEditor.Path = event.target;
-    const temp: any = getObjById(canvas, line.tempPoint);
-    temp.visible = true;
-    canvas.renderAll();
-  });
-  newLine.on("mouseout", (event: any) => {
-    const line: CanvasEditor.Path = event.target;
-    const temp: any = getObjById(canvas, line.tempPoint);
-    temp.visible = false;
-    canvas.renderAll();
-  });
   newLine.tempPoint = point.id;
   canvas.add(newLine);
   canvas.add(point);
@@ -132,37 +112,16 @@ export const updateLine = (
     fill: "",
     stroke: "black",
     objectCaching: false,
-    strokeWidth: 5,
+    strokeWidth: 3,
     perPixelTargetFind: true,
     lockMovementX: true,
     lockMovementY: true,
   }) as CanvasEditor.Path;
   newLine.id = line.id;
   newLine.data = line.data;
-  newLine.type = "line";
+  newLine.effectType = "line";
   newLine.points = line.points;
   newLine.tempPoint = line.tempPoint;
-
-  newLine.on("mousemove", (event: any) => {
-    const xy: any = computedZoomXY(event.e.offsetX, event.e.offsetY, canvas);
-    const line: CanvasEditor.Path = event.target;
-    const temp: any = getObjById(canvas, line.tempPoint);
-    temp.left = xy.left - pointRadius;
-    temp.top = xy.top - pointRadius;
-    canvas.renderAll();
-  });
-  newLine.on("mouseover", (event: any) => {
-    const line: CanvasEditor.Path = event.target;
-    const temp: any = getObjById(canvas, line.tempPoint);
-    temp.visible = true;
-    canvas.renderAll();
-  });
-  newLine.on("mouseout", (event: any) => {
-    const line: CanvasEditor.Path = event.target;
-    const temp: any = getObjById(canvas, line.tempPoint);
-    temp.visible = false;
-    canvas.renderAll();
-  });
 
   canvas.add(newLine);
   return newLine;

@@ -19,6 +19,8 @@ declare namespace MtipIt {
     name: string;
     style: string;
     image_run: string;
+    events?: { [key: string]: string };
+    properties?: any[];
   }
 
   export interface ThingGroup {

@@ -34,7 +34,38 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
     }
   });
+  // 悬浮线
+  canvas.on("mouse:over", (e: fabric.IEvent) => {
+    const obj: CanvasEditor.Object | undefined = e.target;
+    if (!canvas.isCreateLine && obj?.type === "line") {
+      const line: CanvasEditor.Path = obj;
+      const temp: any = getObjById(canvas, line.tempPoint);
+      temp.visible = true;
+      canvas.renderAll();
+    }
+  });
+  // 离开线
+  canvas.on("mouse:out", (e: fabric.IEvent) => {
+    const obj: CanvasEditor.Object | undefined = e.target;
+    if (!canvas.isCreateLine && obj?.type === "line") {
+      const line: CanvasEditor.Path = obj;
+      const temp: any = getObjById(canvas, line.tempPoint);
+      temp.visible = false;
+      canvas.renderAll();
+    }
+  });
+
   canvas.on("mouse:move", (e) => {
+    const obj: CanvasEditor.Object | undefined = e.target;
+    // 悬浮点提示
+    if (!canvas.isCreateLine && obj?.type === "line") {
+      const xy: any = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
+      const line: CanvasEditor.Path = obj;
+      const temp: any = getObjById(canvas, line.tempPoint);
+      temp.left = xy.left - pointRadius;
+      temp.top = xy.top - pointRadius;
+      canvas.renderAll();
+    }
     // 移动块
     if (beginObj && !canvas.isCreateLine && beginObj.effectType === "rect") {
       beginObj.outLines?.forEach((lineId: number) => {

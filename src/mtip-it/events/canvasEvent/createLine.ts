@@ -24,17 +24,47 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       beginObj = undefined;
     }
   });
+  // 悬浮线
+  canvas.on("mouse:over", (e: fabric.IEvent) => {
+    const obj: CanvasEditor.Object | undefined = e.target;
+    if (!canvas.isCreateLine && obj?.effectType === "line") {
+      const line: CanvasEditor.Path = obj;
+      const temp: any = getObjById(canvas, line.tempPoint);
+      temp.visible = true;
+      canvas.renderAll();
+    }
+  });
+  // 离开线
+  canvas.on("mouse:out", (e: fabric.IEvent) => {
+    const obj: CanvasEditor.Object | undefined = e.target;
+    if (!canvas.isCreateLine && obj?.effectType === "line") {
+      const line: CanvasEditor.Path = obj;
+      const temp: any = getObjById(canvas, line.tempPoint);
+      temp.visible = false;
+      canvas.renderAll();
+    }
+  });
   // 加点
   canvas.on("mouse:down", (e: fabric.IEvent) => {
     const obj: CanvasEditor.Object | undefined = e.target;
     const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
-    if (obj?.type === "line") {
+    if (obj?.effectType === "line") {
       const line: CanvasEditor.Path = obj as CanvasEditor.Path;
       pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
       line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
     }
   });
   canvas.on("mouse:move", (e) => {
+    const obj: CanvasEditor.Object | undefined = e.target;
+    // 悬浮点提示
+    if (!canvas.isCreateLine && obj?.effectType === "line") {
+      const xy: any = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
+      const line: CanvasEditor.Path = obj;
+      const temp: any = getObjById(canvas, line.tempPoint);
+      temp.left = xy.left - pointRadius;
+      temp.top = xy.top - pointRadius;
+      canvas.renderAll();
+    }
     // 移动块
     if (beginObj && !canvas.isCreateLine && beginObj.effectType === "rect") {
       beginObj.outLines?.forEach((lineId: number) => {
@@ -61,7 +91,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       });
     }
     // 移动点
-    if (beginObj && !canvas.isCreateLine && beginObj.type === "point") {
+    if (beginObj && !canvas.isCreateLine && beginObj.effectType === "point") {
       const point: CanvasEditor.Circle = beginObj as CanvasEditor.Circle;
       const line: CanvasEditor.Path = getObjById(
         canvas,
@@ -77,7 +107,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     if (
       beginObj &&
       !canvas.isCreateLine &&
-      beginObj.type === "line" &&
+      beginObj.effectType === "line" &&
       pointIndex !== undefined
     ) {
       const line: CanvasEditor.Path = beginObj as CanvasEditor.Path;
@@ -118,7 +148,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       beginObj = undefined;
       canvas.isCreateLine = false;
       canvas.getObjects().map((item) => {
-        if (item.type !== "line") {
+        if (item.effectType !== "line") {
           item.selectable = true;
         }
         return item;
@@ -128,7 +158,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     if (
       beginObj &&
       !canvas.isCreateLine &&
-      beginObj.type === "line" &&
+      beginObj.effectType === "line" &&
       pointIndex !== undefined
     ) {
       const line: CanvasEditor.Path = beginObj as CanvasEditor.Path;
