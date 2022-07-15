@@ -1,5 +1,5 @@
 declare namespace MtipIt {
-  export type EventsList = "mouse:down" | "move";
+  export type EventsList = "mousedown" | "move";
   export interface Canvas extends fabric.Canvas {
     isCreateLine: boolean;
   }
