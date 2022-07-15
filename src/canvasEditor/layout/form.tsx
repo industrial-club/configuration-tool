@@ -1,7 +1,7 @@
 import {
   computed,
   defineComponent,
-  onUnmounted,
+  onBeforeUnmount,
   PropType,
   ref,
   watch,
@@ -58,7 +58,7 @@ export default defineComponent({
         }
       }
     );
-    onUnmounted(() => {
+    onBeforeUnmount(() => {
       props.avtiveCanvas?.canvas.off("selection:created", handleWidgetSelect);
       props.avtiveCanvas?.canvas.off("selection:updated", handleWidgetSelect);
       props.avtiveCanvas?.canvas.off("selection:cleared", handleClearSelect);

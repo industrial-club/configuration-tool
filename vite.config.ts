@@ -6,6 +6,11 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 export default defineConfig({
   server: {
     host: "0.0.0.0",
+    proxy: {
+      "/api/": {
+        target: "http://192.168.9.88:7666/",
+      },
+    },
   },
   resolve: {
     alias: {

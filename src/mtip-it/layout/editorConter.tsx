@@ -1,5 +1,5 @@
 import { defineComponent, inject, PropType, Ref, ref, watch } from "vue";
-import tabBar, { tabBarItem } from "../component/tabBar";
+import tabBar from "../component/tabBar";
 
 export default defineComponent({
   components: {

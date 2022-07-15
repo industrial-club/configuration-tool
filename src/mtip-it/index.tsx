@@ -6,6 +6,7 @@ import editorForm from "./layout/form";
 import thingPlane from "./layout/thingPlane";
 import canvasEditorTop from "./layout/canvasEditorTop";
 import { create, createFlow } from "./config/createCanvas";
+import previewDom from "./component/preview";
 
 const allIts: Array<MtipIt.Item> = [];
 
@@ -21,6 +22,7 @@ export default defineComponent({
     thingPlane,
     editorForm,
     canvasEditorTop,
+    previewDom,
   },
   setup(prop, context) {
     // 全局类前缀
@@ -60,10 +62,17 @@ export default defineComponent({
       }
     );
 
+    // 预览弹窗数据相关
+    const previewVal = ref(false);
+
     // 所有图表集合
     return () => (
       <div id={prefix.value} class={prefix.value}>
-        <canvasEditorTop />
+        <canvasEditorTop
+          onPreview={(e: MtipIt.MenuItem) => {
+            previewVal.value = true;
+          }}
+        />
         <div class={prefix.value + "_body"}>
           <thingPlane
             onOpenThing={(e: MtipIt.ThingItem) => {
@@ -87,6 +96,7 @@ export default defineComponent({
           <editorConter mtipIts={canvasList.value} val={thingId.value} />
           <editorForm />
         </div>
+        <previewDom v-models={[[previewVal.value, "val"]]} />
       </div>
     );
   },
