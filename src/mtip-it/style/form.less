@@ -1,12 +1,21 @@
 .@{prefix}_form_box {
-    width: 300px;
-    padding: 16px;
-    box-shadow: 1px 1px 3px @boxShadowColor;
-    overflow-y: auto;
-    .ant-input,
-    .ant-input-number,
-    .ant-select {
-      width: 100%;
+  width: 300px;
+  padding: 16px;
+  box-shadow: 1px 1px 3px @boxShadowColor;
+  overflow-y: auto;
+  .operation {
+    margin-bottom: 16px;
+    width: 100%;
+    .ant-space-item {
+      flex: auto;
+      .ant-btn {
+        width: 100%;
+      }
     }
   }
-
+  .ant-input,
+  .ant-input-number,
+  .ant-select {
+    width: 100%;
+  }
+}

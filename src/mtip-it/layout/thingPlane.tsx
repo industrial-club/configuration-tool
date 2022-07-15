@@ -1,16 +1,21 @@
-import { defineComponent, ref } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import { svgPath } from "../config";
 import ThingList from "../config/thingList";
 
 export default defineComponent({
   emits: ["dropEnd", "dropStart", "openThing"],
-  props: {},
+  props: {
+    thingList: {
+      type: Array as PropType<Array<any>>,
+      default: () => [],
+    },
+  },
   setup(props, content) {
     const keyword = ref("");
 
-    const thingList = ref(ThingList);
+    // const thingList = ref(ThingList);
 
-    const expandedKeys = ref(thingList.value.map((item) => item.code));
+    const expandedKeys = ref(props.thingList.map((item) => item.code));
 
     return () => (
       <div class={"mtip_it_editor_thing_plane"}>
@@ -21,10 +26,10 @@ export default defineComponent({
           v-model={[keyword.value, "value"]}
         ></a-input>
         <a-collapse v-model={[expandedKeys.value, "activeKey"]}>
-          {thingList.value.map((item) => (
+          {props.thingList.map((item) => (
             <a-collapse-panel key={item.code} header={item.name}>
               <div class="thing-list">
-                {item.elements.map((thing) => (
+                {item.elements.map((thing: any) => (
                   <div
                     class="thing-item"
                     key={thing.id}
