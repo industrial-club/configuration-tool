@@ -1,12 +1,14 @@
 import { defineComponent, nextTick, PropType, provide, ref, watch } from "vue";
 import { fabric } from "fabric";
 import "./style/index.less";
+import things from "@/mtip-it/config/thingList2";
 import editorConter from "./layout/editorConter";
 import editorForm from "./layout/form";
 import thingPlane from "./layout/thingPlane";
 import canvasEditorTop from "./layout/canvasEditorTop";
 import { create, createFlow } from "./config/createCanvas";
 import previewDom from "./component/preview";
+import { message } from "ant-design-vue";
 
 const allIts: Array<MtipIt.Item> = [];
 
@@ -27,6 +29,21 @@ export default defineComponent({
   setup(prop, context) {
     // 全局类前缀
     const prefix = ref("mtip_it_editor");
+
+    // 实例列表
+    const storageThingList = JSON.parse(
+      localStorage.getItem("thingList") || "[]"
+    );
+    const thingList = ref<MtipIt.ThingGroupList>(
+      storageThingList.length ? storageThingList : things
+    );
+    watch(
+      thingList,
+      (val) => {
+        localStorage.setItem("thingList", JSON.stringify(val));
+      },
+      { immediate: true, deep: true }
+    );
 
     // canvasList
     const canvasList = ref<Array<MtipIt.Item>>(allIts);
@@ -49,6 +66,26 @@ export default defineComponent({
     if (canvasList.value.length > 0) {
       thingId.value = canvasList.value[0].id;
     }
+
+    // 在当前活跃的canvas上添加元素
+    const handleAddElement = (element: fabric.Object) =>
+      activeMtipItItem.value?.canvas.add(element);
+    // 删除当前活跃的canvas上的元素
+    const handleRemoveElement = (elements: fabric.Object[]) =>
+      activeMtipItItem.value?.canvas.remove(...elements);
+
+    // 保存当前活跃的canvas的信息
+    const handleSave = (data: MtipIt.Item) => {
+      const id = data.thingInfo.id;
+      for (const item of thingList.value) {
+        const idx = item.elements.findIndex((ele) => ele.id === id);
+        if (idx > -1) {
+          item.elements[idx] = data.thingInfo;
+          message.success("保存成功");
+          break;
+        }
+      }
+    };
 
     // 动态更新
     watch(
@@ -75,6 +112,7 @@ export default defineComponent({
         />
         <div class={prefix.value + "_body"}>
           <thingPlane
+            thingList={thingList.value}
             onOpenThing={(e: MtipIt.ThingItem) => {
               const eid = `canvas_${e.id}`;
               e.id = eid;
@@ -94,7 +132,11 @@ export default defineComponent({
             }}
           />
           <editorConter mtipIts={canvasList.value} val={thingId.value} />
-          <editorForm />
+          <editorForm
+            onAddElement={handleAddElement}
+            onRemoveElement={handleRemoveElement}
+            onSave={handleSave}
+          />
         </div>
         <previewDom v-models={[[previewVal.value, "val"]]} />
       </div>

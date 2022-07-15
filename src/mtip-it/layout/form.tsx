@@ -9,14 +9,27 @@ import {
   nextTick,
 } from "vue";
 import { fabric } from "fabric";
+import { cloneDeep } from "lodash";
 import { MenuId } from "../config/menus";
 import PropertiesForm from "../component/properties-form";
 import ThingForm from "../component/thing-form";
 import FlowForm from "../component/flow-form";
+import AddEventModal from "@/canvasEditor/components/properties-form/add-event-modal";
 
 export default defineComponent({
-  setup(props, context) {
+  emits: ["addElement", "removeElement", "save"],
+  setup(props, { emit }) {
     const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem")!;
+
+    // 复制当前canvas
+    const copyCanvas = ref<MtipIt.Item>({} as MtipIt.Item);
+    watch(
+      activeCanvas,
+      (newVal) => {
+        copyCanvas.value = cloneDeep(newVal);
+      },
+      { deep: true, immediate: true }
+    );
 
     // const activeWidget = ref<fabric.Object>();
     // // 选择部件 (只有选择了一个部件才能操作)
@@ -33,7 +46,7 @@ export default defineComponent({
 
     // 是否为物实例
     const isThing = computed(() => {
-      if (activeCanvas.value?.type === MenuId.thing) {
+      if (copyCanvas.value?.type === MenuId.thing) {
         return true;
       }
       return false;
@@ -63,32 +76,91 @@ export default defineComponent({
     // });
 
     // 处理选中属性后展示到图中
-    const handlePropertyChange = ({ checked, property }: any) => {
-      const name = `_property_${property.key}`;
+    const handlePropertyChange = ({
+      checked,
+      property,
+      isInit = false,
+    }: any) => {
+      const name = `_property_${property.code}`;
       // 选中
       if (checked) {
         // 创建text 值暂时写死
-        const text = new fabric.Text(`${property.name}: 100m`, {
-          name,
+        const content = `${property.name}: 100m`;
+        const text = new fabric.Text(isInit ? property.content : content, {
+          name: isInit ? property.name : name,
           fill: "#ff0000",
           fontSize: 16,
+          left: isInit ? property.position.left : 0,
+          top: isInit ? property.position.top : 0,
         });
-        activeCanvas.value.canvas.add(text);
-        // activeCanvas.value.thingInfo = activeCanvas.value?.thingInfo ?? [];
-        // console.log(activeCanvas.value.thingInfo);
-
-        // activeCanvas.value.thingInfo.push(text);
+        emit("addElement", text);
+        if (!isInit) {
+          // 抽象属性
+          const abstractProperty = {
+            name,
+            content,
+            style: {
+              fill: "#ff0000",
+              fontSize: 16,
+            },
+            position: {
+              top: text.top,
+              left: text.left,
+            },
+            code: property.code,
+          };
+          // 创建属性数组
+          if (!copyCanvas.value.thingInfo) copyCanvas.value.thingInfo = {};
+          if (!copyCanvas.value.thingInfo.properties)
+            copyCanvas.value.thingInfo.properties = [];
+          copyCanvas.value.thingInfo.properties.push(abstractProperty);
+          // 文字移动，更新位置
+          text.on("modified", () => {
+            abstractProperty.position = {
+              top: text.top,
+              left: text.left,
+            };
+          });
+        } else {
+          text.on("modified", () => {
+            property.position = {
+              top: text.top,
+              left: text.left,
+            };
+          });
+        }
       } else {
         // 移除text
         const textList = activeCanvas.value?.canvas
           .getObjects()
-          .filter((item: any) => item.name === name);
-        if (textList?.length) activeCanvas.value?.canvas.remove(...textList);
-        // const idx = activeCanvas.value.thingInfo.findIndex(
-        //   (item: any) => item.name === name
-        // );
-        // idx !== -1 && activeCanvas.value.thingInfo.splice(idx, 1);
+          .filter((item: fabric.Object) => item.name === name);
+        emit("removeElement", textList);
+        // 移除属性
+        if (copyCanvas.value.thingInfo?.properties) {
+          copyCanvas.value.thingInfo.properties =
+            copyCanvas.value.thingInfo.properties.filter(
+              (item: any) => item.name !== name
+            );
+        }
       }
+    };
+
+    // 添加事件
+    const isAddEventShow = ref(false);
+    const currListener = computed(
+      () => copyCanvas.value.thingInfo?.events?.click || ""
+    );
+    const handleSetListener = (code: string) => {
+      if (!copyCanvas.value.thingInfo) copyCanvas.value.thingInfo = {};
+      if (!copyCanvas.value.thingInfo.events)
+        copyCanvas.value.thingInfo.events = {};
+      copyCanvas.value.thingInfo.events.click = code;
+      isAddEventShow.value = false;
+    };
+
+    // 保存
+    const handleSave = () => {
+      emit("save", copyCanvas.value);
     };
 
     return () => (
@@ -98,12 +170,28 @@ export default defineComponent({
           // activeWidget.value ? (
           //   <PropertiesForm widget={activeWidget.value} />
           // ) : (
-          <ThingForm onPropertyChange={handlePropertyChange} />
+          <div>
+            <a-space class="operation">
+              <a-button onClick={() => (isAddEventShow.value = true)}>
+                添加事件
+              </a-button>
+              <a-button type="primary" onClick={handleSave}>
+                保存
+              </a-button>
+            </a-space>
+            <ThingForm onPropertyChange={handlePropertyChange} />
+          </div>
         ) : (
           // )
           // <FlowForm widget={activeWidget.value} />
           <a-empty></a-empty>
         )}
+
+        <AddEventModal
+          listener={currListener.value}
+          v-model={[isAddEventShow.value, "visible"]}
+          onCommit={handleSetListener}
+        />
       </div>
     );
   },
