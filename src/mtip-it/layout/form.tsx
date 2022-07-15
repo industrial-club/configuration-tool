@@ -148,13 +148,13 @@ export default defineComponent({
     // 添加事件
     const isAddEventShow = ref(false);
     const currListener = computed(
-      () => copyCanvas.value.thingInfo?.events?.["mouse:down"] || ""
+      () => copyCanvas.value.thingInfo?.events?.mousedown || ""
     );
     const handleSetListener = (code: string) => {
       if (!copyCanvas.value.thingInfo) copyCanvas.value.thingInfo = {};
       if (!copyCanvas.value.thingInfo.events)
         copyCanvas.value.thingInfo.events = {};
-      copyCanvas.value.thingInfo.events["mouse:down"] = code;
+      copyCanvas.value.thingInfo.events.mousedown = code;
       isAddEventShow.value = false;
     };
 
