@@ -8,8 +8,11 @@ export const toPreview = () => {
   canvas.setWidth(width!);
   const info = previewInfo.get();
   canvas.loadFromJSON(info, () => {
-    canvas.getObjects().forEach((item) => {
+    canvas.getObjects().forEach((item: CanvasEditor.Object) => {
       item.selectable = false;
+      if (item?.type === "circle") {
+        item.visible = false;
+      }
       if (item?.data?.events) {
         for (const key in item?.data?.events) {
           item.on(key, () => {
@@ -18,5 +21,6 @@ export const toPreview = () => {
         }
       }
     });
+    canvas.renderAll();
   });
 };
