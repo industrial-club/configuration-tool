@@ -7,10 +7,16 @@ export const toPreview = () => {
   canvas.setHeight(height!);
   canvas.setWidth(width!);
   const info = previewInfo.get();
-
   canvas.loadFromJSON(info, () => {
     canvas.getObjects().forEach((item) => {
       item.selectable = false;
+      if (item?.data?.events) {
+        for (const key in item?.data?.events) {
+          item.on(key, () => {
+            eval(item?.data?.events[key]);
+          });
+        }
+      }
     });
   });
 };

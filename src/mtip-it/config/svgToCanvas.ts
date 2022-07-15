@@ -7,7 +7,16 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
   const pathUrl = thing.image_run;
   // 当流程图情况下，将svg打组 后渲染
   const groupSvg = (objects: fabric.Object[], options: any) => {
-    const svg = fabric.util.groupSVGElements(objects, { a: 0 }) as any;
+    const texts = thing.properties?.map((ele: any, index: number) => {
+      return new fabric.Textbox(ele.content, {
+        width: 100,
+        fontSize: 12,
+        top: -((index + 1) * 15),
+      });
+    });
+    const svg = fabric.util.groupSVGElements([...objects, ...(texts || [])], {
+      a: 0,
+    }) as any;
     const userX = (e.pointer?.x || (e.e as any).layerX) - svg.width / 2;
     const userY = (e.pointer?.y || (e.e as any).layerY) - svg.height / 2;
     const { left, top } = computedZoomXY(userX, userY, canvas);
@@ -16,9 +25,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
       top,
     });
 
-    svg.data = {
-      info: thing,
-    };
+    svg.data = thing;
     svg.effectType = "rect";
     canvas.add(svg);
     canvas.setActiveObject(svg);
@@ -30,7 +37,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
 };
 
 export const initSvgCanvas = (canvas: MtipIt.Canvas, path: string) => {
-  const padding = 80;
+  const padding = 120;
   fabric.loadSVGFromURL(path, (objects, options) => {
     const svg = fabric.util.groupSVGElements(objects, options);
     const { width, height } = svg;

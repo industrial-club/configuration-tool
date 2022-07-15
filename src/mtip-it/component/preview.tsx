@@ -23,7 +23,6 @@ export default defineComponent({
     watch(
       () => val.value,
       () => {
-        console.log(val.value);
         if (val.value) {
           nextTick(() => {
             toPreview();

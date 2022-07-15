@@ -92,7 +92,6 @@ export default defineComponent({
       () => thingId.value,
       () => {
         activeMtipItItem.value = getActiveCanvas();
-        console.log(activeMtipItItem.value);
       },
       {
         immediate: true,

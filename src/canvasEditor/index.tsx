@@ -108,13 +108,7 @@ export default defineComponent({
           "previewCanvas"
         ) as CanvasEditor.Canvas;
         onresize(PreviewCanvas, "previewBox");
-        onClick(
-          PreviewCanvas,
-          (e) => {
-            console.log(e);
-          },
-          200
-        );
+        onClick(PreviewCanvas, (e) => {}, 200);
       } else {
         PreviewCanvas.clear();
       }
@@ -145,7 +139,6 @@ export default defineComponent({
         <div class={"canvas_editor_conter"}>
           <thingPlane
             onOpenIcon={(e: any) => {
-              console.log(e);
               createCanvasConfirm.value.val = "测试Tab";
               createCustomCanvas(e);
               nextTick(() => {

@@ -8,6 +8,35 @@ const ThingList: MtipIt.ThingGroupList = [
         name: "生产系统",
         style: "[{key:value},{key1:value1}]",
         image_run: "/icons/设备图标汇总_综保数据.svg",
+        events: {
+          mousedown: "console.log('下发成功')",
+        },
+        properties: [
+          {
+            name: "_property_ALARM_ZHOUJIE",
+            content: "周界报警: 100m",
+            style: {
+              fill: "#ff0000",
+              fontSize: 16,
+            },
+            position: {
+              top: 0,
+              left: 0,
+            },
+          },
+          {
+            name: "_property_ALARM_OFF",
+            content: "相机断线: 100m",
+            style: {
+              fill: "#ff0000",
+              fontSize: 16,
+            },
+            position: {
+              top: 22,
+              left: 0,
+            },
+          },
+        ],
       },
       {
         id: 1,
