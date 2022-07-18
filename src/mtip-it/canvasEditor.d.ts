@@ -32,6 +32,7 @@ declare namespace MtipIt {
   export interface ThingItem {
     id: string | number;
     name: string;
+    size?: { [key: string]: number };
     style: string;
     image_run: string;
     properties: Array<Record<string, unknown>>;
