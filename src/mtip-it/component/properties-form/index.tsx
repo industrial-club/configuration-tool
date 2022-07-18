@@ -14,6 +14,7 @@ import { CONFIG_PROPS } from "./config";
  * 动态部件属性表单
  */
 const PropertiesForm = defineComponent({
+  emits: ["update"],
   props: {
     widget: {
       type: Object as PropType<fabric.Object>,
@@ -37,6 +38,7 @@ const PropertiesForm = defineComponent({
     // 更新属性
     const update = (key: string, value: any) => {
       props.widget.set<any>(key, value);
+      emit("update", { key, value });
       props.widget.canvas!.requestRenderAll();
     };
 
@@ -96,11 +98,6 @@ const PropertiesForm = defineComponent({
 
     return () => (
       <div class="propertiesForm">
-        <a-space style={{ marginBottom: "16px" }}>
-          <a-button type="primary" onClick={handleAddEvents}>
-            添加事件
-          </a-button>
-        </a-space>
         <a-form labelCol={{ style: { width: "6em" } }}>
           {configureProps.value.length ? (
             configureProps.value.map((item) => (
