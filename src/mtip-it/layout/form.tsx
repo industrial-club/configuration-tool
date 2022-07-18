@@ -28,8 +28,8 @@ export default defineComponent({
     // 物实例详情
     const thingDetail = ref({});
     const getThingDetail = async () => {
-      const id = activeCanvas.value.id;
-      // const id = "1";
+      // const id = activeCanvas.value.id;
+      const id = "1";
       const { data } = await api.getThingCode(id);
       const thingCode = data.thingInst.thingCode;
       const { data: res } = await api.getThingDetail(thingCode);
@@ -41,7 +41,22 @@ export default defineComponent({
       async (newVal) => {
         await nextTick();
         copyCanvas.value = cloneDeep(newVal);
-        getThingDetail();
+        await getThingDetail();
+        const size = copyCanvas.value.thingInfo.size;
+
+        if (size) {
+          const { width, height } = size;
+          activeCanvas.value.canvas.setWidth(width);
+          activeCanvas.value.canvas.setHeight(height);
+        } else {
+          // 获取宽高
+          const width = activeCanvas.value.canvas.getWidth();
+          const height = activeCanvas.value.canvas.getHeight();
+
+          // 设置到详情中
+          copyCanvas.value.thingInfo.size = { width, height };
+        }
+
         // 回显属性到图中
         if (Array.isArray(activeCanvas.value.thingInfo?.properties)) {
           for (const item of activeCanvas.value.thingInfo.properties) {
@@ -53,7 +68,7 @@ export default defineComponent({
           }
         }
       },
-      { immediate: true }
+      { immediate: true, flush: "post" }
     );
 
     // 是否为物实例
@@ -221,6 +236,31 @@ export default defineComponent({
                 >
                   是否响应点击事件
                 </a-checkbox>
+              </a-form-item>
+              <a-form-item label="宽">
+                <a-input-number
+                  value={copyCanvas.value.thingInfo?.size?.width}
+                  onChange={(val: number) => {
+                    if (!copyCanvas.value.thingInfo.size) {
+                      copyCanvas.value.thingInfo.size = {};
+                    }
+                    copyCanvas.value.thingInfo.size.width = val;
+                    activeCanvas.value.canvas.setWidth(val);
+                  }}
+                ></a-input-number>
+              </a-form-item>
+              <a-form-item label="高">
+                <a-input-number
+                  value={copyCanvas.value.thingInfo?.size?.height}
+                  onChange={(val: number) => {
+                    if (!copyCanvas.value.thingInfo.size) {
+                      copyCanvas.value.thingInfo.size = {};
+                    }
+                    copyCanvas.value.thingInfo.size.height = val;
+
+                    activeCanvas.value.canvas.setHeight(val);
+                  }}
+                ></a-input-number>
               </a-form-item>
               <ThingForm
                 thingDetail={thingDetail.value}
