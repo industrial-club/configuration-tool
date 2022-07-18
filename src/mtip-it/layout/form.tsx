@@ -36,11 +36,20 @@ export default defineComponent({
       thingDetail.value = res;
     };
 
+    // 是否为物实例
+    const isThing = computed(() => {
+      if (copyCanvas.value?.type === MenuId.thing) {
+        return true;
+      }
+      return false;
+    });
+
     watch(
       activeCanvas,
       async (newVal) => {
         await nextTick();
         copyCanvas.value = cloneDeep(newVal);
+        if (!isThing.value) return;
         await getThingDetail();
         const size = copyCanvas.value.thingInfo.size;
 
@@ -58,8 +67,8 @@ export default defineComponent({
         }
 
         // 回显属性到图中
-        if (Array.isArray(activeCanvas.value.thingInfo?.properties)) {
-          for (const item of activeCanvas.value.thingInfo.properties) {
+        if (Array.isArray(copyCanvas.value.thingInfo?.properties)) {
+          for (const item of copyCanvas.value.thingInfo.properties) {
             handlePropertyChange({
               checked: true,
               property: item,
@@ -70,14 +79,6 @@ export default defineComponent({
       },
       { immediate: true, flush: "post" }
     );
-
-    // 是否为物实例
-    const isThing = computed(() => {
-      if (copyCanvas.value?.type === MenuId.thing) {
-        return true;
-      }
-      return false;
-    });
 
     /* ======= 当前选中的部件 ======= */
     const activeWidget = ref<fabric.Object>();
@@ -167,6 +168,7 @@ export default defineComponent({
               top: text.top,
               left: text.left,
             };
+            console.log();
           });
         }
       } else {
