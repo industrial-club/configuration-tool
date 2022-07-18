@@ -17,48 +17,29 @@ import * as api from "@/mtip-it/api/form";
  */
 const ThingForm = defineComponent({
   emits: ["propertyChange"],
+  props: {
+    thingDetail: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
   setup(props, { emit }) {
     const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem")!;
 
-    // 当前实例详细信息
-    const thingDetail = ref<any>({});
-
     // 属性列表
     const propertiesList = computed(() => {
-      return thingDetail.value.thingPropertyList || [];
+      return props.thingDetail.thingPropertyList || [];
     });
-
-    // 获取实例属性
-    const getProperties = async () => {
-      // const id = activeCanvas.value.id;
-      const id = "1";
-      const { data } = await api.getThingCode(id);
-      const thingCode = data.thingInst.thingCode;
-      const { data: res } = await api.getThingDetail(thingCode);
-      thingDetail.value = res;
-    };
 
     const selectedProps = ref([]);
 
     watch(
-      activeCanvas,
+      () => props.thingDetail,
       async () => {
         await nextTick();
-        thingDetail.value = {};
-        selectedProps.value = [];
-        // 回显选中的属性
-        const properties = activeCanvas.value?.thingInfo?.properties;
-        if (properties?.length > 0) {
-          selectedProps.value = properties.map((item: any) => item.code);
-          for (const prop of properties) {
-            emit("propertyChange", {
-              checked: true,
-              property: prop,
-              isInit: true,
-            });
-          }
-        }
-        getProperties();
+        selectedProps.value = (
+          activeCanvas.value.thingInfo.properties || []
+        ).map((item: any) => item.code);
       },
       { immediate: true }
     );
@@ -76,14 +57,14 @@ const ThingForm = defineComponent({
       <div class="thing-form">
         <a-form>
           <a-form-item label="名称">
-            <a-input disabled value={thingDetail.value.name}></a-input>
+            <a-input disabled value={props.thingDetail.name}></a-input>
           </a-form-item>
           <a-form-item>
             <a-checkbox-group
               style={{ width: "100%" }}
               v-model={selectedProps.value}
             >
-              <a-collapse>
+              <a-collapse activeKey={1}>
                 <a-collapse-panel key={1} header="属性">
                   <a-checkbox-group v-model={[selectedProps.value, "value"]}>
                     <a-row>

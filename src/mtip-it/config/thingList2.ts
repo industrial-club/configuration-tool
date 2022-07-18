@@ -8,9 +8,6 @@ const thingList: MtipIt.ThingGroupList = [
         name: "生产系统",
         style: "[{key:value},{key1:value1}]",
         image_run: "/icons/设备图标汇总_综保数据.svg",
-        events: {
-          click: "console.log(e)",
-        },
         properties: [
           {
             code: "ALARM_ZHOUJIE",

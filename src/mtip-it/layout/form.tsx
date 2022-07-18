@@ -15,6 +15,7 @@ import PropertiesForm from "../component/properties-form";
 import ThingForm from "../component/thing-form";
 import FlowForm from "../component/flow-form";
 import AddEventModal from "@/canvasEditor/components/properties-form/add-event-modal";
+import * as api from "@/mtip-it/api/form";
 
 export default defineComponent({
   emits: ["addElement", "removeElement", "save"],
@@ -23,26 +24,52 @@ export default defineComponent({
 
     // 复制当前canvas
     const copyCanvas = ref<MtipIt.Item>({} as MtipIt.Item);
+
+    // 物实例详情
+    const thingDetail = ref({});
+    const getThingDetail = async () => {
+      // const id = activeCanvas.value.id;
+      const id = "1";
+      const { data } = await api.getThingCode(id);
+      const thingCode = data.thingInst.thingCode;
+      const { data: res } = await api.getThingDetail(thingCode);
+      thingDetail.value = res;
+    };
+
     watch(
       activeCanvas,
-      (newVal) => {
+      async (newVal) => {
+        await nextTick();
         copyCanvas.value = cloneDeep(newVal);
-      },
-      { deep: true, immediate: true }
-    );
+        await getThingDetail();
+        const size = copyCanvas.value.thingInfo.size;
 
-    // const activeWidget = ref<fabric.Object>();
-    // // 选择部件 (只有选择了一个部件才能操作)
-    // const handleWidgetSelect = ({ selected }: any) => {
-    //   // 只选择了一个小部件
-    //   if (selected.length === 1) {
-    //     activeWidget.value = selected[0];
-    //   }
-    // };
-    // 取消选择
-    // const handleClearSelect = () => {
-    //   activeWidget.value = undefined;
-    // };
+        if (size) {
+          const { width, height } = size;
+          activeCanvas.value.canvas.setWidth(width);
+          activeCanvas.value.canvas.setHeight(height);
+        } else {
+          // 获取宽高
+          const width = activeCanvas.value.canvas.getWidth();
+          const height = activeCanvas.value.canvas.getHeight();
+
+          // 设置到详情中
+          copyCanvas.value.thingInfo.size = { width, height };
+        }
+
+        // 回显属性到图中
+        if (Array.isArray(activeCanvas.value.thingInfo?.properties)) {
+          for (const item of activeCanvas.value.thingInfo.properties) {
+            handlePropertyChange({
+              checked: true,
+              property: item,
+              isInit: true,
+            });
+          }
+        }
+      },
+      { immediate: true, flush: "post" }
+    );
 
     // 是否为物实例
     const isThing = computed(() => {
@@ -52,28 +79,41 @@ export default defineComponent({
       return false;
     });
 
+    /* ======= 当前选中的部件 ======= */
+    const activeWidget = ref<fabric.Object>();
+    // 选择部件 (只有选择了一个部件才能操作)
+    const handleWidgetSelect = ({ selected }: any) => {
+      // 只选择了一个小部件
+      if (selected.length === 1) {
+        activeWidget.value = selected[0];
+      }
+    };
+    // 取消选择
+    const handleClearSelect = () => {
+      activeWidget.value = undefined;
+    };
     // 给当前活跃的canvas添加选中事件
-    // watch(
-    //   () => activeCanvas.value,
-    //   async (val, oldVal) => {
-    //     await nextTick();
-    //     if (val) {
-    //       val.canvas.on("selection:created", handleWidgetSelect);
-    //       val.canvas.on("selection:updated", handleWidgetSelect);
-    //       val.canvas.on("selection:cleared", handleClearSelect);
-    //     }
-    //     if (val !== oldVal) {
-    //       oldVal?.canvas.off("selection:created", handleWidgetSelect);
-    //       oldVal?.canvas.off("selection:updated", handleWidgetSelect);
-    //       oldVal?.canvas.off("selection:cleared", handleClearSelect);
-    //     }
-    //   }
-    // );
-    // onUnmounted(() => {
-    //   activeCanvas.value?.canvas.off("selection:created", handleWidgetSelect);
-    //   activeCanvas.value?.canvas.off("selection:updated", handleWidgetSelect);
-    //   activeCanvas.value?.canvas.off("selection:cleared", handleClearSelect);
-    // });
+    watch(
+      () => activeCanvas.value,
+      async (val, oldVal) => {
+        await nextTick();
+        if (val) {
+          val.canvas.on("selection:created", handleWidgetSelect);
+          val.canvas.on("selection:updated", handleWidgetSelect);
+          val.canvas.on("selection:cleared", handleClearSelect);
+        }
+        if (val !== oldVal) {
+          oldVal?.canvas.off("selection:created", handleWidgetSelect);
+          oldVal?.canvas.off("selection:updated", handleWidgetSelect);
+          oldVal?.canvas.off("selection:cleared", handleClearSelect);
+        }
+      }
+    );
+    onUnmounted(() => {
+      activeCanvas.value?.canvas.off("selection:created", handleWidgetSelect);
+      activeCanvas.value?.canvas.off("selection:updated", handleWidgetSelect);
+      activeCanvas.value?.canvas.off("selection:cleared", handleClearSelect);
+    });
 
     // 处理选中属性后展示到图中
     const handlePropertyChange = ({
@@ -85,11 +125,11 @@ export default defineComponent({
       // 选中
       if (checked) {
         // 创建text 值暂时写死
-        const content = `${property.name}: 100m`;
+        const content = `${property.name}: null`;
         const text = new fabric.Text(isInit ? property.content : content, {
-          name: isInit ? property.name : name,
-          fill: "#ff0000",
-          fontSize: 16,
+          name: name,
+          // 回显使用原有的样式 否则使用初始化样式
+          ...(isInit ? property.style : { fill: "#ff0000", fontSize: 16 }),
           left: isInit ? property.position.left : 0,
           top: isInit ? property.position.top : 0,
         });
@@ -145,17 +185,18 @@ export default defineComponent({
       }
     };
 
-    // 添加事件
-    const isAddEventShow = ref(false);
-    const currListener = computed(
-      () => copyCanvas.value.thingInfo?.events?.mousedown || ""
-    );
-    const handleSetListener = (code: string) => {
-      if (!copyCanvas.value.thingInfo) copyCanvas.value.thingInfo = {};
-      if (!copyCanvas.value.thingInfo.events)
-        copyCanvas.value.thingInfo.events = {};
-      copyCanvas.value.thingInfo.events.mousedown = code;
-      isAddEventShow.value = false;
+    // 更改样式，更新属性
+    const handlePropertyUpdate = ({ key, value }: any) => {
+      const name = activeWidget.value?.name;
+
+      const properties = copyCanvas.value.thingInfo.properties.filter(
+        (item: any) => item.name === name
+      );
+      if (properties.length > 0) {
+        for (const property of properties) {
+          property.style[key] = value;
+        }
+      }
     };
 
     // 保存
@@ -166,32 +207,72 @@ export default defineComponent({
     return () => (
       <div class={"mtip_it_editor_form_box"}>
         {isThing.value ? (
-          // 如果选中部件 展示部件属性表单 否则展示实例表单
-          // activeWidget.value ? (
-          //   <PropertiesForm widget={activeWidget.value} />
-          // ) : (
-          <div>
-            <a-space class="operation">
-              <a-button onClick={() => (isAddEventShow.value = true)}>
-                添加事件
-              </a-button>
-              <a-button type="primary" onClick={handleSave}>
+          // 如果选中属性文字 展示部件属性表单 否则展示实例表单
+          activeWidget.value?.type === "text" ? (
+            <PropertiesForm
+              widget={activeWidget.value}
+              onUpdate={handlePropertyUpdate}
+            />
+          ) : (
+            <div>
+              <a-button
+                class="btn-save"
+                block
+                type="primary"
+                onClick={handleSave}
+              >
                 保存
               </a-button>
-            </a-space>
-            <ThingForm onPropertyChange={handlePropertyChange} />
-          </div>
+              <a-form-item>
+                <a-checkbox
+                  checked={copyCanvas.value.thingInfo?.events?.mousedown}
+                  onChange={(e: any) => {
+                    if (!copyCanvas.value.thingInfo.events) {
+                      copyCanvas.value.thingInfo.events = {};
+                    }
+                    copyCanvas.value.thingInfo.events.mousedown =
+                      e.target.checked;
+                  }}
+                >
+                  是否响应点击事件
+                </a-checkbox>
+              </a-form-item>
+              <a-form-item label="宽">
+                <a-input-number
+                  value={copyCanvas.value.thingInfo?.size?.width}
+                  onChange={(val: number) => {
+                    if (!copyCanvas.value.thingInfo.size) {
+                      copyCanvas.value.thingInfo.size = {};
+                    }
+                    copyCanvas.value.thingInfo.size.width = val;
+                    activeCanvas.value.canvas.setWidth(val);
+                  }}
+                ></a-input-number>
+              </a-form-item>
+              <a-form-item label="高">
+                <a-input-number
+                  value={copyCanvas.value.thingInfo?.size?.height}
+                  onChange={(val: number) => {
+                    if (!copyCanvas.value.thingInfo.size) {
+                      copyCanvas.value.thingInfo.size = {};
+                    }
+                    copyCanvas.value.thingInfo.size.height = val;
+
+                    activeCanvas.value.canvas.setHeight(val);
+                  }}
+                ></a-input-number>
+              </a-form-item>
+              <ThingForm
+                thingDetail={thingDetail.value}
+                onPropertyChange={handlePropertyChange}
+              />
+            </div>
+          )
         ) : (
           // )
           // <FlowForm widget={activeWidget.value} />
           <a-empty></a-empty>
         )}
-
-        <AddEventModal
-          listener={currListener.value}
-          v-model={[isAddEventShow.value, "visible"]}
-          onCommit={handleSetListener}
-        />
       </div>
     );
   },

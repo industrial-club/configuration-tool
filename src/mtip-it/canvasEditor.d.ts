@@ -23,6 +23,10 @@ declare namespace MtipIt {
       top?: number;
       left?: number;
     }; // 属性位置
+    size?: {
+      width: number;
+      height: number;
+    };
   }
 
   export interface ThingItem {
