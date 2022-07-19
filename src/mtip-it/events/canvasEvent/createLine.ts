@@ -12,6 +12,7 @@ import {
 } from "./createLineUtil";
 
 const pointRadius = 7;
+let lineEditing = false;
 let pointIndex: number | undefined;
 
 // 连线相关事件
@@ -66,7 +67,12 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       canvas.renderAll();
     }
     // 移动块
-    if (beginObj && !canvas.isCreateLine && beginObj.effectType === "rect") {
+    if (
+      beginObj &&
+      !canvas.isCreateLine &&
+      beginObj.effectType !== "line" &&
+      beginObj.effectType !== "point"
+    ) {
       beginObj.outLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
         const line: CanvasEditor.Path = getObjById(
@@ -103,7 +109,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       line.path[index + 1][2] = xy.top;
       updateLine(canvas, line);
     }
-    // 拖动线
+    // 通过临时点拖动线
     if (
       beginObj &&
       !canvas.isCreateLine &&

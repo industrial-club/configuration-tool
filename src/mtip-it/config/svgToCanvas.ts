@@ -9,13 +9,14 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
   const groupSvg = (objects: fabric.Object[], options: any) => {
     const texts = thing.properties?.map((ele: any, index: number) => {
       return new fabric.Textbox(ele.content, {
-        width: 100,
-        fontSize: 12,
-        top: -((index + 1) * 15),
+        ...ele.position,
+        ...ele.style,
+        ...thing.size,
       });
     });
     const svg = fabric.util.groupSVGElements([...objects, ...(texts || [])], {
-      a: 0,
+      width: thing.size?.width,
+      height: thing.size?.height,
     }) as any;
     const userX = (e.pointer?.x || (e.e as any).layerX) - svg.width / 2;
     const userY = (e.pointer?.y || (e.e as any).layerY) - svg.height / 2;
