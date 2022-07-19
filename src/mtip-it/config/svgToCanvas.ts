@@ -7,6 +7,11 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
   const pathUrl = thing.image_run;
   // 当流程图情况下，将svg打组 后渲染
   const groupSvg = (objects: fabric.Object[], options: any) => {
+    const svgTest = fabric.util.groupSVGElements(objects) as any;
+    svgTest.set({
+      left: (thing.size?.width! - svgTest.width) / 2,
+      top: (thing.size?.height! - svgTest.height) / 2,
+    });
     const texts = thing.properties?.map((ele: any, index: number) => {
       return new fabric.Textbox(ele.content, {
         ...ele.position,
@@ -14,7 +19,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
         ...thing.size,
       });
     });
-    const svg = fabric.util.groupSVGElements([...objects, ...(texts || [])], {
+    const svg = fabric.util.groupSVGElements([svgTest, ...(texts || [])], {
       width: thing.size?.width,
       height: thing.size?.height,
     }) as any;
@@ -29,7 +34,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
     svg.data = thing;
     svg.effectType = "rect";
     canvas.add(svg);
-    canvas.setActiveObject(svg);
+    // canvas.setActiveObject(svg);
   };
 
   fabric.loadSVGFromURL(pathUrl, (objects, options) => {

@@ -13,6 +13,7 @@ import {
 
 const pointRadius = 7;
 let lineEditing = false;
+// 点下标
 let pointIndex: number | undefined;
 
 // 连线相关事件
