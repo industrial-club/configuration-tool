@@ -46,12 +46,21 @@ export default defineComponent({
     const getThingList = async () => {
       const { data } = await thingApi.getThingList();
       if (!data) return;
+      console.log(data);
+      data[0].elements.forEach((ele: any) => {
+        ele.image_run = ele.image_run.replace("http://192.168.5.234:9001", "");
+      });
       // 转换thingInfo属性
       for (const group of data) {
         if (!group.elements) continue;
         for (let i = 0; i < group.elements.length; i++) {
           const element = group.elements[i];
+
           const thingInfo = element.style ? JSON.parse(element.style) : {};
+          // thingInfo.image_run = thingInfo.image_run?.replace(
+          //   "http://192.168.5.234:9001",
+          //   ""
+          // );
           group.elements[i] = {
             ...group.elements[i],
             ...omit(thingInfo, "id"),
