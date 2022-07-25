@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
 import { Line } from "fabric/fabric-impl";
 import canvas from "../../layout/canvas";
-import { computedZoomXY } from "@/canvasEditor/config/index";
+import { computedZoomXY } from "@/mtip-it/config/index";
 import {
   getCenter,
   getObjById,
@@ -12,7 +12,8 @@ import {
 } from "./createLineUtil";
 
 const pointRadius = 7;
-let lineEditing = false;
+let lineEditing: CanvasEditor.Path | undefined;
+// 点下标
 let pointIndex: number | undefined;
 
 // 连线相关事件
@@ -50,9 +51,18 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     const obj: CanvasEditor.Object | undefined = e.target;
     const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
     if (obj?.effectType === "line") {
+      // const line: CanvasEditor.Path = obj as CanvasEditor.Path;
+      // lineEditing = line;
+      // line.on("mouseover", (e: fabric.IEvent) => {
+      //   console.log(11111111);
+      // });
       const line: CanvasEditor.Path = obj as CanvasEditor.Path;
       pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
       line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
+    } else {
+      // if (lineEditing) {
+      //   lineEditing.removeListeners();
+      // }
     }
   });
   canvas.on("mouse:move", (e) => {

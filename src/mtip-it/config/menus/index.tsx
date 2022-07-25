@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons-vue";
 import { fabric } from "fabric";
 import { previewInfo } from "..";
+import api from "@/mtip-it/api";
 
 export enum MenuId {
   newXflow = "流程图",
@@ -93,6 +94,11 @@ const menus: Array<MtipIt.MenuItem> = [
     event(canvas) {
       const canvasJson = canvas.toJSON();
       previewInfo.set(canvas.toJSON());
+      debugger;
+      api.post(
+        "/thing/v1/adapter/thing/inst/saveTopoMap",
+        JSON.stringify(canvasJson)
+      );
     },
     type: "item",
     icon: <SaveOutlined />,

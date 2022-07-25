@@ -3,11 +3,13 @@ import { message } from "ant-design-vue";
 
 const instance = axios.create({
   baseURL: "/api/",
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     "X-Custom-Header": "foobar",
     clientType: "app",
     "Content-Type": "application/json;charset=UTF-8",
+    userId: -1,
+    corpId: 123,
   },
 });
 
