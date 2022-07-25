@@ -41,7 +41,6 @@ export default (canvas: MtipIt.Canvas) => {
         canvas.remove(point);
       } else if (target?.effectType === "rect") {
         const rect: CanvasEditor.Object = target;
-        debugger;
         [...(rect.outLines || []), ...(rect.inLines || [])]?.forEach(
           (id: number) => {
             const line: CanvasEditor.Path = getObjById(
