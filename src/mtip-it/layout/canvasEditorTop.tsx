@@ -25,6 +25,9 @@ export default defineComponent({
       if (item.id === MenuId.see) {
         ctx.emit("preview", item);
       }
+      // if (item.id === MenuId.save) {
+      //   ctx.emit("save", item);
+      // }
     };
     const renderMenuGroup = (item: MtipIt.MenuItem) => {
       const dropMenu: () => JSX.Element = () => {

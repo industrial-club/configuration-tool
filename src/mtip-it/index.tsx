@@ -19,6 +19,7 @@ import thingPlane from "./layout/thingPlane";
 import canvasEditorTop from "./layout/canvasEditorTop";
 import previewDom from "./component/preview";
 import * as thingApi from "./api/thing";
+import api from "@/mtip-it/api";
 
 const allIts: Array<MtipIt.Item> = [];
 
@@ -57,8 +58,6 @@ export default defineComponent({
           };
         }
       }
-      console.log(data);
-
       thingList.value = data;
     };
     onMounted(getThingList);
@@ -68,7 +67,19 @@ export default defineComponent({
 
     // 设置选中thingid
     const thingId = ref("");
-    const flowCanvas = createFlow();
+
+    let flowCanvas = createFlow();
+    canvasList.value.push(flowCanvas);
+    if (canvasList.value.length > 0) {
+      thingId.value = canvasList.value[0].id;
+    }
+    onMounted(async () => {
+      const res: any = await api.get(
+        "/thing/v1/adapter/thing/inst/queryTopoMap"
+      );
+      flowCanvas.canvas.loadFromJSON(res.data.style);
+      flowCanvas.canvas.renderAll();
+    });
 
     // 获取当前活跃的canvas
     const getActiveCanvas = () => {
@@ -80,10 +91,6 @@ export default defineComponent({
     provide("activeMtipItItem", activeMtipItItem);
     //
     provide("thingId", thingId);
-    canvasList.value.push(flowCanvas);
-    if (canvasList.value.length > 0) {
-      thingId.value = canvasList.value[0].id;
-    }
 
     // 在当前活跃的canvas上添加元素
     const handleAddElement = (element: fabric.Object) =>
