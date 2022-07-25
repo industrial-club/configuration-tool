@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { computedZoomXY } from "@/canvasEditor/config/index";
+import { computedZoomXY } from "@/mtip-it/config/index";
 
 const pointRadius = 7;
 

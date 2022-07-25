@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
 
 export const resetFabric = () => {
-  const newList = ["Line", "Group", "Rect", "Point", "Path"];
+  const newList = ["Line", "Group", "Rect", "Point", "Path", "Circle"];
   for (let i of newList) {
     (fabric as any)[i].prototype["toObject"] = (function (toObject) {
       return function () {

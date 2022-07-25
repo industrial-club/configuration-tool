@@ -168,7 +168,6 @@ export default defineComponent({
               top: text.top,
               left: text.left,
             };
-            console.log();
           });
         }
       } else {

@@ -7,8 +7,8 @@ export default (canvas: MtipIt.Canvas) => {
     });
   };
   const removeLine = (canvas: MtipIt.Canvas, line: CanvasEditor.Path) => {
-    const from: CanvasEditor.Object = getObjById(canvas, line.from!)!;
-    const to: CanvasEditor.Object = getObjById(canvas, line.to!)!;
+    const from: CanvasEditor.Object = getObjById(canvas, line?.from!)!;
+    const to: CanvasEditor.Object = getObjById(canvas, line?.to!)!;
     from.outLines = from.outLines?.filter((id) => {
       id !== line.from;
     });
@@ -41,6 +41,7 @@ export default (canvas: MtipIt.Canvas) => {
         canvas.remove(point);
       } else if (target?.effectType === "rect") {
         const rect: CanvasEditor.Object = target;
+        debugger;
         [...(rect.outLines || []), ...(rect.inLines || [])]?.forEach(
           (id: number) => {
             const line: CanvasEditor.Path = getObjById(
