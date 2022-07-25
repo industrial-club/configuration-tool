@@ -1,14 +1,24 @@
-import { defineComponent, nextTick, PropType, provide, ref, watch } from "vue";
-import { fabric } from "fabric";
 import "./style/index.less";
+import {
+  defineComponent,
+  nextTick,
+  onMounted,
+  PropType,
+  provide,
+  ref,
+  watch,
+} from "vue";
+import { omit } from "lodash";
+import { fabric } from "fabric";
+import { message } from "ant-design-vue";
+import { create, createFlow } from "./config/createCanvas";
 import things from "@/mtip-it/config/thingList2";
 import editorConter from "./layout/editorConter";
 import editorForm from "./layout/form";
 import thingPlane from "./layout/thingPlane";
 import canvasEditorTop from "./layout/canvasEditorTop";
-import { create, createFlow } from "./config/createCanvas";
 import previewDom from "./component/preview";
-import { message } from "ant-design-vue";
+import * as thingApi from "./api/thing";
 
 const allIts: Array<MtipIt.Item> = [];
 
@@ -31,19 +41,27 @@ export default defineComponent({
     const prefix = ref("mtip_it_editor");
 
     // 实例列表
-    const storageThingList = JSON.parse(
-      localStorage.getItem("thingList") || "[]"
-    );
-    const thingList = ref<MtipIt.ThingGroupList>(
-      storageThingList.length ? storageThingList : things
-    );
-    watch(
-      thingList,
-      (val) => {
-        localStorage.setItem("thingList", JSON.stringify(val));
-      },
-      { immediate: true, deep: true }
-    );
+    const thingList = ref<MtipIt.ThingGroupList>([]);
+    const getThingList = async () => {
+      const { data } = await thingApi.getThingList();
+      if (!data) return;
+      // 转换thingInfo属性
+      for (const group of data) {
+        if (!group.elements) continue;
+        for (let i = 0; i < group.elements.length; i++) {
+          const element = group.elements[i];
+          const thingInfo = element.style ? JSON.parse(element.style) : {};
+          group.elements[i] = {
+            ...group.elements[i],
+            ...omit(thingInfo, "id"),
+          };
+        }
+      }
+      console.log(data);
+
+      thingList.value = data;
+    };
+    onMounted(getThingList);
 
     // canvasList
     const canvasList = ref<Array<MtipIt.Item>>(allIts);
@@ -75,16 +93,11 @@ export default defineComponent({
       activeMtipItItem.value?.canvas.remove(...elements);
 
     // 保存当前活跃的canvas的信息
-    const handleSave = (data: MtipIt.Item) => {
-      const id = data.thingInfo.id;
-      for (const item of thingList.value) {
-        const idx = item.elements.findIndex((ele) => ele.id === id);
-        if (idx > -1) {
-          item.elements[idx] = data.thingInfo;
-          message.success("保存成功");
-          break;
-        }
-      }
+    const handleSave = async (data: MtipIt.Item) => {
+      const id = data.thingInfo.id.replace("canvas_", "");
+      await thingApi.saveThingInfo(id, data.thingInfo);
+      message.success("保存成功");
+      getThingList();
     };
 
     // 动态更新
@@ -113,7 +126,9 @@ export default defineComponent({
           <thingPlane
             thingList={thingList.value}
             onOpenThing={(e: MtipIt.ThingItem) => {
-              const eid = `canvas_${e.id}`;
+              const eid = `${e.id}`.startsWith("canvas_")
+                ? e.id
+                : `canvas_${e.id}`;
               e.id = eid;
               const canvasItem = create(e);
               let status = false;

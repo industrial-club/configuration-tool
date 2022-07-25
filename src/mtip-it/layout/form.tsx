@@ -28,8 +28,8 @@ export default defineComponent({
     // 物实例详情
     const thingDetail = ref({});
     const getThingDetail = async () => {
-      // const id = activeCanvas.value.id;
-      const id = "1";
+      const id = activeCanvas.value.id.replace("canvas_", "");
+      // const id = "1";
       const { data } = await api.getThingCode(id);
       const thingCode = data.thingInst.thingCode;
       const { data: res } = await api.getThingDetail(thingCode);
@@ -168,7 +168,6 @@ export default defineComponent({
               top: text.top,
               left: text.left,
             };
-            console.log();
           });
         }
       } else {
