@@ -12,7 +12,10 @@ export const create: (e: MtipIt.ThingItem) => MtipIt.Item = (e) => {
     name,
     canvas: null,
     type: "thing",
-    thingPath: e.image_run || "/icons/设备图标汇总_综保数据.svg",
+    thingPath:
+      // 代理 *****
+      e.image_run?.replace("http://192.168.5.234:9001", "") ||
+      "/icons/设备图标汇总_综保数据.svg",
     thingInfo: e,
   } as MtipIt.Item;
   nextTick(() => {
