@@ -12,13 +12,13 @@ import {
 } from "./createLineUtil";
 
 const pointRadius = 7;
-let lineEditing: CanvasEditor.Path | undefined;
+let lineEditing: MtipIt.Path | undefined;
 // 点下标
 let pointIndex: number | undefined;
 
 // 连线相关事件
-const createLine = (canvas: CanvasEditor.Canvas) => {
-  let beginObj: CanvasEditor.Object | undefined;
+const createLine = (canvas: MtipIt.Canvas) => {
+  let beginObj: MtipIt.Object | undefined;
   canvas.on("mouse:down:before", (e) => {
     if (e.target) {
       beginObj = e.target;
@@ -28,9 +28,9 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
   });
   // 悬浮线
   canvas.on("mouse:over", (e: fabric.IEvent) => {
-    const obj: CanvasEditor.Object | undefined = e.target;
+    const obj: MtipIt.Object | undefined = e.target;
     if (!canvas.isCreateLine && obj?.effectType === "line") {
-      const line: CanvasEditor.Path = obj;
+      const line: MtipIt.Path = obj;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = true;
       canvas.renderAll();
@@ -38,9 +38,9 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
   });
   // 离开线
   canvas.on("mouse:out", (e: fabric.IEvent) => {
-    const obj: CanvasEditor.Object | undefined = e.target;
+    const obj: MtipIt.Object | undefined = e.target;
     if (!canvas.isCreateLine && obj?.effectType === "line") {
-      const line: CanvasEditor.Path = obj;
+      const line: MtipIt.Path = obj;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = false;
       canvas.renderAll();
@@ -48,15 +48,15 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
   });
   // 加点
   canvas.on("mouse:down", (e: fabric.IEvent) => {
-    const obj: CanvasEditor.Object | undefined = e.target;
+    const obj: MtipIt.Object | undefined = e.target;
     const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
     if (obj?.effectType === "line") {
-      // const line: CanvasEditor.Path = obj as CanvasEditor.Path;
+      // const line: MtipIt.Path = obj as MtipIt.Path;
       // lineEditing = line;
       // line.on("mouseover", (e: fabric.IEvent) => {
       //   console.log(11111111);
       // });
-      const line: CanvasEditor.Path = obj as CanvasEditor.Path;
+      const line: MtipIt.Path = obj as MtipIt.Path;
       pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
       line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
     } else {
@@ -66,11 +66,11 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     }
   });
   canvas.on("mouse:move", (e) => {
-    const obj: CanvasEditor.Object | undefined = e.target;
+    const obj: MtipIt.Object | undefined = e.target;
     // 悬浮点提示
     if (!canvas.isCreateLine && obj?.effectType === "line") {
       const xy: any = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
-      const line: CanvasEditor.Path = obj;
+      const line: MtipIt.Path = obj;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.left = xy.left - pointRadius;
       temp.top = xy.top - pointRadius;
@@ -85,10 +85,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     ) {
       beginObj.outLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
-        const line: CanvasEditor.Path = getObjById(
-          canvas,
-          lineId
-        ) as CanvasEditor.Path;
+        const line: MtipIt.Path = getObjById(canvas, lineId) as MtipIt.Path;
         const path = line.path;
         path[0][1] = beginPoint.x;
         path[0][2] = beginPoint.y;
@@ -96,10 +93,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       });
       beginObj.inLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
-        const line: CanvasEditor.Path = getObjById(
-          canvas,
-          lineId
-        ) as CanvasEditor.Path;
+        const line: MtipIt.Path = getObjById(canvas, lineId) as MtipIt.Path;
         const path = line.path;
         path[line.path.length - 1][1] = beginPoint.x;
         path[line.path.length - 1][2] = beginPoint.y;
@@ -108,11 +102,11 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
     }
     // 移动点
     if (beginObj && !canvas.isCreateLine && beginObj.effectType === "point") {
-      const point: CanvasEditor.Circle = beginObj as CanvasEditor.Circle;
-      const line: CanvasEditor.Path = getObjById(
+      const point: MtipIt.Circle = beginObj as MtipIt.Circle;
+      const line: MtipIt.Path = getObjById(
         canvas,
         point.lineId!
-      ) as CanvasEditor.Path;
+      ) as MtipIt.Path;
       const index: number = line.points?.indexOf(point.id!)!;
       const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
       line.path[index + 1][1] = xy.left;
@@ -126,7 +120,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       beginObj.effectType === "line" &&
       pointIndex !== undefined
     ) {
-      const line: CanvasEditor.Path = beginObj as CanvasEditor.Path;
+      const line: MtipIt.Path = beginObj as MtipIt.Path;
       const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
       line.path[pointIndex + 1][1] = xy.left;
       line.path[pointIndex + 1][2] = xy.top;
@@ -134,7 +128,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
   });
 
   canvas.on("mouse:up", (e) => {
-    const endObj: CanvasEditor.Object | undefined = e.target;
+    const endObj: MtipIt.Object | undefined = e.target;
     // 新连线
     if (endObj && canvas.isCreateLine && beginObj && beginObj !== endObj) {
       const beginPoint: { [key: string]: number } = getCenter(beginObj);
@@ -177,9 +171,9 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       beginObj.effectType === "line" &&
       pointIndex !== undefined
     ) {
-      const line: CanvasEditor.Path = beginObj as CanvasEditor.Path;
+      const line: MtipIt.Path = beginObj as MtipIt.Path;
       const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
-      const point: CanvasEditor.Circle = addPoint(
+      const point: MtipIt.Circle = addPoint(
         line,
         xy.left! - pointRadius,
         xy.top! - pointRadius

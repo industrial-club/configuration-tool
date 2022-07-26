@@ -55,4 +55,24 @@ declare namespace MtipIt {
     event: (canvas: Canvas) => void;
     child?: Array<MenuItem>;
   }
+
+  export interface Object extends fabric.Object {
+    outLines?: number[];
+    inLines?: number[];
+    id?: number;
+    effectType?: string;
+  }
+
+  export interface Path extends fabric.Path {
+    id?: number;
+    points?: number[];
+    path: any[];
+    data?: any;
+    tempPoint: id;
+  }
+
+  export interface Circle extends fabric.Circle {
+    id?: number;
+    lineId?: number;
+  }
 }

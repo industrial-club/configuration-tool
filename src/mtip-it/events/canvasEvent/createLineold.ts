@@ -1,7 +1,7 @@
 import { fabric } from "fabric";
-import { computedZoomXY } from "@/canvasEditor/config/index";
+import { computedZoomXY } from "@/MtipIt/config/index";
 
-const getCenter = (obj: CanvasEditor.Object) => {
+const getCenter = (obj: MtipIt.Object) => {
   return {
     x: obj.left! + obj.width! / 2,
     y: obj.top! + obj.height! / 2,
@@ -9,13 +9,13 @@ const getCenter = (obj: CanvasEditor.Object) => {
 };
 
 const getObjById = (canvas: MtipIt.Canvas, id: number) => {
-  return canvas._objects.find((ele: CanvasEditor.Object) => {
+  return canvas._objects.find((ele: MtipIt.Object) => {
     return ele.id === id;
   });
 };
 
-const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
-  const point: CanvasEditor.Circle = new fabric.Circle({
+const addPoint = (line: MtipIt.Path, x: number, y: number) => {
+  const point: MtipIt.Circle = new fabric.Circle({
     radius: 5,
     fill: "#4FC3F7",
     left: x,
@@ -39,7 +39,7 @@ const addLine = (
   data: any,
   points?: number[]
 ) => {
-  const newLine: CanvasEditor.Path = new fabric.Path(path, {
+  const newLine: MtipIt.Path = new fabric.Path(path, {
     fill: "",
     stroke: "black",
     objectCaching: false,
@@ -47,7 +47,7 @@ const addLine = (
     perPixelTargetFind: true,
     lockMovementX: true,
     lockMovementY: true,
-  }) as CanvasEditor.Path;
+  }) as MtipIt.Path;
   newLine.id = id;
   newLine.data = data;
   newLine.type = "line";
@@ -55,8 +55,8 @@ const addLine = (
     newLine.points = points;
   } else {
     newLine.points = [];
-    // const p1: CanvasEditor.Circle = addPoint(newLine, path[0][1], path[0][2]);
-    // const p2: CanvasEditor.Circle = addPoint(newLine, path[1][1], path[1][2]);
+    // const p1: MtipIt.Circle = addPoint(newLine, path[0][1], path[0][2]);
+    // const p2: MtipIt.Circle = addPoint(newLine, path[1][1], path[1][2]);
     // canvas.add(p1);
     // canvas.add(p2);
     // newLine.points.push(p1.id!);
@@ -68,7 +68,7 @@ const addLine = (
 
 const getInsertIndex = (
   canvas: MtipIt.Canvas,
-  line: CanvasEditor.Path,
+  line: MtipIt.Path,
   x: number,
   y: number
 ) => {
@@ -93,7 +93,7 @@ const getInsertIndex = (
 
 // 连线相关事件
 const createLine = (canvas: MtipIt.Canvas) => {
-  let beginObj: CanvasEditor.Object | undefined;
+  let beginObj: MtipIt.Object | undefined;
   canvas.on("mouse:down:before", (e) => {
     if (e.target) {
       beginObj = e.target;
@@ -103,15 +103,11 @@ const createLine = (canvas: MtipIt.Canvas) => {
   });
   // 加点
   canvas.on("mouse:dblclick", (e: fabric.IEvent) => {
-    const obj: CanvasEditor.Object | undefined = e.target;
+    const obj: MtipIt.Object | undefined = e.target;
     const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
     if (obj?.type === "line") {
-      const line: CanvasEditor.Path = obj as CanvasEditor.Path;
-      const point: CanvasEditor.Circle = addPoint(
-        line,
-        xy.left! - 5,
-        xy.top! - 5
-      );
+      const line: MtipIt.Path = obj as MtipIt.Path;
+      const point: MtipIt.Circle = addPoint(line, xy.left! - 5, xy.top! - 5);
       canvas.add(point);
       const index = getInsertIndex(canvas, line, xy!.left, xy!.top);
       line.path.splice(index + 1, 0, ["L", xy!.left, xy!.top]);
@@ -123,10 +119,7 @@ const createLine = (canvas: MtipIt.Canvas) => {
     if (beginObj && !canvas.isCreateLine && beginObj.type === "rect") {
       beginObj.outLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
-        const line: CanvasEditor.Path = getObjById(
-          canvas,
-          lineId
-        ) as CanvasEditor.Path;
+        const line: MtipIt.Path = getObjById(canvas, lineId) as MtipIt.Path;
         const path = line.path;
         path[0][1] = beginPoint.x;
         path[0][2] = beginPoint.y;
@@ -135,10 +128,7 @@ const createLine = (canvas: MtipIt.Canvas) => {
       });
       beginObj.inLines?.forEach((lineId: number) => {
         const beginPoint: { [key: string]: number } = getCenter(beginObj!);
-        const line: CanvasEditor.Path = getObjById(
-          canvas,
-          lineId
-        ) as CanvasEditor.Path;
+        const line: MtipIt.Path = getObjById(canvas, lineId) as MtipIt.Path;
         const path = line.path;
         path[line.path.length - 1][1] = beginPoint.x;
         path[line.path.length - 1][2] = beginPoint.y;
@@ -148,11 +138,11 @@ const createLine = (canvas: MtipIt.Canvas) => {
     }
     // 移动点
     if (beginObj && !canvas.isCreateLine && beginObj.type === "point") {
-      const point: CanvasEditor.Circle = beginObj as CanvasEditor.Circle;
-      const line: CanvasEditor.Path = getObjById(
+      const point: MtipIt.Circle = beginObj as MtipIt.Circle;
+      const line: MtipIt.Path = getObjById(
         canvas,
         point.lineId!
-      ) as CanvasEditor.Path;
+      ) as MtipIt.Path;
       const index: number = line.points?.indexOf(point.id!)!;
       const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
       line.path[index + 1][1] = xy.left;
@@ -163,7 +153,7 @@ const createLine = (canvas: MtipIt.Canvas) => {
   });
 
   canvas.on("mouse:up", (e) => {
-    const endObj: CanvasEditor.Object | undefined = e.target;
+    const endObj: MtipIt.Object | undefined = e.target;
     // 新连线
     if (endObj && canvas.isCreateLine && beginObj && beginObj !== endObj) {
       const beginPoint: { [key: string]: number } = getCenter(beginObj);

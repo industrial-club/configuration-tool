@@ -16,7 +16,7 @@ import things from "@/mtip-it/config/thingList2";
 import editorConter from "./layout/editorConter";
 import editorForm from "./layout/form";
 import thingPlane from "./layout/thingPlane";
-import canvasEditorTop from "./layout/canvasEditorTop";
+import MtipItTop from "./layout/MtipItTop";
 import previewDom from "./component/preview";
 import * as thingApi from "./api/thing";
 import api from "@/mtip-it/api";
@@ -34,7 +34,7 @@ export default defineComponent({
     editorConter,
     thingPlane,
     editorForm,
-    canvasEditorTop,
+    MtipItTop,
     previewDom,
   },
   setup(prop, context) {
@@ -129,7 +129,7 @@ export default defineComponent({
     // 所有图表集合
     return () => (
       <div id={prefix.value} class={prefix.value}>
-        <canvasEditorTop
+        <MtipItTop
           onPreview={(e: MtipIt.MenuItem) => {
             previewVal.value = true;
           }}
