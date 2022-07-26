@@ -7,13 +7,13 @@ export default (canvas: MtipIt.Canvas) => {
     });
   };
   const removeLine = (canvas: MtipIt.Canvas, line: CanvasEditor.Path) => {
-    const from: CanvasEditor.Object = getObjById(canvas, line?.from!)!;
-    const to: CanvasEditor.Object = getObjById(canvas, line?.to!)!;
+    const from: CanvasEditor.Object = getObjById(canvas, line.data?.from!)!;
+    const to: CanvasEditor.Object = getObjById(canvas, line.data?.to!)!;
     from.outLines = from.outLines?.filter((id) => {
-      id !== line.from;
+      id !== line.data.from;
     });
     to.inLines = to.inLines?.filter((id) => {
-      id !== line.to;
+      id !== line.data.to;
     });
     const temp = getObjById(canvas, line.tempPoint!)!;
     canvas.remove(temp);
@@ -27,9 +27,9 @@ export default (canvas: MtipIt.Canvas) => {
   window.addEventListener("keydown", (e) => {
     if (e.key === "Backspace" || e.key === "Delete") {
       const target: CanvasEditor.Object = canvas.getActiveObject();
-      if (target?.type === "line") {
+      if (target?.effectType === "line") {
         removeLine(canvas, target as CanvasEditor.Path);
-      } else if (target?.type === "point") {
+      } else if (target?.effectType === "point") {
         const point = target as CanvasEditor.Circle;
         const line: CanvasEditor.Path = getObjById(
           canvas,
