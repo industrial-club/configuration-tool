@@ -22,6 +22,14 @@ const createLine = (canvas: MtipIt.Canvas) => {
   canvas.on("mouse:down:before", (e) => {
     if (e.target) {
       beginObj = e.target;
+      const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
+      const active = canvas.getActiveObject();
+      // 如果是选中后的线
+      if (beginObj?.effectType === "line" && active?.id === beginObj.id) {
+        const line: MtipIt.Path = beginObj as MtipIt.Path;
+        pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
+        line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
+      }
     } else {
       beginObj = undefined;
     }
@@ -29,7 +37,12 @@ const createLine = (canvas: MtipIt.Canvas) => {
   // 悬浮线
   canvas.on("mouse:over", (e: fabric.IEvent) => {
     const obj: MtipIt.Object | undefined = e.target;
-    if (!canvas.isCreateLine && obj?.effectType === "line") {
+    const active = canvas.getActiveObject();
+    if (
+      !canvas.isCreateLine &&
+      obj?.effectType === "line" &&
+      active?.id === obj.id
+    ) {
       const line: MtipIt.Path = obj;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = true;
@@ -44,25 +57,6 @@ const createLine = (canvas: MtipIt.Canvas) => {
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = false;
       canvas.renderAll();
-    }
-  });
-  // 加点
-  canvas.on("mouse:down", (e: fabric.IEvent) => {
-    const obj: MtipIt.Object | undefined = e.target;
-    const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
-    if (obj?.effectType === "line") {
-      // const line: MtipIt.Path = obj as MtipIt.Path;
-      // lineEditing = line;
-      // line.on("mouseover", (e: fabric.IEvent) => {
-      //   console.log(11111111);
-      // });
-      const line: MtipIt.Path = obj as MtipIt.Path;
-      pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
-      line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
-    } else {
-      // if (lineEditing) {
-      //   lineEditing.removeListeners();
-      // }
     }
   });
   canvas.on("mouse:move", (e) => {
@@ -138,7 +132,7 @@ const createLine = (canvas: MtipIt.Canvas) => {
         from: beginObj.id,
         to: endObj.id,
       };
-      const newLine = addLine(
+      const newLine: MtipIt.Path = addLine(
         canvas,
         lineId,
         [
@@ -147,6 +141,8 @@ const createLine = (canvas: MtipIt.Canvas) => {
         ],
         data
       );
+      // newLine.to = endObj.id;
+      // newLine.from = beginObj.id;
       if (!beginObj.outLines) {
         beginObj.outLines = [];
       }

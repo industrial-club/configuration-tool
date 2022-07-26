@@ -94,6 +94,13 @@ const menus: Array<MtipIt.MenuItem> = [
     event(canvas) {
       const canvasJson = canvas.toJSON();
       previewInfo.set(canvas.toJSON());
+      canvasJson?.objects.forEach((element: any) => {
+        if (element.effectType === "line") {
+          element.perPixelTargetFind = true;
+          element.lockMovementX = true;
+          element.lockMovementY = true;
+        }
+      });
       api.post(
         "/thing/v1/adapter/thing/inst/saveTopoMap",
         JSON.stringify(canvasJson)

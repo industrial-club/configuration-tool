@@ -7,7 +7,7 @@ export const resetFabric = () => {
       return function () {
         return fabric.util.object.extend(toObject.call(this), {
           data: (this as any).data,
-          id: this.id || "aaa",
+          id: this.id || Math.random(),
           outLines: this.outLines,
           inLines: this.inLines,
           effectType: this.effectType,
@@ -16,6 +16,9 @@ export const resetFabric = () => {
           to: this.to,
           tempPoint: this.tempPoint,
           lineId: this.lineId,
+          // perPixelTargetFind: this.perPixelTargetFind,
+          // lockMovementX: this.lockMovementX,
+          // lockMovementY: this.lockMovementY,
         });
       };
     })((fabric as any)[i].prototype["toObject"]);

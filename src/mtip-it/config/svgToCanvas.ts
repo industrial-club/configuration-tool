@@ -30,7 +30,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
       left,
       top,
     });
-
+    svg.id = Math.random();
     svg.data = thing;
     svg.effectType = "rect";
     canvas.add(svg);
