@@ -16,6 +16,9 @@ export const resetFabric = () => {
           to: this.to,
           tempPoint: this.tempPoint,
           lineId: this.lineId,
+          // perPixelTargetFind: this.perPixelTargetFind,
+          // lockMovementX: this.lockMovementX,
+          // lockMovementY: this.lockMovementY,
         });
       };
     })((fabric as any)[i].prototype["toObject"]);

@@ -22,6 +22,14 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
   canvas.on("mouse:down:before", (e) => {
     if (e.target) {
       beginObj = e.target;
+      const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
+      const active = canvas.getActiveObject();
+      // 如果是选中后的线
+      if (beginObj?.effectType === "line" && active?.id === beginObj.id) {
+        const line: CanvasEditor.Path = beginObj as CanvasEditor.Path;
+        pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
+        line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
+      }
     } else {
       beginObj = undefined;
     }
@@ -29,7 +37,12 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
   // 悬浮线
   canvas.on("mouse:over", (e: fabric.IEvent) => {
     const obj: CanvasEditor.Object | undefined = e.target;
-    if (!canvas.isCreateLine && obj?.effectType === "line") {
+    const active = canvas.getActiveObject();
+    if (
+      !canvas.isCreateLine &&
+      obj?.effectType === "line" &&
+      active?.id === obj.id
+    ) {
       const line: CanvasEditor.Path = obj;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = true;
@@ -44,25 +57,6 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = false;
       canvas.renderAll();
-    }
-  });
-  // 加点
-  canvas.on("mouse:down", (e: fabric.IEvent) => {
-    const obj: CanvasEditor.Object | undefined = e.target;
-    const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
-    if (obj?.effectType === "line") {
-      // const line: CanvasEditor.Path = obj as CanvasEditor.Path;
-      // lineEditing = line;
-      // line.on("mouseover", (e: fabric.IEvent) => {
-      //   console.log(11111111);
-      // });
-      const line: CanvasEditor.Path = obj as CanvasEditor.Path;
-      pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
-      line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
-    } else {
-      // if (lineEditing) {
-      //   lineEditing.removeListeners();
-      // }
     }
   });
   canvas.on("mouse:move", (e) => {
@@ -144,7 +138,7 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
         from: beginObj.id,
         to: endObj.id,
       };
-      const newLine = addLine(
+      const newLine: CanvasEditor.Path = addLine(
         canvas,
         lineId,
         [
@@ -153,6 +147,8 @@ const createLine = (canvas: CanvasEditor.Canvas) => {
         ],
         data
       );
+      // newLine.to = endObj.id;
+      // newLine.from = beginObj.id;
       if (!beginObj.outLines) {
         beginObj.outLines = [];
       }

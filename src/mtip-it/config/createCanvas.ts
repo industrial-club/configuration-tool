@@ -40,7 +40,7 @@ export const createFlow: () => MtipIt.Item = () => {
     name: "全场工艺流程图",
   };
   nextTick(() => {
-    flowCanvas.canvas = new fabric.Canvas(id);
+    flowCanvas.canvas = new fabric.Canvas(id, { selection: false });
     events(flowCanvas.canvas);
 
     flowCanvas.canvas.isCreateLine = false;
