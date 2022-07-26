@@ -1,6 +1,4 @@
 import { fabric } from "fabric";
-import { Line } from "fabric/fabric-impl";
-import canvas from "../../layout/canvas";
 import { computedZoomXY } from "@/mtip-it/config/index";
 import {
   getCenter,
@@ -25,7 +23,10 @@ const createLine = (canvas: MtipIt.Canvas) => {
       const xy = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
       const active = canvas.getActiveObject();
       // 如果是选中后的线
-      if (beginObj?.effectType === "line" && active?.id === beginObj.id) {
+      if (
+        beginObj?.effectType === "line" &&
+        (active as any)?.id === beginObj.id
+      ) {
         const line: MtipIt.Path = beginObj as MtipIt.Path;
         pointIndex = getInsertIndex(canvas, line, xy!.left, xy!.top);
         line.path.splice(pointIndex + 1, 0, ["L", xy!.left, xy!.top]);
@@ -36,14 +37,14 @@ const createLine = (canvas: MtipIt.Canvas) => {
   });
   // 悬浮线
   canvas.on("mouse:over", (e: fabric.IEvent) => {
-    const obj: MtipIt.Object | undefined = e.target;
-    const active = canvas.getActiveObject();
+    const obj: MtipIt.Object | MtipIt.Path | undefined = e.target;
+    const active: MtipIt.Object = canvas.getActiveObject();
     if (
       !canvas.isCreateLine &&
       obj?.effectType === "line" &&
       active?.id === obj.id
     ) {
-      const line: MtipIt.Path = obj;
+      const line: MtipIt.Path = obj as MtipIt.Path;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = true;
       canvas.renderAll();
@@ -53,7 +54,7 @@ const createLine = (canvas: MtipIt.Canvas) => {
   canvas.on("mouse:out", (e: fabric.IEvent) => {
     const obj: MtipIt.Object | undefined = e.target;
     if (!canvas.isCreateLine && obj?.effectType === "line") {
-      const line: MtipIt.Path = obj;
+      const line: MtipIt.Path = obj as any;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.visible = false;
       canvas.renderAll();
@@ -64,7 +65,7 @@ const createLine = (canvas: MtipIt.Canvas) => {
     // 悬浮点提示
     if (!canvas.isCreateLine && obj?.effectType === "line") {
       const xy: any = computedZoomXY(e.pointer!.x, e.pointer!.y, canvas);
-      const line: MtipIt.Path = obj;
+      const line: MtipIt.Path = obj as any;
       const temp: any = getObjById(canvas, line.tempPoint);
       temp.left = xy.left - pointRadius;
       temp.top = xy.top - pointRadius;
@@ -153,7 +154,7 @@ const createLine = (canvas: MtipIt.Canvas) => {
       endObj.inLines!.push(lineId);
       beginObj = undefined;
       canvas.isCreateLine = false;
-      canvas.getObjects().map((item) => {
+      canvas.getObjects().map((item: MtipIt.Object) => {
         if (item.effectType !== "line") {
           item.selectable = true;
         }

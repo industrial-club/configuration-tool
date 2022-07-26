@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { computedZoomXY } from "@/MtipIt/config/index";
+import { computedZoomXY } from "../../config";
 
 const getCenter = (obj: MtipIt.Object) => {
   return {
