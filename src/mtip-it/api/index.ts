@@ -19,6 +19,7 @@ const getToken = (): string => {
 
 instance.interceptors.request.use(
   (conf) => {
+    conf.headers.token = getToken() || "";
     return conf;
   },
   (err) => {

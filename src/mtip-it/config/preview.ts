@@ -9,7 +9,7 @@ export const toPreview = () => {
   canvas.setWidth(width!);
   const info = previewInfo.get();
   canvas.loadFromJSON(info, () => {
-    canvas.getObjects().forEach((item: CanvasEditor.Object) => {
+    canvas.getObjects().forEach((item: MtipIt.Object) => {
       item.selectable = false;
       if (item?.type === "circle") {
         item.visible = false;

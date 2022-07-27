@@ -1,7 +1,7 @@
 import { IEvent } from "fabric/fabric-impl";
 
 export const onClick = (
-  canvas: CanvasEditor.Canvas,
+  canvas: MtipIt.Canvas,
   cb: (e: IEvent<MouseEvent>) => void,
   delay: number = 200
 ) => {

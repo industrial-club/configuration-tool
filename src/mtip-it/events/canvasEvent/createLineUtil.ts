@@ -3,21 +3,21 @@ import { computedZoomXY } from "@/mtip-it/config/index";
 
 const pointRadius = 7;
 
-export const getCenter = (obj: CanvasEditor.Object) => {
+export const getCenter = (obj: MtipIt.Object) => {
   return {
     x: obj.left! + obj.width! / 2,
     y: obj.top! + obj.height! / 2,
   };
 };
 
-export const getObjById = (canvas: CanvasEditor.Canvas, id: number) => {
-  return canvas._objects.find((ele: CanvasEditor.Object) => {
+export const getObjById = (canvas: MtipIt.Canvas, id: number) => {
+  return canvas._objects.find((ele: MtipIt.Object) => {
     return ele.id === id;
   });
 };
 
-export const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
-  const point: CanvasEditor.Circle = new fabric.Circle({
+export const addPoint = (line: MtipIt.Path, x: number, y: number) => {
+  const point: MtipIt.Circle = new fabric.Circle({
     radius: 5,
     fill: "#4FC3F7",
     left: x,
@@ -35,8 +35,8 @@ export const addPoint = (line: CanvasEditor.Path, x: number, y: number) => {
 };
 
 export const getInsertIndex = (
-  canvas: CanvasEditor.Canvas,
-  line: CanvasEditor.Path,
+  canvas: MtipIt.Canvas,
+  line: MtipIt.Path,
   x: number,
   y: number
 ) => {
@@ -60,13 +60,13 @@ export const getInsertIndex = (
 };
 
 export const addLine = (
-  canvas: CanvasEditor.Canvas,
+  canvas: MtipIt.Canvas,
   id: number,
   path: Array<any>,
   data: any,
   points?: number[]
 ) => {
-  const newLine: CanvasEditor.Path = new fabric.Path(path, {
+  const newLine: MtipIt.Path = new fabric.Path(path, {
     fill: "",
     stroke: "black",
     objectCaching: false,
@@ -74,7 +74,7 @@ export const addLine = (
     perPixelTargetFind: true,
     lockMovementX: true,
     lockMovementY: true,
-  }) as CanvasEditor.Path;
+  }) as MtipIt.Path;
   newLine.id = id;
   newLine.data = data;
   newLine.effectType = "line";
@@ -83,7 +83,7 @@ export const addLine = (
   } else {
     newLine.points = [];
   }
-  const point: CanvasEditor.Circle = new fabric.Circle({
+  const point: MtipIt.Circle = new fabric.Circle({
     radius: pointRadius,
     fill: "#4FC3F7",
     left: path[0][1],
@@ -103,12 +103,9 @@ export const addLine = (
   return newLine;
 };
 
-export const updateLine = (
-  canvas: CanvasEditor.Canvas,
-  line: CanvasEditor.Path
-) => {
+export const updateLine = (canvas: MtipIt.Canvas, line: MtipIt.Path) => {
   canvas.remove(line);
-  const newLine: CanvasEditor.Path = new fabric.Path(line.path, {
+  const newLine: MtipIt.Path = new fabric.Path(line.path, {
     fill: "",
     stroke: "black",
     objectCaching: false,
@@ -116,7 +113,7 @@ export const updateLine = (
     perPixelTargetFind: true,
     lockMovementX: true,
     lockMovementY: true,
-  }) as CanvasEditor.Path;
+  }) as MtipIt.Path;
   newLine.id = line.id;
   newLine.data = line.data;
   newLine.effectType = "line";

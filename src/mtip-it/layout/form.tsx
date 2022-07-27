@@ -13,8 +13,6 @@ import { cloneDeep } from "lodash";
 import { MenuId } from "../config/menus";
 import PropertiesForm from "../component/properties-form";
 import ThingForm from "../component/thing-form";
-import FlowForm from "../component/flow-form";
-import AddEventModal from "@/canvasEditor/components/properties-form/add-event-modal";
 import * as api from "@/mtip-it/api/form";
 
 export default defineComponent({

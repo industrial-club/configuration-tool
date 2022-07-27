@@ -2,6 +2,9 @@ declare namespace MtipIt {
   export type EventsList = "mousedown" | "move";
   export interface Canvas extends fabric.Canvas {
     isCreateLine: boolean;
+    isMoveing: boolean;
+    lastPosX: number;
+    lastPosY: number;
   }
   export interface Item {
     id: string;
@@ -54,5 +57,27 @@ declare namespace MtipIt {
     icon?: JSX.Element;
     event: (canvas: Canvas) => void;
     child?: Array<MenuItem>;
+  }
+
+  export interface Object extends fabric.Object {
+    outLines?: number[];
+    inLines?: number[];
+    id?: number;
+    effectType?: string;
+  }
+
+  export interface Path extends fabric.Path {
+    id?: number;
+    points?: number[];
+    path: any[];
+    data?: any;
+    tempPoint: id;
+    effectType?: string;
+  }
+
+  export interface Circle extends fabric.Circle {
+    id?: number;
+    lineId?: number;
+    effectType?: string;
   }
 }
