@@ -86,6 +86,14 @@ export default defineComponent({
       if (json.zoom) {
         flowCanvas.canvas.setZoom(json.zoom);
       }
+      flowCanvas.canvas.setViewportTransform([
+        json.zoom,
+        0,
+        0,
+        json.zoom,
+        json.localtion.x,
+        json.localtion.y,
+      ]);
       flowCanvas.canvas.renderAll();
     });
 

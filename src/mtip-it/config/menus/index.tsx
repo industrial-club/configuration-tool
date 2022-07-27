@@ -102,6 +102,11 @@ const menus: Array<MtipIt.MenuItem> = [
           element.lockMovementY = true;
         }
       });
+
+      canvasJson.localtion = {
+        x: canvas.viewportTransform[4],
+        y: canvas.viewportTransform[5],
+      };
       canvasJson.zoom = canvas.getZoom();
       api
         .post(
