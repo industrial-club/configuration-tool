@@ -11,7 +11,7 @@ export default defineConfig({
       "/images/": "http://192.168.5.234:9001",
       "/api/": {
         // target: "http://192.168.9.88:7666/", // 宋欢本地
-        target: "http://192.168.5.234:7666/",
+        target: "http://192.168.5.234:7600/",
       },
     },
   },

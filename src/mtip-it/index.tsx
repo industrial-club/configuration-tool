@@ -82,7 +82,11 @@ export default defineComponent({
       const res: any = await api.get(
         "/thing/v1/adapter/thing/inst/queryTopoMap"
       );
-      flowCanvas.canvas.loadFromJSON(res.data.style);
+      const json = JSON.parse(res.data.style);
+      flowCanvas.canvas.loadFromJSON(json);
+      if (json.zoom) {
+        flowCanvas.canvas.setZoom(json.zoom);
+      }
       flowCanvas.canvas.renderAll();
     });
 

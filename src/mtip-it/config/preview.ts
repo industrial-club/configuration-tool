@@ -1,3 +1,4 @@
+import { message } from "ant-design-vue";
 import { fabric } from "fabric";
 import { getWindowInfo, previewInfo } from "../config";
 
@@ -16,7 +17,9 @@ export const toPreview = () => {
       if (item?.data?.events) {
         for (const key in item?.data?.events) {
           item.on(key, () => {
-            eval(item?.data?.events[key]);
+            if (item?.data?.events[key]) {
+              message.success("下发成功");
+            }
           });
         }
       }

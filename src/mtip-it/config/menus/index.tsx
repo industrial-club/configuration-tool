@@ -8,6 +8,7 @@ import {
 import { fabric } from "fabric";
 import { previewInfo } from "..";
 import api from "@/mtip-it/api";
+import { message } from "ant-design-vue";
 
 export enum MenuId {
   newXflow = "流程图",
@@ -92,7 +93,7 @@ const menus: Array<MtipIt.MenuItem> = [
   {
     id: MenuId.save,
     event(canvas) {
-      const canvasJson = canvas.toJSON();
+      const canvasJson: any = canvas.toJSON();
       previewInfo.set(canvas.toJSON());
       canvasJson?.objects.forEach((element: any) => {
         if (element.effectType === "line") {
@@ -101,10 +102,19 @@ const menus: Array<MtipIt.MenuItem> = [
           element.lockMovementY = true;
         }
       });
-      api.post(
-        "/thing/v1/adapter/thing/inst/saveTopoMap",
-        JSON.stringify(canvasJson)
-      );
+      canvasJson.zoom = canvas.getZoom();
+      api
+        .post(
+          "/thing/v1/adapter/thing/inst/saveTopoMap",
+          JSON.stringify(canvasJson)
+        )
+        .then((res: any) => {
+          if (res.code === "M0000") {
+            message.success("保存成功");
+          } else {
+            message.error(res.message);
+          }
+        });
     },
     type: "item",
     icon: <SaveOutlined />,

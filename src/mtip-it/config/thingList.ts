@@ -9,7 +9,7 @@ const ThingList: MtipIt.ThingGroupList = [
         style: "[{key:value},{key1:value1}]",
         image_run: "/icons/设备图标汇总_综保数据.svg",
         events: {
-          mousedown: "console.log('下发成功')",
+          mousedown: "message.success('下发成功')",
         },
         properties: [
           {
