@@ -94,7 +94,6 @@ const menus: Array<MtipIt.MenuItem> = [
     id: MenuId.save,
     event(canvas) {
       const canvasJson: any = canvas.toJSON();
-      previewInfo.set(canvas.toJSON());
       canvasJson?.objects.forEach((element: any) => {
         if (element.effectType === "line") {
           element.perPixelTargetFind = true;
@@ -108,6 +107,12 @@ const menus: Array<MtipIt.MenuItem> = [
         y: canvas.viewportTransform[5],
       };
       canvasJson.zoom = canvas.getZoom();
+      previewInfo.set(
+        canvas.toJSON(),
+        JSON.stringify(canvasJson.localtion),
+        canvasJson.zoom
+      );
+
       api
         .post(
           "/thing/v1/adapter/thing/inst/saveTopoMap",

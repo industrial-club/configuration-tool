@@ -52,10 +52,19 @@ export const svgPath = {
 
 export const previewInfo = {
   get() {
-    return window.sessionStorage.getItem("previewInfo");
+    const info = window.sessionStorage.getItem("previewInfo");
+    const localtion = window.sessionStorage.getItem("editor_localtion");
+    const zoom = window.sessionStorage.getItem("editor_zoom");
+    return {
+      info,
+      localtion: JSON.parse(localtion),
+      zoom,
+    };
   },
-  set(val: string) {
-    window.sessionStorage.setItem("previewInfo", JSON.stringify(val));
+  set(info: string, localtion: string, zoom: string) {
+    window.sessionStorage.setItem("previewInfo", JSON.stringify(info));
+    window.sessionStorage.setItem("editor_localtion", localtion);
+    window.sessionStorage.setItem("editor_zoom", zoom);
   },
   clear() {
     window.sessionStorage.setItem("previewInfo", "");
