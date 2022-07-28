@@ -160,10 +160,9 @@ export default defineComponent({
                   status = true;
                 }
               }
-
+              thingId.value = canvasItem.id;
               // 防止重复加载
               if (!status) {
-                thingId.value = canvasItem.id;
                 canvasList.value.push(canvasItem);
               }
             }}
