@@ -124,6 +124,11 @@ const createLine = (canvas: MtipIt.Canvas) => {
 
   canvas.on("mouse:up", (e) => {
     const endObj: MtipIt.Object | undefined = e.target;
+    if (canvas.getActiveObjects().length > 1) {
+      canvas.getActiveObject().set("lockMovementX", true);
+      canvas.getActiveObject().set("lockMovementY", true);
+    }
+
     // 新连线
     if (endObj && canvas.isCreateLine && beginObj && beginObj !== endObj) {
       const beginPoint: { [key: string]: number } = getCenter(beginObj);
