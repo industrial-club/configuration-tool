@@ -7,8 +7,11 @@ export const toPreview = () => {
   const canvas = new fabric.Canvas("preview_canvas", {});
   canvas.setHeight(height!);
   canvas.setWidth(width!);
-  const info = previewInfo.get();
+  const { info, localtion, zoom } = previewInfo.get();
   canvas.loadFromJSON(info, () => {
+    canvas.setZoom(Number(zoom));
+    canvas.viewportTransform[4] = localtion.x;
+    canvas.viewportTransform[5] = localtion.y;
     canvas.getObjects().forEach((item: MtipIt.Object) => {
       item.selectable = false;
       if (item?.type === "circle") {

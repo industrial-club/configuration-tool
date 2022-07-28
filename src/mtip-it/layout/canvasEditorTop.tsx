@@ -1,4 +1,4 @@
-import { defineComponent, inject, PropType, Ref } from "vue";
+import { defineComponent, inject, PropType, Ref, toRaw } from "vue";
 import Menus, { MenuId } from "../config/menus";
 
 export default defineComponent({
@@ -21,7 +21,7 @@ export default defineComponent({
     };
 
     const toDoMenuEvent = (item: MtipIt.MenuItem) => {
-      item.event(activeCanvas?.value.canvas);
+      item.event(toRaw(activeCanvas?.value.canvas));
       if (item.id === MenuId.see) {
         ctx.emit("preview", item);
       }
