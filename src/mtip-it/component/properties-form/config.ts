@@ -25,10 +25,10 @@ export const CONFIG_PROPS: any = {
   //   label: "边框宽度",
   //   type: "number",
   // },
-  // stroke: {
-  //   label: "边框颜色",
-  //   type: "color",
-  // },
+  stroke: {
+    label: "边框颜色",
+    type: "color",
+  },
   opacity: {
     label: "透明度",
     type: "range",
