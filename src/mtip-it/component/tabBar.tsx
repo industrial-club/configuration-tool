@@ -1,4 +1,5 @@
 import { defineComponent, PropType, watch } from "vue";
+import { CloseOutlined } from "@ant-design/icons-vue";
 
 export interface tabBarItem {
   id: string;
@@ -15,12 +16,19 @@ export const Props = {
 
 export default defineComponent({
   props: Props,
-  emits: ["update:value"],
+  emits: ["update:value", "close"],
   setup(prop, cxt) {
     // 当item被点击事件
     const itemClick = (e: tabBarItem) => {
       cxt.emit("update:value", e.id);
     };
+
+    watch(
+      () => prop.value,
+      () => {
+        console.log(prop.value);
+      }
+    );
 
     return () => (
       <ul id="mtip_it_editor_tabbar" class={"mtip_it_editor_tabbar"}>
@@ -35,6 +43,12 @@ export default defineComponent({
             }}
           >
             <span>{i.name}</span>
+            <CloseOutlined
+              class={"custonCloseIcon"}
+              onClick={() => {
+                cxt.emit("close", i);
+              }}
+            />
           </li>
         ))}
       </ul>

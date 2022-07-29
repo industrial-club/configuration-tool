@@ -137,6 +137,35 @@ export default defineComponent({
     // 预览弹窗数据相关
     const previewVal = ref(false);
 
+    const tabbar = {
+      open(e: MtipIt.ThingItem) {
+        const eid = `${e.id}`.startsWith("canvas_") ? e.id : `canvas_${e.id}`;
+        e.id = eid;
+        const canvasItem = create(e);
+        let status = false;
+        for (let i of canvasList.value) {
+          if (i.id === eid) {
+            status = true;
+          }
+        }
+        thingId.value = canvasItem.id;
+        // 防止重复加载
+        if (!status) {
+          canvasList.value.push(canvasItem);
+        }
+      },
+      close(e: MtipIt.ThingItem) {
+        const index = canvasList.value.findIndex((item) => item.id === e.id);
+
+        if (index) {
+          canvasList.value.splice(index, 1);
+          const activeIndex = canvasList.value.length - 1;
+          setTimeout(() => {
+            thingId.value = canvasList.value[activeIndex].id;
+          }, 1);
+        }
+      },
+    };
     // 所有图表集合
     return () => (
       <div id={prefix.value} class={prefix.value}>
@@ -149,25 +178,16 @@ export default defineComponent({
           <thingPlane
             thingList={thingList.value}
             onOpenThing={(e: MtipIt.ThingItem) => {
-              const eid = `${e.id}`.startsWith("canvas_")
-                ? e.id
-                : `canvas_${e.id}`;
-              e.id = eid;
-              const canvasItem = create(e);
-              let status = false;
-              for (let i of canvasList.value) {
-                if (i.id === eid) {
-                  status = true;
-                }
-              }
-              thingId.value = canvasItem.id;
-              // 防止重复加载
-              if (!status) {
-                canvasList.value.push(canvasItem);
-              }
+              tabbar.open(e);
             }}
           />
-          <editorConter mtipIts={canvasList.value} val={thingId.value} />
+          <editorConter
+            mtipIts={canvasList.value}
+            val={thingId.value}
+            onClose={(e: MtipIt.ThingItem) => {
+              tabbar.close(e);
+            }}
+          />
           <editorForm
             onAddElement={handleAddElement}
             onRemoveElement={handleRemoveElement}
