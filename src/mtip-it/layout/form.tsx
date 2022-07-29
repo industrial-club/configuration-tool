@@ -2,17 +2,18 @@ import {
   computed,
   defineComponent,
   inject,
-  onUnmounted,
   ref,
   watch,
   Ref,
   nextTick,
+  onBeforeUnmount,
 } from "vue";
 import { fabric } from "fabric";
 import { cloneDeep } from "lodash";
 import { MenuId } from "../config/menus";
 import PropertiesForm from "../component/properties-form";
 import ThingForm from "../component/thing-form";
+import FlowForm from "../component/flow-form";
 import * as api from "@/mtip-it/api/form";
 
 export default defineComponent({
@@ -106,9 +107,10 @@ export default defineComponent({
           oldVal?.canvas.off("selection:updated", handleWidgetSelect);
           oldVal?.canvas.off("selection:cleared", handleClearSelect);
         }
-      }
+      },
+      { immediate: true }
     );
-    onUnmounted(() => {
+    onBeforeUnmount(() => {
       activeCanvas.value?.canvas.off("selection:created", handleWidgetSelect);
       activeCanvas.value?.canvas.off("selection:updated", handleWidgetSelect);
       activeCanvas.value?.canvas.off("selection:cleared", handleClearSelect);
@@ -205,72 +207,92 @@ export default defineComponent({
 
     return () => (
       <div class={"mtip_it_editor_form_box"}>
-        {isThing.value ? (
-          // 如果选中属性文字 展示部件属性表单 否则展示实例表单
-          activeWidget.value?.type === "text" ? (
-            <PropertiesForm
-              widget={activeWidget.value}
-              onUpdate={handlePropertyUpdate}
-            />
-          ) : (
-            <div>
-              <a-button
-                class="btn-save"
-                block
-                type="primary"
-                onClick={handleSave}
-              >
-                保存
-              </a-button>
-              <a-form-item>
-                <a-checkbox
-                  checked={copyCanvas.value.thingInfo?.events?.mousedown}
-                  onChange={(e: any) => {
-                    if (!copyCanvas.value.thingInfo.events) {
-                      copyCanvas.value.thingInfo.events = {};
-                    }
-                    copyCanvas.value.thingInfo.events.mousedown =
-                      e.target.checked;
-                  }}
-                >
-                  是否响应点击事件
-                </a-checkbox>
-              </a-form-item>
-              <a-form-item label="宽">
-                <a-input-number
-                  value={copyCanvas.value.thingInfo?.size?.width}
-                  onChange={(val: number) => {
-                    if (!copyCanvas.value.thingInfo.size) {
-                      copyCanvas.value.thingInfo.size = {};
-                    }
-                    copyCanvas.value.thingInfo.size.width = val;
-                    activeCanvas.value.canvas.setWidth(val);
-                  }}
-                ></a-input-number>
-              </a-form-item>
-              <a-form-item label="高">
-                <a-input-number
-                  value={copyCanvas.value.thingInfo?.size?.height}
-                  onChange={(val: number) => {
-                    if (!copyCanvas.value.thingInfo.size) {
-                      copyCanvas.value.thingInfo.size = {};
-                    }
-                    copyCanvas.value.thingInfo.size.height = val;
-
-                    activeCanvas.value.canvas.setHeight(val);
-                  }}
-                ></a-input-number>
-              </a-form-item>
-              <ThingForm
-                thingDetail={thingDetail.value}
-                onPropertyChange={handlePropertyChange}
+        {activeCanvas.value ? (
+          isThing.value ? (
+            // 如果选中属性文字 展示部件属性表单 否则展示实例表单
+            activeWidget.value?.type === "text" ? (
+              <PropertiesForm
+                widget={activeWidget.value}
+                onUpdate={handlePropertyUpdate}
               />
-            </div>
+            ) : (
+              <div>
+                <a-button
+                  class="btn-save"
+                  block
+                  type="primary"
+                  onClick={handleSave}
+                >
+                  保存
+                </a-button>
+                <a-form-item>
+                  <a-checkbox
+                    checked={copyCanvas.value.thingInfo?.events?.mousedown}
+                    onChange={(e: any) => {
+                      if (!copyCanvas.value.thingInfo.events) {
+                        copyCanvas.value.thingInfo.events = {};
+                      }
+                      copyCanvas.value.thingInfo.events.mousedown =
+                        e.target.checked;
+                    }}
+                  >
+                    是否响应点击事件
+                  </a-checkbox>
+                </a-form-item>
+                <a-form-item label="宽">
+                  <a-input-number
+                    value={copyCanvas.value.thingInfo?.size?.width}
+                    onChange={(val: number) => {
+                      if (!copyCanvas.value.thingInfo.size) {
+                        copyCanvas.value.thingInfo.size = {};
+                      }
+                      copyCanvas.value.thingInfo.size.width = val;
+                      activeCanvas.value.canvas.setWidth(val);
+                    }}
+                  ></a-input-number>
+                </a-form-item>
+                <a-form-item label="高">
+                  <a-input-number
+                    value={copyCanvas.value.thingInfo?.size?.height}
+                    onChange={(val: number) => {
+                      if (!copyCanvas.value.thingInfo.size) {
+                        copyCanvas.value.thingInfo.size = {};
+                      }
+                      copyCanvas.value.thingInfo.size.height = val;
+
+                      activeCanvas.value.canvas.setHeight(val);
+                    }}
+                  ></a-input-number>
+                </a-form-item>
+                <ThingForm
+                  thingDetail={thingDetail.value}
+                  onPropertyChange={handlePropertyChange}
+                />
+              </div>
+            )
+          ) : // )
+          activeWidget.value ? (
+            <FlowForm widget={activeWidget.value} />
+          ) : (
+            // 修改颜色
+            <a-form>
+              <a-form-item label="背景颜色">
+                <input
+                  type="color"
+                  value={activeCanvas.value?.canvas?.backgroundColor}
+                  onInput={(e: any) => {
+                    activeCanvas.value?.canvas.set(
+                      "backgroundColor",
+                      e.target.value
+                    );
+                    activeCanvas.value?.canvas.requestRenderAll();
+                  }}
+                />
+              </a-form-item>
+            </a-form>
           )
         ) : (
-          // )
-          // <FlowForm widget={activeWidget.value} />
-          <a-empty></a-empty>
+          <a-empty />
         )}
       </div>
     );
