@@ -10,10 +10,10 @@ export default (canvas: MtipIt.Canvas) => {
     const from: MtipIt.Object = getObjById(canvas, line.data?.from!)!;
     const to: MtipIt.Object = getObjById(canvas, line.data?.to!)!;
     from.outLines = from.outLines?.filter((id) => {
-      id !== line.data.from;
+      return id !== line.id;
     });
     to.inLines = to.inLines?.filter((id) => {
-      id !== line.data.to;
+      return id !== line.id;
     });
     const temp = getObjById(canvas, line.tempPoint!)!;
     canvas.remove(temp);
@@ -39,7 +39,7 @@ export default (canvas: MtipIt.Canvas) => {
         line.points?.splice(index, 1);
         line.path.splice(index + 1, 1);
         canvas.remove(point);
-      } else if (target?.effectType === "rect") {
+      } else {
         const rect: MtipIt.Object = target;
         [...(rect.outLines || []), ...(rect.inLines || [])]?.forEach(
           (id: number) => {

@@ -4,6 +4,7 @@ import {
   ApiOutlined,
   SaveOutlined,
   FastForwardOutlined,
+  SwapOutlined,
 } from "@ant-design/icons-vue";
 import { fabric } from "fabric";
 import { previewInfo } from "..";
@@ -19,6 +20,7 @@ export enum MenuId {
   rect = "rect",
   line = "线",
   see = "看",
+  move = "下移",
 }
 
 const onLine = (canvas: MtipIt.Canvas) => {
@@ -89,6 +91,15 @@ const menus: Array<MtipIt.MenuItem> = [
     type: "item",
     icon: <ApiOutlined />,
     name: "创建管道",
+  },
+  {
+    id: MenuId.move,
+    event(canvas) {
+      canvas.getActiveObject().sendBackwards();
+    },
+    type: "item",
+    icon: <SwapOutlined />,
+    name: "下移",
   },
   {
     id: MenuId.save,
