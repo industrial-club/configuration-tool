@@ -7,6 +7,7 @@ import {
   Ref,
   nextTick,
   onBeforeUnmount,
+  onMounted,
 } from "vue";
 import { fabric } from "fabric";
 import { cloneDeep } from "lodash";
@@ -20,19 +21,21 @@ export default defineComponent({
   emits: ["addElement", "removeElement", "save"],
   setup(props, { emit }) {
     const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem")!;
-
+    const activeCanvasBgColor = ref("");
+    onMounted(() => {
+      setTimeout(() => {
+        activeCanvasBgColor.value = activeCanvas.value.canvas.backgroundColor;
+      }, 500);
+    });
     // 复制当前canvas
     const copyCanvas = ref<MtipIt.Item>({} as MtipIt.Item);
 
-    // 物实例详情
-    const thingDetail = ref({});
-    const getThingDetail = async () => {
+    // 物实例属性列表
+    const thingPropList = ref<string[]>([]);
+    const getThingPropList = async () => {
       const id = activeCanvas.value.id.replace("canvas_", "");
-      // const id = "1";
-      const { data } = await api.getThingCode(id);
-      const thingCode = data.thingInst.thingCode;
-      const { data: res } = await api.getThingDetail(thingCode);
-      thingDetail.value = res;
+      const { data } = await api.getThingPropList(id);
+      thingPropList.value = data;
     };
 
     // 是否为物实例
@@ -49,7 +52,7 @@ export default defineComponent({
         await nextTick();
         copyCanvas.value = cloneDeep(newVal);
         if (!isThing.value) return;
-        await getThingDetail();
+        await getThingPropList();
         const size = copyCanvas.value.thingInfo.size;
 
         if (size) {
@@ -122,12 +125,13 @@ export default defineComponent({
       property,
       isInit = false,
     }: any) => {
-      const name = `_property_${property.code}`;
+      const name = `_property_${property}`;
+
       // 选中
       if (checked) {
         // 创建text 值暂时写死
-        const content = `${property.name}: null`;
-        const text = new fabric.Text(isInit ? property.content : content, {
+        const content = `${property}: null`;
+        const text = new fabric.Text(isInit ? property : content, {
           name: name,
           // 回显使用原有的样式 否则使用初始化样式
           ...(isInit ? property.style : { fill: "#ff0000", fontSize: 16 }),
@@ -140,6 +144,7 @@ export default defineComponent({
           const abstractProperty = {
             name,
             content,
+            code: property,
             style: {
               fill: "#ff0000",
               fontSize: 16,
@@ -148,7 +153,6 @@ export default defineComponent({
               top: text.top,
               left: text.left,
             },
-            code: property.code,
           };
           // 创建属性数组
           if (!copyCanvas.value.thingInfo) copyCanvas.value.thingInfo = {};
@@ -265,7 +269,8 @@ export default defineComponent({
                   ></a-input-number>
                 </a-form-item>
                 <ThingForm
-                  thingDetail={thingDetail.value}
+                  thingPropList={thingPropList.value}
+                  activeCanvas={copyCanvas.value}
                   onPropertyChange={handlePropertyChange}
                 />
               </div>
@@ -279,7 +284,7 @@ export default defineComponent({
               <a-form-item label="背景颜色">
                 <input
                   type="color"
-                  value={activeCanvas.value?.canvas?.backgroundColor}
+                  value={activeCanvasBgColor.value}
                   onInput={(e: any) => {
                     activeCanvas.value?.canvas.set(
                       "backgroundColor",

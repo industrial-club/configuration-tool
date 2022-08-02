@@ -14,3 +14,10 @@ export const getThingCode = (id: string) =>
  */
 export const getThingDetail = (code: string) =>
   instance.get(`/thing/v1/core/thing/findByCode/${code}`);
+
+/**
+ * 获取物实例属性列表
+ * @param id 物实例id
+ */
+export const getThingPropList = (id: string) =>
+  instance.get(`/thing/v1/adapter/thing/inst/topoProperty/${id}`);
