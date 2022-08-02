@@ -51,13 +51,13 @@ const menus: Array<MtipIt.MenuItem> = [
       {
         type: "item",
         id: MenuId.newXflow,
-        name: "创建流程图",
+        name: "流程图",
         event(canvas) {},
       },
       {
         type: "item",
         id: MenuId.newThing,
-        name: "创建物实例",
+        name: "设备",
         event(canvas) {},
       },
     ],

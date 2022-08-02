@@ -7,6 +7,7 @@ import {
   computed,
   watch,
   nextTick,
+  PropType,
 } from "vue";
 import { CheckboxChangeEvent } from "ant-design-vue/es/_util/EventInterface";
 import AddEventModal from "./add-event-modal";
@@ -18,27 +19,29 @@ import * as api from "@/mtip-it/api/form";
 const ThingForm = defineComponent({
   emits: ["propertyChange"],
   props: {
-    thingDetail: {
+    thingPropList: {
       type: Object,
-      default: () => ({}),
+      default: () => [],
+    },
+    activeCanvas: {
+      type: Object as PropType<MtipIt.Item>,
+      required: true,
     },
   },
   setup(props, { emit }) {
-    const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem")!;
-
     // 属性列表
     const propertiesList = computed(() => {
-      return props.thingDetail.thingPropertyList || [];
+      return props.thingPropList || [];
     });
 
     const selectedProps = ref([]);
 
     watch(
-      () => props.thingDetail,
+      () => props.thingPropList,
       async () => {
         await nextTick();
         selectedProps.value = (
-          activeCanvas.value.thingInfo.properties || []
+          props.activeCanvas.thingInfo.properties || []
         ).map((item: any) => item.code);
       },
       { immediate: true }
@@ -56,35 +59,27 @@ const ThingForm = defineComponent({
     return () => (
       <div class="thing-form">
         <a-form>
-          <a-form-item label="名称">
-            <a-input disabled value={props.thingDetail.name}></a-input>
-          </a-form-item>
           <a-form-item>
-            <a-checkbox-group
-              style={{ width: "100%" }}
-              v-model={selectedProps.value}
-            >
-              <a-collapse activeKey={1}>
-                <a-collapse-panel key={1} header="属性">
-                  <a-checkbox-group v-model={[selectedProps.value, "value"]}>
-                    <a-row>
-                      {propertiesList.value.map((item: any) => (
-                        <a-col span={24}>
-                          <a-checkbox
-                            value={item.code}
-                            onChange={(e: CheckboxChangeEvent) =>
-                              onPropertyChange(e, item)
-                            }
-                          >
-                            {item.displayLabel}
-                          </a-checkbox>
-                        </a-col>
-                      ))}
-                    </a-row>
-                  </a-checkbox-group>
-                </a-collapse-panel>
-              </a-collapse>
-            </a-checkbox-group>
+            <a-collapse activeKey={1}>
+              <a-collapse-panel key={1} header="属性">
+                <a-checkbox-group v-model={[selectedProps.value, "value"]}>
+                  <a-row>
+                    {propertiesList.value.map((item: any) => (
+                      <a-col span={24}>
+                        <a-checkbox
+                          value={item}
+                          onChange={(e: CheckboxChangeEvent) =>
+                            onPropertyChange(e, item)
+                          }
+                        >
+                          {item}
+                        </a-checkbox>
+                      </a-col>
+                    ))}
+                  </a-row>
+                </a-checkbox-group>
+              </a-collapse-panel>
+            </a-collapse>
           </a-form-item>
         </a-form>
       </div>
