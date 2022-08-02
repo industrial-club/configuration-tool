@@ -23,9 +23,14 @@
     "@vitejs/plugin-vue-jsx": "^1.3.10",
     "ant-design-vue": "^3.2.8",
     "fabric": "^5.2.1",
+    "inl-ui": "^0.0.9-rc.59",
     "less": "^4.1.3",
+    "mitt": "^3.0.0",
+    "moment": "^2.29.4",
     "typescript": "^4.5.4",
     "vite": "^2.9.9",
+    "vitevuu": "^1.0.9",
+    "vue-router": "^4.1.3",
     "vue-tsc": "^0.34.7",
     "vue3-tabs-chrome": "^0.3.2"
   }
