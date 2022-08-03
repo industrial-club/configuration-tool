@@ -14,18 +14,21 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
       instanceId: thing.id,
     });
 
-    console.log(svgTest);
-    const texts = thing.properties?.map((ele: any, index: number) => {
-      return new fabric.Textbox(ele.content, {
-        ...ele.position,
-        ...ele.style,
-        ...thing.size,
-      });
-    });
-    const svg = fabric.util.groupSVGElements([svgTest, ...(texts || [])], {
+    const texts =
+      thing.properties?.map((ele: any, index: number) => {
+        return new fabric.Textbox(ele.content, {
+          ...ele.position,
+          ...ele.style,
+          ...thing.size,
+        });
+      }) || [];
+    const svg = fabric.util.groupSVGElements([svgTest], {
       width: thing.size?.width,
       height: thing.size?.height,
     }) as any;
+    for (let i of texts) {
+      canvas.add(i);
+    }
     const userX = (e.pointer?.x || (e.e as any).layerX) - svg.width / 2;
     const userY = (e.pointer?.y || (e.e as any).layerY) - svg.height / 2;
     const { left, top } = computedZoomXY(userX, userY, canvas);
@@ -35,7 +38,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
     });
     svg.id = Math.random();
     svg.data = thing;
-    svg.effectType = "rect";
+    svg.effectType = "svg";
     canvas.add(svg);
     // canvas.setActiveObject(svg);
   };
