@@ -9,24 +9,18 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
   const groupSvg = (objects: fabric.Object[], options: any) => {
     const svgTest = fabric.util.groupSVGElements(objects) as any;
     svgTest.set({
-      left: (thing.size?.width! - svgTest.width) / 2,
-      top: (thing.size?.height! - svgTest.height) / 2,
       instanceId: thing.id,
     });
     const texts =
       thing.properties?.map((ele: any, index: number) => {
-        return new fabric.Textbox(ele.content, {
+        return new fabric.Textbox(`${ele.label}:无`, {
           ...ele.position,
           ...ele.style,
-          ...thing.size,
           attrCode: "attrCode",
           parentId: thing.id,
         });
       }) || [];
-    const svg = fabric.util.groupSVGElements([svgTest], {
-      width: thing.size?.width,
-      height: thing.size?.height,
-    }) as any;
+    const svg = fabric.util.groupSVGElements([svgTest]) as any;
     for (let i of texts) {
       canvas.add(i);
     }
