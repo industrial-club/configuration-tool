@@ -23,7 +23,7 @@
     "@vitejs/plugin-vue-jsx": "^1.3.10",
     "ant-design-vue": "^3.2.8",
     "fabric": "^5.2.1",
-    "inl-ui": "^0.0.9-rc.59",
+    "inl-ui": "^0.0.9-rc.62",
     "less": "^4.1.3",
     "mitt": "^3.0.0",
     "moment": "^2.29.4",
