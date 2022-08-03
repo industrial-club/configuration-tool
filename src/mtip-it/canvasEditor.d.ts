@@ -64,6 +64,9 @@ declare namespace MtipIt {
     inLines?: number[];
     id?: number;
     effectType?: string;
+    attrCode?: string;
+    parentId?: string;
+    instanceId?: string;
   }
 
   export interface Path extends fabric.Path {

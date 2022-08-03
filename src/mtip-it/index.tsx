@@ -95,6 +95,7 @@ export default defineComponent({
         json.localtion.y,
       ]);
       flowCanvas.canvas.renderAll();
+      console.log(flowCanvas.canvas.getObjects());
     });
 
     // 获取当前活跃的canvas
