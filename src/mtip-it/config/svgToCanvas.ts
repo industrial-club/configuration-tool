@@ -11,7 +11,10 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
     svgTest.set({
       left: (thing.size?.width! - svgTest.width) / 2,
       top: (thing.size?.height! - svgTest.height) / 2,
+      instanceId: thing.id,
     });
+
+    console.log(svgTest);
     const texts = thing.properties?.map((ele: any, index: number) => {
       return new fabric.Textbox(ele.content, {
         ...ele.position,

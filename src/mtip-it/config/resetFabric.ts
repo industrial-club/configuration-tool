@@ -16,6 +16,7 @@ export const resetFabric = () => {
           to: this.to,
           tempPoint: this.tempPoint,
           lineId: this.lineId,
+          instanceId: this.instanceId || null,
           // perPixelTargetFind: this.perPixelTargetFind,
           // lockMovementX: this.lockMovementX,
           // lockMovementY: this.lockMovementY,

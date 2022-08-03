@@ -6,6 +6,7 @@ export const onClick = (
   delay: number = 200
 ) => {
   let times = 0;
+
   canvas.on("mouse:down:before", () => {
     times = new Date().getTime();
   });
