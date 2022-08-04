@@ -17,6 +17,15 @@ declare namespace MtipIt {
     thingInfo?: any;
   }
 
+  // 接口返回 flow类型
+  export interface serverFlowInfo {
+    cropId: number;
+    id: string;
+    image: string;
+    style: string;
+    title: string;
+  }
+
   export interface IProperty {
     name: string; // 唯一标识
     code: string; // 属性code
@@ -55,7 +64,7 @@ declare namespace MtipIt {
     name: string;
     id: string;
     icon?: JSX.Element;
-    event: (canvas: Canvas) => void;
+    event: (canvas: Item, cb?: () => void) => void;
     child?: Array<MenuItem>;
   }
 

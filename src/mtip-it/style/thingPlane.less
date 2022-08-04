@@ -3,6 +3,19 @@
   overflow-y: auto;
   width: 200px;
 
+  .@{prefix}_flow_box {
+    display: flex;
+    flex-direction: column;
+
+    &_item {
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1rem;
+    }
+  }
+
   .search {
     margin: 16px;
   }

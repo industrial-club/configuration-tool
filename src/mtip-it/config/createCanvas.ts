@@ -31,7 +31,9 @@ export const initCanvas = (id: string, thingPath: string) => {
   return canvas;
 };
 
-export const createFlow: () => MtipIt.Item = () => {
+export const createFlow: (info?: MtipIt.serverFlowInfo) => MtipIt.Item = (
+  info
+) => {
   const id = uuid();
   const flowCanvas: MtipIt.Item = {
     canvas: null,
@@ -39,12 +41,22 @@ export const createFlow: () => MtipIt.Item = () => {
     id,
     name: "全场工艺流程图",
   };
-  nextTick(() => {
-    flowCanvas.canvas = new fabric.Canvas(id);
+
+  if (info) {
+    flowCanvas.id = info.id;
+    flowCanvas.name = info.title;
+  }
+  setTimeout(() => {
+    flowCanvas.canvas = new fabric.Canvas(flowCanvas.id);
+    if (info) {
+      (flowCanvas.canvas as MtipIt.Canvas).loadFromJSON(
+        JSON.parse(info.style),
+        () => {}
+      );
+    }
     events(flowCanvas.canvas);
 
     flowCanvas.canvas.isCreateLine = false;
-  });
+  }, 10);
   return flowCanvas;
-  // mtip_it_editor_canvas
 };

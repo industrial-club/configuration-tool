@@ -72,8 +72,8 @@ const menus: Array<MtipIt.MenuItem> = [
         width: 100, // 宽度 100px
         height: 100, // 高度 100px
       });
-      canvas.add(rect);
-      canvas.renderAll();
+      canvas.canvas.add(rect);
+      canvas.canvas.renderAll();
     },
     type: "item",
     icon: <BorderOutlined />,
@@ -82,10 +82,10 @@ const menus: Array<MtipIt.MenuItem> = [
   {
     id: MenuId.line,
     event(canvas) {
-      if (canvas.isCreateLine) {
-        finishLine(canvas);
+      if (canvas.canvas.isCreateLine) {
+        finishLine(canvas.canvas);
       } else {
-        onLine(canvas);
+        onLine(canvas.canvas);
       }
     },
     type: "item",
@@ -95,7 +95,7 @@ const menus: Array<MtipIt.MenuItem> = [
   {
     id: MenuId.move,
     event(canvas) {
-      canvas.getActiveObject().sendBackwards();
+      canvas.canvas.getActiveObject().sendBackwards();
     },
     type: "item",
     icon: <SwapOutlined />,
@@ -103,8 +103,8 @@ const menus: Array<MtipIt.MenuItem> = [
   },
   {
     id: MenuId.save,
-    event(canvas) {
-      const canvasJson: any = canvas.toJSON();
+    event(canvasItem, cb) {
+      const canvasJson: any = canvasItem.canvas.toJSON();
       canvasJson?.objects.forEach((element: any) => {
         if (element.effectType === "line") {
           element.perPixelTargetFind = true;
@@ -114,24 +114,27 @@ const menus: Array<MtipIt.MenuItem> = [
       });
 
       canvasJson.localtion = {
-        x: canvas.viewportTransform[4],
-        y: canvas.viewportTransform[5],
+        x: canvasItem.canvas.viewportTransform[4],
+        y: canvasItem.canvas.viewportTransform[5],
       };
-      canvasJson.zoom = canvas.getZoom();
+      canvasJson.zoom = canvasItem.canvas.getZoom();
       previewInfo.set(
-        canvas.toJSON(),
+        canvasItem.canvas.toJSON(),
         JSON.stringify(canvasJson.localtion),
         canvasJson.zoom
       );
 
       api
-        .post(
-          "/thing/v1/adapter/thing/inst/saveTopoMap",
-          JSON.stringify(canvasJson)
-        )
+        .post("/thing/v1/adapter/thing/inst/saveTopoMap", {
+          id: canvasItem.id,
+          style: JSON.stringify(canvasJson),
+          title: canvasItem.name,
+          image: canvasItem.canvas.toDataURL({ format: "image/png" }),
+        })
         .then((res: any) => {
           if (res.code === "M0000") {
             message.success("保存成功");
+            cb();
           } else {
             message.error(res.message);
           }

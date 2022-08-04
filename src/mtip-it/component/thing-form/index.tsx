@@ -75,6 +75,7 @@ const ThingForm = defineComponent({
           position.left = textEle.left;
           position.top = textEle.top;
         });
+
         activeCanvas.value.canvas.add(textEle);
         // 添加到设备属性列表
         if (!props.widget.data) {

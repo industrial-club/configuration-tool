@@ -2,7 +2,7 @@ import { defineComponent, inject, PropType, Ref, toRaw } from "vue";
 import Menus, { MenuId } from "../config/menus";
 
 export default defineComponent({
-  emits: ["newCanvas", "preview"],
+  emits: ["newCanvas", "preview", "save"],
   props: {
     customMenus: {
       type: Array,
@@ -21,13 +21,14 @@ export default defineComponent({
     };
 
     const toDoMenuEvent = (item: MtipIt.MenuItem) => {
-      item.event(toRaw(activeCanvas?.value.canvas));
+      item.event(toRaw(activeCanvas.value), () => {
+        if (item.id === MenuId.save) {
+          ctx.emit("save", item);
+        }
+      });
       if (item.id === MenuId.see) {
         ctx.emit("preview", item);
       }
-      // if (item.id === MenuId.save) {
-      //   ctx.emit("save", item);
-      // }
     };
     const renderMenuGroup = (item: MtipIt.MenuItem) => {
       const dropMenu: () => JSX.Element = () => {

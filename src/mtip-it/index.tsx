@@ -1,16 +1,6 @@
 import "./style/index.less";
-import {
-  defineComponent,
-  nextTick,
-  onMounted,
-  PropType,
-  provide,
-  ref,
-  watch,
-} from "vue";
+import { defineComponent, onMounted, PropType, provide, ref, watch } from "vue";
 import { omit } from "lodash";
-import { fabric } from "fabric";
-import { message } from "ant-design-vue";
 import { create, createFlow } from "./config/createCanvas";
 import editorConter from "./layout/editorConter";
 import editorForm from "./layout/form";
@@ -64,39 +54,32 @@ export default defineComponent({
       });
       thingList.value = data;
     };
-    onMounted(getThingList);
+
+    // flow 列表
+    const flowList = ref<Array<any>>([]);
+    const getFlowList = async () => {
+      if (canvasList.value.length > 0) {
+        thingId.value = canvasList.value[0].id;
+      }
+      const res: any = await api.get(
+        "/thing/v1/adapter/thing/inst/queryTopoMap"
+      );
+
+      if (res.data) {
+        flowList.value = res.data;
+      }
+    };
+
+    onMounted(() => {
+      getThingList();
+      getFlowList();
+    });
 
     // canvasList
     const canvasList = ref<Array<MtipIt.Item>>(allIts);
 
     // 设置选中thingid
     const thingId = ref("");
-
-    let flowCanvas = createFlow();
-    canvasList.value.push(flowCanvas);
-    if (canvasList.value.length > 0) {
-      thingId.value = canvasList.value[0].id;
-    }
-    onMounted(async () => {
-      const res: any = await api.get(
-        "/thing/v1/adapter/thing/inst/queryTopoMap"
-      );
-      const json = JSON.parse(res.data.style);
-      flowCanvas.canvas.loadFromJSON(json);
-      if (json.zoom) {
-        flowCanvas.canvas.setZoom(json.zoom);
-      }
-      flowCanvas.canvas.setViewportTransform([
-        json.zoom,
-        0,
-        0,
-        json.zoom,
-        json.localtion.x,
-        json.localtion.y,
-      ]);
-      flowCanvas.canvas.renderAll();
-      console.log(flowCanvas.canvas.getObjects());
-    });
 
     // 获取当前活跃的canvas
     const getActiveCanvas = () => {
@@ -109,22 +92,7 @@ export default defineComponent({
     //
     provide("thingId", thingId);
 
-    // 在当前活跃的canvas上添加元素
-    const handleAddElement = (element: fabric.Object) =>
-      activeMtipItItem.value?.canvas.add(element);
-    // 删除当前活跃的canvas上的元素
-    const handleRemoveElement = (elements: fabric.Object[]) =>
-      activeMtipItItem.value?.canvas.remove(...elements);
-
-    // 保存当前活跃的canvas的信息
-    const handleSave = async (data: MtipIt.Item) => {
-      const id = data.thingInfo.id.replace("canvas_", "");
-      await thingApi.saveThingInfo(id, data.thingInfo);
-      message.success("保存成功");
-      getThingList();
-    };
-
-    // 动态更新
+    // 动态更新当前活跃的canvas
     watch(
       () => thingId.value,
       () => {
@@ -139,20 +107,18 @@ export default defineComponent({
     const previewVal = ref(false);
 
     const tabbar = {
-      open(e: MtipIt.ThingItem) {
-        const eid = `${e.id}`.startsWith("canvas_") ? e.id : `canvas_${e.id}`;
-        e.id = eid;
-        const canvasItem = create(e);
+      open(e: MtipIt.serverFlowInfo) {
+        const canvas = createFlow(e);
         let status = false;
         for (let i of canvasList.value) {
-          if (i.id === eid) {
+          if (i.id === canvas.id) {
             status = true;
           }
         }
-        thingId.value = canvasItem.id;
+        thingId.value = canvas.id;
         // 防止重复加载
         if (!status) {
-          canvasList.value.push(canvasItem);
+          canvasList.value.push(canvas);
         }
       },
       close(e: MtipIt.ThingItem) {
@@ -174,11 +140,16 @@ export default defineComponent({
           onPreview={(e: MtipIt.MenuItem) => {
             previewVal.value = true;
           }}
+          onSave={() => {
+            getThingList();
+            getFlowList();
+          }}
         />
         <div class={prefix.value + "_body"}>
           <thingPlane
             thingList={thingList.value}
-            onOpenThing={(e: MtipIt.ThingItem) => {
+            flowList={flowList.value}
+            onCreateFlow={(e: MtipIt.serverFlowInfo) => {
               tabbar.open(e);
             }}
           />
@@ -189,11 +160,7 @@ export default defineComponent({
               tabbar.close(e);
             }}
           />
-          <editorForm
-            onAddElement={handleAddElement}
-            onRemoveElement={handleRemoveElement}
-            onSave={handleSave}
-          />
+          <editorForm />
         </div>
         <previewDom v-models={[[previewVal.value, "val"]]} />
       </div>
