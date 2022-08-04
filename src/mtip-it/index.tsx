@@ -160,7 +160,7 @@ export default defineComponent({
               tabbar.close(e);
             }}
           />
-          <editorForm />
+          <editorForm onRefresh={getThingList} />
         </div>
         <previewDom v-models={[[previewVal.value, "val"]]} />
       </div>

@@ -13,11 +13,16 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
     });
     const texts =
       thing.properties?.map((ele: any, index: number) => {
-        return new fabric.Textbox(`${ele.label}:无`, {
+        return new fabric.Textbox(ele.text, {
           ...ele.position,
           ...ele.style,
+          name: ele.name,
           attrCode: "attrCode",
           parentId: thing.id,
+          data: {
+            key: ele.key,
+            name: ele.name,
+          },
         });
       }) || [];
     const svg = fabric.util.groupSVGElements([svgTest]) as any;
