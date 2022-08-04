@@ -23,13 +23,6 @@ export default defineComponent({
       cxt.emit("update:value", e.id);
     };
 
-    watch(
-      () => prop.value,
-      () => {
-        console.log(prop.value);
-      }
-    );
-
     return () => (
       <ul id="mtip_it_editor_tabbar" class={"mtip_it_editor_tabbar"}>
         {prop.list.map((i) => (

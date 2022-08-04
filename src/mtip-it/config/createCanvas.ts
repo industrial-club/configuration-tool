@@ -57,6 +57,6 @@ export const createFlow: (info?: MtipIt.serverFlowInfo) => MtipIt.Item = (
     events(flowCanvas.canvas);
 
     flowCanvas.canvas.isCreateLine = false;
-  }, 10);
+  }, 1);
   return flowCanvas;
 };

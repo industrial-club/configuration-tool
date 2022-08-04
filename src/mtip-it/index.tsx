@@ -1,5 +1,13 @@
 import "./style/index.less";
-import { defineComponent, onMounted, PropType, provide, ref, watch } from "vue";
+import {
+  defineComponent,
+  nextTick,
+  onMounted,
+  PropType,
+  provide,
+  ref,
+  watch,
+} from "vue";
 import { omit } from "lodash";
 import { create, createFlow } from "./config/createCanvas";
 import editorConter from "./layout/editorConter";
@@ -115,15 +123,16 @@ export default defineComponent({
             status = true;
           }
         }
-        thingId.value = canvas.id;
         // 防止重复加载
         if (!status) {
           canvasList.value.push(canvas);
         }
+        setTimeout(() => {
+          thingId.value = canvas.id;
+        }, 1);
       },
       close(e: MtipIt.ThingItem) {
         const index = canvasList.value.findIndex((item) => item.id === e.id);
-
         if (index) {
           canvasList.value.splice(index, 1);
           const activeIndex = canvasList.value.length - 1;
