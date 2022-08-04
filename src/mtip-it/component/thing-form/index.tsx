@@ -84,13 +84,6 @@ const ThingForm = defineComponent({
             name,
           },
         } as any);
-<<<<<<< HEAD
-        textEle.on("modified", () => {
-          position.left = textEle.left;
-          position.top = textEle.top;
-        });
-=======
->>>>>>> 4c9d38cbbc9a67b99e20f35e3cfbdc28585d6b52
 
         activeCanvas.value.canvas.add(textEle);
         props.widget.data.properties.push(data);
