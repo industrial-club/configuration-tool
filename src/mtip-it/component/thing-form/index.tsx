@@ -1,15 +1,23 @@
-import { defineComponent, ref, inject, Ref, watch, PropType } from "vue";
+import {
+  defineComponent,
+  ref,
+  inject,
+  Ref,
+  watch,
+  PropType,
+  onMounted,
+} from "vue";
 import { CheckboxChangeEvent } from "ant-design-vue/es/_util/EventInterface";
 import { fabric } from "fabric";
+import { message } from "ant-design-vue";
 import * as api from "@/mtip-it/api/form";
 import * as thingApi from "@/mtip-it/api/thing";
-import { message } from "ant-design-vue";
 
 /**
  * 实例属性表单
  */
 const ThingForm = defineComponent({
-  emits: ["propertyChange"],
+  emits: ["refresh"],
   props: {
     widget: {
       type: Object as PropType<MtipIt.Object>,
@@ -42,6 +50,8 @@ const ThingForm = defineComponent({
       const instanceId = props.widget.instanceId;
       const content = `${property.displayLabel}:无`;
 
+      let textEle: fabric.Object;
+
       // 添加
       if (checked) {
         // 位置 相对于物实例
@@ -64,47 +74,84 @@ const ThingForm = defineComponent({
           position,
           style: defaultStyle,
         };
-        const textEle = new fabric.Textbox(content, {
+        textEle = new fabric.Textbox(content, {
           name,
           ...position,
           ...defaultStyle,
           parentId: instanceId,
-          data,
+          data: {
+            key: property.code,
+            name,
+          },
         } as any);
-        textEle.on("modified", () => {
-          position.left = textEle.left;
-          position.top = textEle.top;
-        });
+
         activeCanvas.value.canvas.add(textEle);
-        // 添加到设备属性列表
-        if (!props.widget.data) {
-          props.widget.data = {};
-        }
-        if (!props.widget.data.properties) {
-          props.widget.data.properties = [];
-        }
         props.widget.data.properties.push(data);
       } else {
         // 移除
         const textList = (activeCanvas.value.canvas as fabric.Canvas)
-          .getObjects("text")
+          .getObjects("textbox")
           .filter(
-            (item) => item.name === name && item.data?.instanceId === instanceId
+            (item: MtipIt.Object) =>
+              item.name === name && item.parentId === instanceId
           );
         for (const text of textList) {
           activeCanvas.value.canvas.remove(text);
+          props.widget.data.properties = props.widget.data.properties.filter(
+            (item: any) =>
+              item.parentId === props.widget.parentId &&
+              item.key !== property.code
+          );
         }
       }
     };
+    onMounted(() => {
+      if (!props.widget.data) {
+        props.widget.data = {};
+      }
+      if (!props.widget.data.properties) {
+        props.widget.data.properties = [];
+      }
+    });
     /* ===== ===== */
 
     // 保存
     const handleSave = async () => {
       const { instanceId, data } = props.widget;
-      if (data) {
-        await thingApi.saveThingInfo(instanceId, data);
-        message.success("保存成功");
+
+      // 获取选中的属性
+      const properties = (activeCanvas.value.canvas as fabric.Canvas)
+        .getObjects("textbox")
+        .filter((item: MtipIt.Object) => item.parentId === instanceId);
+      data.properties = [];
+      for (const property of properties) {
+        const {
+          left,
+          top,
+          fill,
+          fontSize,
+          text,
+          visible,
+          opacity,
+          data: textData,
+        } = property as fabric.Textbox;
+        data.properties.push({
+          key: textData.key,
+          name: textData.name,
+          position: { left, top },
+          style: {
+            fill,
+            fontSize,
+            visible,
+            opacity,
+          },
+          text,
+        });
       }
+
+      await thingApi.saveThingInfo(instanceId, data);
+      message.success("保存成功");
+      emit("refresh");
     };
 
     return () => (
