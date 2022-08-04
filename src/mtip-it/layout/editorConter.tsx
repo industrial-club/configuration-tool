@@ -23,9 +23,7 @@ export default defineComponent({
           v-models={[[thingId.value, "value"]]}
           onClose={(e: MtipIt.Item) => {
             // 因为目前只有一个全场工艺图，所以不需要关闭
-            if (e.type !== "flow") {
-              context.emit("close", e);
-            }
+            context.emit("close", e);
           }}
         />
         <div id="mtip_it_editor_canvas" class={"mtip_it_editor_canvas"}>
