@@ -6,13 +6,6 @@ import { defineComponent, inject, onMounted, ref, Ref } from "vue";
 const CanvasForm = defineComponent({
   setup() {
     const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem")!;
-    const canvasBgColor = ref("");
-    onMounted(() => {
-      setTimeout(() => {
-        canvasBgColor.value =
-          activeCanvas.value.canvas?.backgroundColor || "#f3ffff";
-      }, 500);
-    });
 
     return () => (
       <div class="canvas-form">
@@ -20,7 +13,7 @@ const CanvasForm = defineComponent({
           <a-form-item label="背景颜色">
             <input
               type="color"
-              v-model={[canvasBgColor.value, "value"]}
+              value={activeCanvas.value?.canvas.backgroundColor || '#f3ffff'}
               onInput={(e: any) => {
                 activeCanvas.value.canvas.set(
                   "backgroundColor",
