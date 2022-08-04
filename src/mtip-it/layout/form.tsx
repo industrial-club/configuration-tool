@@ -7,8 +7,7 @@ import CanvasForm from "../component/canvas-form";
 import * as api from "@/mtip-it/api/form";
 
 export default defineComponent({
-  emits: ["addElement", "removeElement", "save"],
-  setup(props, { emit }) {
+  setup(props, { emit, attrs }) {
     const activeCanvas = inject<Ref<MtipIt.Item>>("activeMtipItItem")!;
     const activeWidget = useActiveWidget(activeCanvas);
 
@@ -25,11 +24,6 @@ export default defineComponent({
       }
     });
 
-    // 保存
-    const handleSave = () => {
-      console.log("保存");
-    };
-
     return () => {
       let content: VNode;
       // 没有选中部件 展示画布表单
@@ -38,6 +32,7 @@ export default defineComponent({
         if (activeWidget.value.effectType === "svg") {
           content = (
             <ThingForm
+              {...attrs}
               widget={activeWidget.value}
               proptyList={thingPropertyList.value.list}
             />

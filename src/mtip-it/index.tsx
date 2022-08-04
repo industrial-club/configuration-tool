@@ -109,21 +109,6 @@ export default defineComponent({
     //
     provide("thingId", thingId);
 
-    // 在当前活跃的canvas上添加元素
-    const handleAddElement = (element: fabric.Object) =>
-      activeMtipItItem.value?.canvas.add(element);
-    // 删除当前活跃的canvas上的元素
-    const handleRemoveElement = (elements: fabric.Object[]) =>
-      activeMtipItItem.value?.canvas.remove(...elements);
-
-    // 保存当前活跃的canvas的信息
-    const handleSave = async (data: MtipIt.Item) => {
-      const id = data.thingInfo.id.replace("canvas_", "");
-      await thingApi.saveThingInfo(id, data.thingInfo);
-      message.success("保存成功");
-      getThingList();
-    };
-
     // 动态更新
     watch(
       () => thingId.value,
@@ -189,11 +174,7 @@ export default defineComponent({
               tabbar.close(e);
             }}
           />
-          <editorForm
-            onAddElement={handleAddElement}
-            onRemoveElement={handleRemoveElement}
-            onSave={handleSave}
-          />
+          <editorForm onRefresh={getThingList} />
         </div>
         <previewDom v-models={[[previewVal.value, "val"]]} />
       </div>
