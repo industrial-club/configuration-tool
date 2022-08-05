@@ -8,7 +8,7 @@ const thingMoving = (canvas: MtipIt.Canvas) => {
   canvas.on("mouse:down:before", (e) => {
     const target = e.target! as MtipIt.Object;
 
-    if (target?.effectType === "svg") {
+    if (target?.effectType === "svg" && !canvas.isCreateLine) {
       status = true;
       child = [];
       // 获取当前svg下所有的动态和静态属性
@@ -40,6 +40,7 @@ const thingMoving = (canvas: MtipIt.Canvas) => {
           top,
         });
       }
+      child = [];
     }
   });
   canvas.on("mouse:up", (e) => {

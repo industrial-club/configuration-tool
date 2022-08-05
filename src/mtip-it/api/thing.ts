@@ -16,3 +16,11 @@ export const saveThingInfo = (id: string, style: any) =>
     id,
     style: JSON.stringify(style),
   });
+
+export const cartest = () => {
+  instance
+    .post("/queue/queueList", {}, { baseURL: "/carapi/localapi/" })
+    .then((res) => {
+      console.log(res);
+    });
+};

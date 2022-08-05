@@ -1,3 +1,4 @@
+import { message } from "ant-design-vue";
 import { fabric } from "fabric";
 import { computedZoomXY, svgPath } from ".";
 
@@ -25,6 +26,7 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
           },
         });
       }) || [];
+
     const svg = fabric.util.groupSVGElements([svgTest]) as any;
     for (let i of texts) {
       canvas.add(i);
@@ -43,6 +45,13 @@ export const svgToCanvas = (canvas: MtipIt.Canvas, e: fabric.IEvent<Event>) => {
     // canvas.setActiveObject(svg);
   };
 
+  const hasThing = canvas
+    .getObjects()
+    .find((item: MtipIt.Object) => item.instanceId === thing.id);
+  if (hasThing) {
+    message.error("一个工艺流程图内不能同时拖入两个相同的设备.");
+    return false;
+  }
   fabric.loadSVGFromURL(pathUrl, (objects, options) => {
     groupSvg(objects, options);
   });
