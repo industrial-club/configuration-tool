@@ -153,6 +153,7 @@ export default defineComponent({
             getThingList();
             getFlowList();
           }}
+          onAddFlow={() => {}}
         />
         <div class={prefix.value + "_body"}>
           <thingPlane

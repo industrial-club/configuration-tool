@@ -2,7 +2,7 @@ import { defineComponent, inject, PropType, Ref, toRaw } from "vue";
 import Menus, { MenuId } from "../config/menus";
 
 export default defineComponent({
-  emits: ["newCanvas", "preview", "save"],
+  emits: ["newCanvas", "preview", "save", "addFlow"],
   props: {
     customMenus: {
       type: Array,
@@ -24,6 +24,10 @@ export default defineComponent({
       item.event(toRaw(activeCanvas.value), () => {
         if (item.id === MenuId.save) {
           ctx.emit("save", item);
+        }
+
+        if (item.id === MenuId.newXflow) {
+          ctx.emit("addFlow", item);
         }
       });
       if (item.id === MenuId.see) {
