@@ -1,6 +1,3 @@
-import { computedZoomXY } from "../../config";
-import { svgToCanvas } from "../../config/svgToCanvas";
-
 const thingMoving = (canvas: MtipIt.Canvas) => {
   let child = [];
   let status = false;
@@ -40,11 +37,11 @@ const thingMoving = (canvas: MtipIt.Canvas) => {
           top,
         });
       }
-      child = [];
     }
   });
   canvas.on("mouse:up", (e) => {
     status = false;
+    child = [];
   });
 };
 

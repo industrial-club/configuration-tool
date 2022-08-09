@@ -2,7 +2,13 @@ import { message } from "ant-design-vue";
 import { fabric } from "fabric";
 import { getWindowInfo, previewInfo } from "../config";
 
-export const toPreview = () => {
+interface TOPreview {
+  event?: {
+    click: (i: MtipIt.Object) => void;
+  };
+}
+
+export const toPreview = (opt: TOPreview) => {
   const { width, height } = getWindowInfo("preview_box")();
   const canvas = new fabric.Canvas("preview_canvas", {});
   canvas.setHeight(height!);
@@ -21,7 +27,7 @@ export const toPreview = () => {
         for (const key in item?.data?.events) {
           item.on(key, () => {
             if (item?.data?.events[key]) {
-              message.success("下发成功");
+              opt.event.click(item);
             }
           });
         }

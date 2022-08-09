@@ -25,7 +25,13 @@ export default defineComponent({
       () => {
         if (val.value) {
           nextTick(() => {
-            toPreview();
+            toPreview({
+              event: {
+                click(i) {
+                  console.log(i);
+                },
+              },
+            });
           });
         }
       }
