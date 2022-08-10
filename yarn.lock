@@ -1578,10 +1578,10 @@ inherits@2, inherits@^2.0.3:
   resolved "https://registry.npmmirror.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-inl-ui@^0.0.9-rc.62:
-  version "0.0.9-rc.62"
-  resolved "https://registry.npmjs.org/inl-ui/-/inl-ui-0.0.9-rc.62.tgz#ee80deb6b40a0035c27bfa3c7a42ef63af3aa5fa"
-  integrity sha512-Vm1TYoAVtatzai3/oxiu8rWMfx6Ig4PDOl8bwQc94R3xORhMqY3zylMZ2pnSOc1OLeAEUf10Fda/Qo3Id7nRZg==
+inl-ui@^0.0.9-rc.77:
+  version "0.0.9-rc.77"
+  resolved "https://registry.npmmirror.com/inl-ui/-/inl-ui-0.0.9-rc.77.tgz#9715aa3d077fb13b189275376b1dd042dfbf6c4c"
+  integrity sha512-lnMYL4SR+tKKr0Kz4Y5ITOmgKGsonQn9Pk/YMNw6ym+2XuG+FR4aevSYFUJ40QJWprvEEsVC8fjOjlx+HbHXHQ==
   dependencies:
     "@antv/g2" "^4.2.2"
     vue-clipboard3 "^2.0.0"
