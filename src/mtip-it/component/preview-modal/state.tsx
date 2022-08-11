@@ -1,23 +1,41 @@
 import { defineComponent, PropType, ref, watch } from "vue";
-import { StateItem } from "../preview";
+import { StateItem, VideoItem } from "../preview";
+import leftBtn from "@/assets/svg/btn_l.png";
+import rightBtn from "@/assets/svg/btn_r.png";
 
 export const Props = {
   data: {
     type: Object as PropType<StateItem>,
     required: true,
   },
+  // camera: {
+  //   type: [Object, String] as PropType<VideoItem | String>,
+  // },
 };
 
 export default defineComponent({
   props: Props,
   setup(_props) {
+    const list = ref([]);
+
     watch(
       () => _props.data,
       (e) => {
-        // console.log(e);
+        list.value = _props.data.camera;
       },
       { immediate: true }
     );
+    const index = ref(0);
+    const toggle = (step: number) => {
+      index.value += step;
+      if (index.value > list.value.length - 1) {
+        index.value = 0;
+        return;
+      }
+      if (index.value < 0) {
+        index.value = list.value.length - 1;
+      }
+    };
     return () => (
       <div class="preview-state">
         <a-row>
@@ -55,7 +73,23 @@ export default defineComponent({
           </a-col>
           <a-col span="10">
             <div class="preview-state-video">
-              <inl-video-player camera={""}></inl-video-player>
+              <img
+                class="img leftImg"
+                onClick={() => {
+                  toggle(-1);
+                }}
+                src={leftBtn}
+              />
+              <img
+                class="img rightImg"
+                onClick={() => {
+                  toggle(1);
+                }}
+                src={rightBtn}
+              />
+              {list.value.map((ele) => {
+                return <inl-video-player camera={ele}></inl-video-player>;
+              })}
             </div>
           </a-col>
         </a-row>

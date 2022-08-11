@@ -10,73 +10,22 @@ export const Props = {
 };
 export interface StateItem {
   equipmentStatus: Array<{ state: any; name: string; tem: any }>;
+  camera: Array<VideoItem> | Array<string>;
 }
 export interface DataItem {
   title: number;
   state: StateItem;
 }
 export interface VideoItem {
+  user: string;
+  mediaServerPo: {
+    url: string;
+  };
   pass: string;
   rtspPort: number;
   ip: string;
   channel: string;
-  remark: string;
-  rtspTemplateMerged: string;
-  uuid: string;
-  webrtcTemplateMerged: string;
-  nvrBo: {
-    brandTypePo: {
-      code: string;
-      name: string;
-      rtspTemplate: string;
-      id: number;
-      prodType: string;
-    };
-    pass: string;
-    brandTypeCode: string;
-    rtspPort: number;
-    ip: string;
-    name: string;
-    remark: string;
-    id: number;
-    user: string;
-    uuid: string;
-  };
-  brandTypePo: {
-    streamTypeDict: string;
-    code: string;
-    name: string;
-    rtspTemplate: string;
-    remark: string;
-    id: number;
-    prodType: string;
-    streamTypeDictList: [
-      {
-        code: string;
-        name: string;
-      },
-      {
-        code: string;
-        name: string;
-      }
-    ];
-  };
   streamType: string;
-  brandTypeCode: string;
-  mediaServerPo: {
-    name: string;
-    remark: string;
-    id: number;
-    secret: string;
-    uuid: string;
-    url: string;
-  };
-  name: string;
-  nvrChannel: string;
-  id: number;
-  nvrUuid: string;
-  user: string;
-  mediaServerUuid: string;
 }
 
 export default defineComponent({
@@ -92,8 +41,16 @@ export default defineComponent({
       { immediate: true }
     );
     const visible = ref(false);
-    const data = reactive<{ list: DataItem }>({
-      list: { title: 0, state: { equipmentStatus: [] } },
+    const data = reactive<{
+      list: DataItem;
+    }>({
+      list: {
+        title: 0,
+        state: {
+          equipmentStatus: [],
+          camera: [],
+        },
+      },
     });
     const dataList = {
       title: 701,
@@ -109,6 +66,19 @@ export default defineComponent({
           { state: null, name: "后轴承温度", tem: "20°C" },
           { state: null, name: "后轴承温度", tem: "20°C" },
           { state: null, name: "后轴承温度", tem: "30°C" },
+        ],
+        camera: [
+          {
+            user: "admin",
+            mediaServerPo: {
+              url: "http://192.168.5.43:880",
+            },
+            pass: "password01",
+            rtspPort: 554,
+            ip: "172.16.202.53",
+            channel: "1",
+            streamType: "0",
+          },
         ],
       },
     };

@@ -45,7 +45,7 @@ const previewModal = defineComponent({
       <a-modal
         v-models={[[_props.visible, "visible"]]}
         title={_props.title}
-        width="50%"
+        width="40%"
         // closable={false}
         footer={null}
         wrap-class-name="preview-modal"
