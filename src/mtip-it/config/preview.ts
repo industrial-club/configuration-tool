@@ -20,6 +20,9 @@ export const toPreview = (opt: TOPreview) => {
     canvas.viewportTransform[5] = localtion.y;
     canvas.getObjects().forEach((item: MtipIt.Object) => {
       item.selectable = false;
+      if (item.type !== "path") {
+        item.bringToFront();
+      }
       if (item?.type === "circle") {
         item.visible = false;
       }

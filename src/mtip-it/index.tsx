@@ -17,6 +17,8 @@ import MtipItTop from "./layout/canvasEditorTop";
 import previewDom from "./component/preview";
 import * as thingApi from "./api/thing";
 import api from "@/mtip-it/api";
+import { message } from "ant-design-vue";
+import { uuid } from "./config";
 
 const allIts: Array<MtipIt.Item> = [];
 
@@ -65,8 +67,8 @@ export default defineComponent({
 
     // flow 列表
     const flowList = ref<Array<any>>([]);
-    const getFlowList = async () => {
-      if (canvasList.value.length > 0) {
+    const getFlowList = async (state?: boolean) => {
+      if (canvasList.value.length > 0 && !state) {
         thingId.value = canvasList.value[0].id;
       }
       const res: any = await api.get(
@@ -142,18 +144,59 @@ export default defineComponent({
         }
       },
     };
+
+    const addFlowMode = ref({
+      state: false,
+      val: "",
+    });
+
     // 所有图表集合
     return () => (
       <div id={prefix.value} class={prefix.value}>
+        <a-modal
+          v-models={[[addFlowMode.value.state, "visible"]]}
+          title="新建工艺流程图"
+          cancelText="取消"
+          okText="添加流程图"
+          onOk={() => {
+            if (addFlowMode.value.val === "") {
+              message.error("工艺流程图名称不能为空.");
+            } else {
+              tabbar.open({
+                cropId: 0,
+                id: uuid(),
+                image: "",
+                style: "",
+                title: addFlowMode.value.val,
+              });
+              nextTick(() => {
+                addFlowMode.value.state = false;
+                message.success("添加成功.");
+              });
+            }
+          }}
+        >
+          <a-row>
+            <a-col span="8">工艺流程图名称: </a-col>
+            <a-col span="16">
+              <a-input
+                v-models={[[addFlowMode.value.val, "value"]]}
+                placeholder="请输入流程图名称"
+              />
+            </a-col>
+          </a-row>
+        </a-modal>
         <MtipItTop
           onPreview={(e: MtipIt.MenuItem) => {
             previewVal.value = true;
           }}
           onSave={() => {
             getThingList();
-            getFlowList();
+            getFlowList(true);
           }}
-          onAddFlow={() => {}}
+          onAddFlow={() => {
+            addFlowMode.value.state = true;
+          }}
         />
         <div class={prefix.value + "_body"}>
           <thingPlane

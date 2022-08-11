@@ -10,6 +10,7 @@ import { fabric } from "fabric";
 import { previewInfo } from "..";
 import api from "@/mtip-it/api";
 import { message } from "ant-design-vue";
+import setActiveCanvasInfo from "./setActiveCanvasInfo";
 
 export enum MenuId {
   newXflow = "流程图",
@@ -52,7 +53,9 @@ const menus: Array<MtipIt.MenuItem> = [
         type: "item",
         id: MenuId.newXflow,
         name: "流程图",
-        event(canvas) {},
+        event(canvas, cb) {
+          cb();
+        },
       },
       {
         type: "item",
@@ -104,26 +107,7 @@ const menus: Array<MtipIt.MenuItem> = [
   {
     id: MenuId.save,
     event(canvasItem, cb) {
-      const canvasJson: any = canvasItem.canvas.toJSON();
-      canvasJson?.objects.forEach((element: any) => {
-        if (element.effectType === "line") {
-          element.perPixelTargetFind = true;
-          element.lockMovementX = true;
-          element.lockMovementY = true;
-        }
-      });
-
-      canvasJson.localtion = {
-        x: canvasItem.canvas.viewportTransform[4],
-        y: canvasItem.canvas.viewportTransform[5],
-      };
-      canvasJson.zoom = canvasItem.canvas.getZoom();
-      previewInfo.set(
-        canvasItem.canvas.toJSON(),
-        JSON.stringify(canvasJson.localtion),
-        canvasJson.zoom
-      );
-
+      const { canvasJson } = setActiveCanvasInfo(canvasItem);
       api
         .post("/thing/v1/adapter/thing/inst/saveTopoMap", {
           id: canvasItem.id,

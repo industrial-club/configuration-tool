@@ -48,7 +48,7 @@ export const createFlow: (info?: MtipIt.serverFlowInfo) => MtipIt.Item = (
   }
   setTimeout(() => {
     flowCanvas.canvas = new fabric.Canvas(flowCanvas.id);
-    if (info) {
+    if (info && info.style) {
       (flowCanvas.canvas as MtipIt.Canvas).loadFromJSON(
         JSON.parse(info.style),
         () => {}

@@ -1,6 +1,5 @@
-import { computed, defineComponent, inject, ref, watch, Ref, VNode } from "vue";
+import { defineComponent, inject, ref, watch, Ref, VNode } from "vue";
 import useActiveWidget from "../hooks/useActiveWidget";
-import { fabric } from "fabric";
 import PropertiesForm from "../component/properties-form";
 import ThingForm from "../component/thing-form";
 import CanvasForm from "../component/canvas-form";
