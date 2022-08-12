@@ -6,7 +6,9 @@
   .@{prefix}_flow_box {
     display: flex;
     flex-direction: column;
-
+    &_img{
+      border: 1px solid #3377ff;
+    }
     &_item {
       height: 130px;
       display: flex;
@@ -15,6 +17,7 @@
       margin-top: 1rem;
     }
   }
+  
 
   .search {
     margin: 16px;
@@ -36,4 +39,22 @@
       }
     }
   }
+}  
+.mtip_it_editor_flow_menu{
+  width: 80px;
+  background-color: #fff;
+  box-shadow: 1px 1px 2px; 
+  border-radius: 1px;
+  .mtip_it_editor_flow_i{
+    padding:5px 15px; 
+    &:hover{
+      background: #f3f4f3;
+    }
+  }
+}
+.mtip_it_editor_flow_img{
+  border: 1px solid transparent;
+}
+.mtip_it_editor_flow_active{
+  border: 1px solid #1890ff ;
 }

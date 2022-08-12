@@ -149,15 +149,23 @@ export default defineComponent({
       state: false,
       val: "",
     });
+    const deleteHandle = async (id: number) => {
+      const res: any = await api.get(
+        `/thing/v1/adapter/thing/inst/deleteTopoMap/${id}`
+      );
+      message.success(`删除${(res.code = "M0000" ? "成功" : "失败")}`);
+      getFlowList();
+    };
+    const type = ref("add");
 
     // 所有图表集合
     return () => (
       <div id={prefix.value} class={prefix.value}>
         <a-modal
           v-models={[[addFlowMode.value.state, "visible"]]}
-          title="新建工艺流程图"
+          title={`${type.value === "add" ? "新建" : "编辑"}工艺流程图`}
           cancelText="取消"
-          okText="添加流程图"
+          okText={`${type.value === "add" ? "添加" : "修改"}流程图`}
           onOk={() => {
             if (addFlowMode.value.val === "") {
               message.error("工艺流程图名称不能为空.");
@@ -195,6 +203,8 @@ export default defineComponent({
             getFlowList(true);
           }}
           onAddFlow={() => {
+            addFlowMode.value.val = "";
+            type.value = "add";
             addFlowMode.value.state = true;
           }}
         />
@@ -204,6 +214,14 @@ export default defineComponent({
             flowList={flowList.value}
             onCreateFlow={(e: MtipIt.serverFlowInfo) => {
               tabbar.open(e);
+            }}
+            onEditFlow={(data: { id: string; name: string }) => {
+              addFlowMode.value.val = data.name;
+              type.value = "edit";
+              addFlowMode.value.state = true;
+            }}
+            onDeleteFlow={(id: number) => {
+              deleteHandle(id);
             }}
           />
           <editorConter
