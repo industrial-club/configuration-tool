@@ -1,8 +1,6 @@
 import { defineComponent, nextTick, reactive, ref, watch } from "vue";
 import { toPreview } from "../config/preview";
 import PreviewModal from "./preview-modal";
-import a from "@/assets/svg/btn_l.png";
-import b from "@/assets/svg/btn_r.png";
 import "../style/preview.less";
 
 export const Props = {
@@ -15,8 +13,8 @@ export interface StateItem {
   camera: Array<VideoItem> | Array<string>;
 }
 export interface DataItem {
-  title: number;
-  state: StateItem;
+  title: string;
+  tabList: Array<{ label: string; data?: StateItem }>;
 }
 export interface VideoItem {
   user: string;
@@ -48,46 +46,50 @@ export default defineComponent({
       list: DataItem;
     }>({
       list: {
-        title: 0,
-        state: {
-          equipmentStatus: [],
-          camera: [],
-        },
+        title: "",
+        tabList: [],
       },
     });
     const dataList = {
-      title: 701,
-      state: {
-        equipmentStatus: [
-          { state: "启动", name: "设备状态", tem: null },
-          { state: "正常", name: "机尾北侧轴承", tem: null },
-          { state: "正常", name: "机尾南侧轴承", tem: null },
-          { state: "正常", name: "机尾南侧轴承", tem: null },
-          { state: null, name: "后轴承温度", tem: "20°C" },
-          { state: null, name: "后轴承温度", tem: "20°C" },
-          { state: null, name: "后轴承温度", tem: "20°C" },
-          { state: null, name: "后轴承温度", tem: "20°C" },
-          { state: null, name: "后轴承温度", tem: "20°C" },
-          { state: null, name: "后轴承温度", tem: "30°C" },
-        ],
-        camera: [
-          // {
-          //   user: "admin",
-          //   mediaServerPo: {
-          //     url: "http://192.168.5.43:10880",
-          //   },
-          //   pass: "zg123456",
-          //   rtspPort: 554,
-          //   ip: "172.16.110.19",
-          //   channel: "1",
-          //   streamType: "0",
-          //   webrtcTemplateMerged:
-          //     "http://192.168.5.43:880/index/api/addStreamProxy?vhost=__defaultVhost__&app=live&stream=v172.16.202.53-554-${channel}-${streamType}&url=rtsp://admin:password01@172.16.202.53:554/H264/ch${channel}/${streamType}/av_stream",
-          // },
-          "c371661235678801920",
-          "c360021015999737856",
-        ],
-      },
+      title: "701",
+      tabList: [
+        {
+          label: "状态",
+          data: {
+            equipmentStatus: [
+              { state: "启动", name: "设备状态", tem: null },
+              { state: "正常", name: "机尾北侧轴承", tem: null },
+              { state: "正常", name: "机尾南侧轴承", tem: null },
+              { state: "正常", name: "机尾南侧轴承", tem: null },
+              { state: null, name: "后轴承温度", tem: "20°C" },
+              { state: null, name: "后轴承温度", tem: "20°C" },
+              { state: null, name: "后轴承温度", tem: "20°C" },
+              { state: null, name: "后轴承温度", tem: "20°C" },
+              { state: null, name: "后轴承温度", tem: "20°C" },
+              { state: null, name: "后轴承温度", tem: "30°C" },
+            ],
+            camera: [
+              // {
+              //   user: "admin",
+              //   mediaServerPo: {
+              //     url: "http://192.168.5.43:10880",
+              //   },
+              //   pass: "zg123456",
+              //   rtspPort: 554,
+              //   ip: "172.16.110.19",
+              //   channel: "1",
+              //   streamType: "0",
+              //   webrtcTemplateMerged:
+              //     "http://192.168.5.43:880/index/api/addStreamProxy?vhost=__defaultVhost__&app=live&stream=v172.16.202.53-554-${channel}-${streamType}&url=rtsp://admin:password01@172.16.202.53:554/H264/ch${channel}/${streamType}/av_stream",
+              // },
+              "c371661235678801920",
+              "c360021015999737856",
+            ],
+          },
+        },
+        { label: "报警" },
+        { label: "控制" },
+      ],
     };
     watch(
       () => val.value,
@@ -122,7 +124,7 @@ export default defineComponent({
           <div class="preview_box" id="preview_box">
             <canvas id="preview_canvas"></canvas>
             <PreviewModal
-              state={dataList.state}
+              data={dataList}
               title={data.list.title}
               v-models={[[visible.value, "visible"]]}
             ></PreviewModal>

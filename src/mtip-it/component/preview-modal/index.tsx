@@ -19,28 +19,35 @@ export const Props = {
   visible: {
     type: Boolean,
   },
-  title: { type: Number },
-  // data: {
-  //   type: Object as PropType<DataItem>,
-  //   required: true,
-  // },
-  state: Object as PropType<StateItem>,
+  title: { type: String },
+  data: {
+    type: Object as PropType<DataItem>,
+  },
 };
 const previewModal = defineComponent({
   props: Props,
   components: { State },
   emits: ["update:visible"],
   setup(_props, cxt) {
-    const activeKey = ref(1);
+    const activeKey = ref(0);
     const data = reactive<{
-      tab: Array<{ label: string; value: number; VNode?: VNode }>;
+      tab: Array<{ label: string; value?: number; VNode?: VNode; data?: any }>;
     }>({
-      tab: [
-        { label: "状态", value: 1, VNode: <State data={_props.state} /> },
-        { label: "报警", value: 2 },
-        { label: "控制", value: 3 },
-      ],
+      tab: [],
     });
+    watch(
+      () => _props.data,
+      (e) => {
+        if (e) {
+          data.tab = _props.data.tabList;
+          data.tab.forEach((item, inx) => {
+            item.value = inx;
+            if (item.data) item.VNode = <State data={item.data}></State>;
+          });
+        }
+      },
+      { immediate: true, deep: true }
+    );
     return () => (
       <a-modal
         v-models={[[_props.visible, "visible"]]}
