@@ -1,6 +1,8 @@
 import { defineComponent, nextTick, reactive, ref, watch } from "vue";
 import { toPreview } from "../config/preview";
 import PreviewModal from "./preview-modal";
+import a from "@/assets/svg/btn_l.png";
+import b from "@/assets/svg/btn_r.png";
 import "../style/preview.less";
 
 export const Props = {
@@ -26,6 +28,7 @@ export interface VideoItem {
   ip: string;
   channel: string;
   streamType: string;
+  webrtcTemplateMerged: string;
 }
 
 export default defineComponent({
@@ -68,17 +71,21 @@ export default defineComponent({
           { state: null, name: "后轴承温度", tem: "30°C" },
         ],
         camera: [
-          {
-            user: "admin",
-            mediaServerPo: {
-              url: "http://192.168.5.43:880",
-            },
-            pass: "password01",
-            rtspPort: 554,
-            ip: "172.16.202.53",
-            channel: "1",
-            streamType: "0",
-          },
+          // {
+          //   user: "admin",
+          //   mediaServerPo: {
+          //     url: "http://192.168.5.43:10880",
+          //   },
+          //   pass: "zg123456",
+          //   rtspPort: 554,
+          //   ip: "172.16.110.19",
+          //   channel: "1",
+          //   streamType: "0",
+          //   webrtcTemplateMerged:
+          //     "http://192.168.5.43:880/index/api/addStreamProxy?vhost=__defaultVhost__&app=live&stream=v172.16.202.53-554-${channel}-${streamType}&url=rtsp://admin:password01@172.16.202.53:554/H264/ch${channel}/${streamType}/av_stream",
+          // },
+          "c371661235678801920",
+          "c360021015999737856",
         ],
       },
     };
@@ -91,8 +98,6 @@ export default defineComponent({
               event: {
                 click(i) {
                   visible.value = !visible.value;
-                  // console.log(i);
-                  // data.list = i.data;
                   data.list = dataList;
                 },
               },

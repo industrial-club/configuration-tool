@@ -71,25 +71,33 @@ export default defineComponent({
               </a-col>
             </a-row>
           </a-col>
-          <a-col span="10">
+          <a-col span="10" class="preview-state-right">
             <div class="preview-state-video">
-              <img
-                class="img leftImg"
-                onClick={() => {
-                  toggle(-1);
-                }}
-                src={leftBtn}
-              />
-              <img
-                class="img rightImg"
-                onClick={() => {
-                  toggle(1);
-                }}
-                src={rightBtn}
-              />
-              {list.value.map((ele) => {
-                return <inl-video-player camera={ele}></inl-video-player>;
-              })}
+              {list.value.length > 1 ? (
+                <>
+                  <img
+                    class="img leftImg"
+                    onClick={() => {
+                      toggle(-1);
+                    }}
+                    src={leftBtn}
+                  />
+                  <img
+                    class="img rightImg"
+                    onClick={() => {
+                      toggle(1);
+                    }}
+                    src={rightBtn}
+                  />
+                </>
+              ) : (
+                ""
+              )}
+              {list.value.map((ele) => (
+                <inl-video-player
+                  camera={list.value[index.value]}
+                ></inl-video-player>
+              ))}
             </div>
           </a-col>
         </a-row>

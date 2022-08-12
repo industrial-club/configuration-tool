@@ -4,24 +4,30 @@
     padding: 0px 24px 24px 24px;
    }
  }
-.preview-state{
-  .preview-state-video{
-    width: 300px;
-    height: 200px;
-    position: relative;
-    overflow: hidden;
-    .img {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .leftImg {
-      left: 0;
-      z-index: 99;
-    }
-    .rightImg {
-      right: 0;
-      z-index: 99;
+ .preview-state{
+  .preview-state-right{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .preview-state-video{
+      height: 200px;
+      display: flex;
+      overflow: hidden;
+      width: 100%;
+      position: relative;
+      .img {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .leftImg {
+        left: 0;
+        z-index: 99;
+      }
+      .rightImg {
+        right: 0;
+        z-index: 99;
+      }
     }
   }
-}
+ }
