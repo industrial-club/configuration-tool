@@ -150,11 +150,17 @@ export default defineComponent({
       val: "",
     });
     const deleteHandle = async (id: number) => {
-      const res: any = await api.get(
-        `/thing/v1/adapter/thing/inst/deleteTopoMap/${id}`
-      );
-      message.success(`删除${(res.code = "M0000" ? "成功" : "失败")}`);
-      getFlowList();
+      let res;
+      try {
+        res = await api.get(`/thing/v1/adapter/thing/inst/deleteTopoMap/${id}`);
+        message.success(`删除${(res.code = "M0000" ? "成功" : "失败")}`);
+      } catch (error) {
+        message.error(`系统错误请稍后重试.`);
+      }
+
+      nextTick(() => {
+        getFlowList();
+      });
     };
     const type = ref("add");
 

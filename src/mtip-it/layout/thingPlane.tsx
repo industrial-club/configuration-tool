@@ -86,17 +86,6 @@ export default defineComponent({
                 v-slots={{
                   overlay: () => (
                     <div class="mtip_it_editor_flow_menu">
-                      {/* <div
-                        class="mtip_it_editor_flow_i"
-                        onClick={() => {
-                          content.emit("editFlow", {
-                            id: item.id,
-                            name: item.title,
-                          });
-                        }}
-                      >
-                        重命名
-                      </div> */}
                       <div
                         class="mtip_it_editor_flow_i"
                         onClick={() => {
