@@ -107,7 +107,7 @@ export const updateLine = (canvas: MtipIt.Canvas, line: MtipIt.Path) => {
   canvas.remove(line);
   const newLine: MtipIt.Path = new fabric.Path(line.path, {
     fill: "",
-    stroke: "black",
+    stroke: line.stroke,
     objectCaching: false,
     strokeWidth: 3,
     perPixelTargetFind: true,

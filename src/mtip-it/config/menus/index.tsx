@@ -26,6 +26,7 @@ export enum MenuId {
 
 const onLine = (canvas: MtipIt.Canvas) => {
   canvas.isCreateLine = true;
+  canvas.selection = false;
   canvas.getObjects().map((item) => {
     item.selectable = false;
     return item;
@@ -33,6 +34,7 @@ const onLine = (canvas: MtipIt.Canvas) => {
 };
 const finishLine = (canvas: MtipIt.Canvas) => {
   canvas.isCreateLine = false;
+  canvas.selection = true;
   canvas.getObjects().map((item) => {
     if (item.type !== "line") {
       item.selectable = true;
