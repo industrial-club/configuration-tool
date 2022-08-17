@@ -1,6 +1,7 @@
 import { message } from "ant-design-vue";
 import { fabric } from "fabric";
 import { getWindowInfo, previewInfo } from "../config";
+import { onClick } from "../events/canvasEvent/click";
 
 interface TOPreview {
   event?: {
@@ -28,11 +29,14 @@ export const toPreview = (opt: TOPreview) => {
       }
       if (item?.data?.events) {
         for (const key in item?.data?.events) {
-          item.on(key, () => {
-            if (item?.data?.events[key]) {
+          onClick(
+            item,
+            () => {
               opt.event.click(item);
-            }
-          });
+            },
+            200,
+            true
+          );
         }
       }
     });
