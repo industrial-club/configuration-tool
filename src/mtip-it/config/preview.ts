@@ -27,7 +27,7 @@ export const toPreview = (opt: TOPreview) => {
       if (item?.type === "circle") {
         item.visible = false;
       }
-      if (item?.data?.events) {
+      if (item?.data?.events?.mousedown) {
         for (const key in item?.data?.events) {
           onClick(
             item,
